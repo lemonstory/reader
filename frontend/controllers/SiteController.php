@@ -210,4 +210,14 @@ class SiteController extends Controller
             'model' => $model,
         ]);
     }
+
+    public function actionHello($message = '你好') {
+
+        $posts = Yii::$app->db->createCommand('SELECT * FROM story')
+            ->queryAll();
+        var_dump($posts);
+        return $this->render('say', ['message' => $message]);
+
+    }
+
 }
