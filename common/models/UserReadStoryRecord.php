@@ -1,0 +1,55 @@
+<?php
+
+namespace common\models;
+
+use Yii;
+
+/**
+ * This is the model class for table "user_read_story_record".
+ *
+ * @property integer $uid
+ * @property integer $story_id
+ * @property integer $last_chapter_id
+ * @property string $last_message_id
+ * @property string $create_time
+ * @property string $last_modify_time
+ * @property integer $status
+ */
+class UserReadStoryRecord extends \yii\db\ActiveRecord
+{
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return 'user_read_story_record';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['uid', 'story_id', 'last_chapter_id', 'last_message_id'], 'required'],
+            [['uid', 'story_id', 'last_chapter_id', 'last_message_id', 'status'], 'integer'],
+            [['create_time', 'last_modify_time'], 'safe'],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'uid' => Yii::t('app', '用户id'),
+            'story_id' => Yii::t('app', '故事id'),
+            'last_chapter_id' => Yii::t('app', '最后阅读章节id'),
+            'last_message_id' => Yii::t('app', '最后阅读信息id'),
+            'create_time' => Yii::t('app', '创建时间'),
+            'last_modify_time' => Yii::t('app', '最后更新时间'),
+            'status' => Yii::t('app', '状态'),
+        ];
+    }
+}
