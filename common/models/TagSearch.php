@@ -5,12 +5,12 @@ namespace common\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Category;
+use common\models\Tag;
 
 /**
- * CategorySearch represents the model behind the search form about `common\models\Category`.
+ * TagSearch represents the model behind the search form about `common\models\Tag`.
  */
-class CategorySearch extends Category
+class TagSearch extends Tag
 {
     /**
      * @inheritdoc
@@ -18,7 +18,7 @@ class CategorySearch extends Category
     public function rules()
     {
         return [
-            [['category_id', 'status'], 'integer'],
+            [['tag_id', 'status'], 'integer'],
             [['name', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
@@ -41,7 +41,7 @@ class CategorySearch extends Category
      */
     public function search($params)
     {
-        $query = Category::find();
+        $query = Tag::find();
 
         // add conditions that should always apply here
 
@@ -59,7 +59,7 @@ class CategorySearch extends Category
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'category_id' => $this->category_id,
+            'tag_id' => $this->tag_id,
             'create_time' => $this->create_time,
             'last_modify_time' => $this->last_modify_time,
             'status' => $this->status,

@@ -3,11 +3,11 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[Category]].
+ * This is the ActiveQuery class for [[Tag]].
  *
- * @see Category
+ * @see Tag
  */
-class CategoryQuery extends \yii\db\ActiveQuery
+class TagQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class CategoryQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return Category[]|array
+     * @return Tag[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class CategoryQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return Category|array|null
+     * @return Tag|array|null
      */
     public function one($db = null)
     {
