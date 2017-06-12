@@ -58,4 +58,8 @@ class Tag extends \yii\db\ActiveRecord
     {
         return new TagQuery(get_called_class());
     }
+
+    public function getStorys() {
+
+    }
 }

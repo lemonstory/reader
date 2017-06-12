@@ -52,6 +52,7 @@ class Chapter extends \yii\db\ActiveRecord
             'number' => Yii::t('app', '序号'),
             'create_time' => Yii::t('app', '创建时间'),
             'last_modify_time' => Yii::t('app', '最后更新时间'),
+            'is_published' => Yii::t('app', '是否发布'),
             'status' => Yii::t('app', '状态'),
         ];
     }
