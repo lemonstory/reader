@@ -52,4 +52,13 @@ class UserReadStoryRecord extends \yii\db\ActiveRecord
             'status' => Yii::t('app', '状态'),
         ];
     }
+
+    /**
+     * @inheritdoc
+     * @return UserReadStoryRecordQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserReadStoryRecordQuery(get_called_class());
+    }
 }

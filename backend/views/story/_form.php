@@ -12,11 +12,11 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'cover')->textInput(['maxlength' => true]) ?>
-
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'cover')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'uid')->textInput() ?>
 
@@ -24,13 +24,15 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'message_count')->textInput() ?>
 
-    <?= $form->field($model, 'views')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'taps')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'is_published')->textInput() ?>
+
+    <?= $form->field($model, 'status')->textInput() ?>
 
     <?= $form->field($model, 'create_time')->textInput() ?>
 
     <?= $form->field($model, 'last_modify_time')->textInput() ?>
-
-    <?= $form->field($model, 'status')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

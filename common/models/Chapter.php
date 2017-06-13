@@ -8,6 +8,7 @@ use Yii;
  * This is the model class for table "chapter".
  *
  * @property integer $chapter_id
+ * @property string $name
  * @property integer $story_id
  * @property string $background
  * @property integer $message_count
@@ -15,6 +16,7 @@ use Yii;
  * @property string $create_time
  * @property string $last_modify_time
  * @property integer $status
+ * @property integer $is_published
  */
 class Chapter extends \yii\db\ActiveRecord
 {
@@ -33,8 +35,9 @@ class Chapter extends \yii\db\ActiveRecord
     {
         return [
             [['story_id', 'background'], 'required'],
-            [['story_id', 'message_count', 'number', 'status'], 'integer'],
+            [['story_id', 'message_count', 'number', 'status', 'is_published'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
+            [['name'], 'string', 'max' => 150],
             [['background'], 'string', 'max' => 2083],
         ];
     }
@@ -46,14 +49,15 @@ class Chapter extends \yii\db\ActiveRecord
     {
         return [
             'chapter_id' => Yii::t('app', '章节id'),
+            'name' => Yii::t('app', 'Name'),
             'story_id' => Yii::t('app', '故事id'),
             'background' => Yii::t('app', '背景图'),
             'message_count' => Yii::t('app', '消息数量'),
             'number' => Yii::t('app', '序号'),
             'create_time' => Yii::t('app', '创建时间'),
             'last_modify_time' => Yii::t('app', '最后更新时间'),
-            'is_published' => Yii::t('app', '是否发布'),
             'status' => Yii::t('app', '状态'),
+            'is_published' => Yii::t('app', '是否发布'),
         ];
     }
 

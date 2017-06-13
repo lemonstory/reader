@@ -3,9 +3,9 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[Story]].
+ * This is the ActiveQuery class for [[StoryActor]].
  *
- * @see Story
+ * @see StoryActor
  */
 class StoryQuery extends \yii\db\ActiveQuery
 {
@@ -16,7 +16,7 @@ class StoryQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return Story[]|array
+     * @return StoryActor[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class StoryQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return Story|array|null
+     * @return StoryActor|array|null
      */
     public function one($db = null)
     {

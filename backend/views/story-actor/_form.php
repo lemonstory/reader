@@ -20,11 +20,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'number')->textInput() ?>
 
+    <?= $form->field($model, 'is_visible')->textInput() ?>
+
+    <?= $form->field($model, 'status')->textInput() ?>
+
     <?= $form->field($model, 'create_time')->textInput() ?>
 
     <?= $form->field($model, 'last_modify_time')->textInput() ?>
-
-    <?= $form->field($model, 'status')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

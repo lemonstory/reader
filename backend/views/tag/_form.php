@@ -14,6 +14,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'number')->textInput() ?>
+
     <?= $form->field($model, 'create_time')->textInput() ?>
 
     <?= $form->field($model, 'last_modify_time')->textInput() ?>

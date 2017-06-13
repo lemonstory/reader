@@ -25,6 +25,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'avatar') ?>
 
+    <?php // echo $form->field($model, 'signature') ?>
+
+    <?php // echo $form->field($model, 'status') ?>
+
     <?php // echo $form->field($model, 'register_ip') ?>
 
     <?php // echo $form->field($model, 'register_time') ?>
@@ -34,8 +38,6 @@ use yii\widgets\ActiveForm;
     <?php // echo $form->field($model, 'last_login_time') ?>
 
     <?php // echo $form->field($model, 'last_modify_time') ?>
-
-    <?php // echo $form->field($model, 'status') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

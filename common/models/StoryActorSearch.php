@@ -18,7 +18,7 @@ class StoryActorSearch extends StoryActor
     public function rules()
     {
         return [
-            [['story_actor_id', 'story_id', 'number', 'status'], 'integer'],
+            [['actor_id', 'story_id', 'number', 'is_visible', 'status'], 'integer'],
             [['name', 'avator', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
@@ -59,12 +59,13 @@ class StoryActorSearch extends StoryActor
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'story_actor_id' => $this->story_actor_id,
+            'actor_id' => $this->actor_id,
             'story_id' => $this->story_id,
             'number' => $this->number,
+            'is_visible' => $this->is_visible,
+            'status' => $this->status,
             'create_time' => $this->create_time,
             'last_modify_time' => $this->last_modify_time,
-            'status' => $this->status,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])

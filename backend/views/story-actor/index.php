@@ -24,14 +24,15 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'story_actor_id',
+            'actor_id',
             'story_id',
             'name',
             'avator',
             'number',
+            // 'is_visible',
+            // 'status',
             // 'create_time',
             // 'last_modify_time',
-            // 'status',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

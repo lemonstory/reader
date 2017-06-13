@@ -20,6 +20,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'avatar')->textInput(['maxlength' => true]) ?>
 
+    <?= $form->field($model, 'signature')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'status')->textInput() ?>
+
     <?= $form->field($model, 'register_ip')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'register_time')->textInput() ?>
@@ -29,8 +33,6 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'last_login_time')->textInput() ?>
 
     <?= $form->field($model, 'last_modify_time')->textInput() ?>
-
-    <?= $form->field($model, 'status')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Update'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

@@ -19,7 +19,7 @@ class UserSearch extends User
     {
         return [
             [['uid', 'status'], 'integer'],
-            [['name', 'cellphone', 'password', 'avatar', 'register_ip', 'register_time', 'last_login_ip', 'last_login_time', 'last_modify_time'], 'safe'],
+            [['name', 'cellphone', 'password', 'avatar', 'signature', 'register_ip', 'register_time', 'last_login_ip', 'last_login_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -60,16 +60,17 @@ class UserSearch extends User
         // grid filtering conditions
         $query->andFilterWhere([
             'uid' => $this->uid,
+            'status' => $this->status,
             'register_time' => $this->register_time,
             'last_login_time' => $this->last_login_time,
             'last_modify_time' => $this->last_modify_time,
-            'status' => $this->status,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'cellphone', $this->cellphone])
             ->andFilterWhere(['like', 'password', $this->password])
             ->andFilterWhere(['like', 'avatar', $this->avatar])
+            ->andFilterWhere(['like', 'signature', $this->signature])
             ->andFilterWhere(['like', 'register_ip', $this->register_ip])
             ->andFilterWhere(['like', 'last_login_ip', $this->last_login_ip]);
 

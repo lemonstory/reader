@@ -29,16 +29,17 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'story_id',
-            'cover',
             'name',
             'description',
+            'cover',
             'uid',
             'chapter_count',
             'message_count',
-            'views',
+            'taps',
+            'is_published',
+            'status',
             'create_time',
             'last_modify_time',
-            'status',
         ],
     ]) ?>
 

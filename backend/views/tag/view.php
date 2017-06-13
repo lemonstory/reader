@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'tag_id',
             'name',
+            'number',
             'create_time',
             'last_modify_time',
             'status',

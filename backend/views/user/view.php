@@ -33,12 +33,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'cellphone',
             'password',
             'avatar',
+            'signature',
+            'status',
             'register_ip',
             'register_time',
             'last_login_ip',
             'last_login_time',
             'last_modify_time',
-            'status',
         ],
     ]) ?>
 

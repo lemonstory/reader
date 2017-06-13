@@ -17,19 +17,23 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'chapter_id') ?>
 
+    <?= $form->field($model, 'name') ?>
+
     <?= $form->field($model, 'story_id') ?>
 
     <?= $form->field($model, 'background') ?>
 
     <?= $form->field($model, 'message_count') ?>
 
-    <?= $form->field($model, 'number') ?>
+    <?php // echo $form->field($model, 'number') ?>
 
     <?php // echo $form->field($model, 'create_time') ?>
 
     <?php // echo $form->field($model, 'last_modify_time') ?>
 
     <?php // echo $form->field($model, 'status') ?>
+
+    <?php // echo $form->field($model, 'is_published') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

@@ -18,8 +18,8 @@ class StorySearch extends Story
     public function rules()
     {
         return [
-            [['story_id', 'uid', 'chapter_count', 'message_count', 'views', 'status'], 'integer'],
-            [['cover', 'name', 'description', 'create_time', 'last_modify_time'], 'safe'],
+            [['story_id', 'uid', 'chapter_count', 'message_count', 'taps', 'is_published', 'status'], 'integer'],
+            [['name', 'description', 'cover', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -63,15 +63,16 @@ class StorySearch extends Story
             'uid' => $this->uid,
             'chapter_count' => $this->chapter_count,
             'message_count' => $this->message_count,
-            'views' => $this->views,
+            'taps' => $this->taps,
+            'is_published' => $this->is_published,
+            'status' => $this->status,
             'create_time' => $this->create_time,
             'last_modify_time' => $this->last_modify_time,
-            'status' => $this->status,
         ]);
 
-        $query->andFilterWhere(['like', 'cover', $this->cover])
-            ->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'description', $this->description]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'description', $this->description])
+            ->andFilterWhere(['like', 'cover', $this->cover]);
 
         return $dataProvider;
     }

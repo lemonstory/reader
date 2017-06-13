@@ -66,7 +66,7 @@ class StoryActorController extends Controller
         $model = new StoryActor();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->story_actor_id]);
+            return $this->redirect(['view', 'id' => $model->actor_id]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -85,7 +85,7 @@ class StoryActorController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->story_actor_id]);
+            return $this->redirect(['view', 'id' => $model->actor_id]);
         } else {
             return $this->render('update', [
                 'model' => $model,

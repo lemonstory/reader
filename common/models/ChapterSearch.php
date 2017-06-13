@@ -18,8 +18,8 @@ class ChapterSearch extends Chapter
     public function rules()
     {
         return [
-            [['chapter_id', 'story_id', 'message_count', 'number', 'status'], 'integer'],
-            [['background', 'create_time', 'last_modify_time'], 'safe'],
+            [['chapter_id', 'story_id', 'message_count', 'number', 'status', 'is_published'], 'integer'],
+            [['name', 'background', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -66,9 +66,11 @@ class ChapterSearch extends Chapter
             'create_time' => $this->create_time,
             'last_modify_time' => $this->last_modify_time,
             'status' => $this->status,
+            'is_published' => $this->is_published,
         ]);
 
-        $query->andFilterWhere(['like', 'background', $this->background]);
+        $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'background', $this->background]);
 
         return $dataProvider;
     }

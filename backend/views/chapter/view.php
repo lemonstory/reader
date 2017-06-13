@@ -6,7 +6,7 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model common\models\Chapter */
 
-$this->title = $model->chapter_id;
+$this->title = $model->name;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Chapters'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'chapter_id',
+            'name',
             'story_id',
             'background',
             'message_count',
@@ -36,6 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'create_time',
             'last_modify_time',
             'status',
+            'is_published',
         ],
     ]) ?>
 

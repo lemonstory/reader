@@ -15,7 +15,7 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
-    <?= $form->field($model, 'story_actor_id') ?>
+    <?= $form->field($model, 'actor_id') ?>
 
     <?= $form->field($model, 'story_id') ?>
 
@@ -25,11 +25,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'number') ?>
 
+    <?php // echo $form->field($model, 'is_visible') ?>
+
+    <?php // echo $form->field($model, 'status') ?>
+
     <?php // echo $form->field($model, 'create_time') ?>
 
     <?php // echo $form->field($model, 'last_modify_time') ?>
-
-    <?php // echo $form->field($model, 'status') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

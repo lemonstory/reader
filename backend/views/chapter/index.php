@@ -25,13 +25,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'chapter_id',
+            'name',
             'story_id',
             'background',
             'message_count',
-            'number',
+            // 'number',
             // 'create_time',
             // 'last_modify_time',
             // 'status',
+            // 'is_published',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

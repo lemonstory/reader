@@ -17,11 +17,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'story_id') ?>
 
-    <?= $form->field($model, 'cover') ?>
-
     <?= $form->field($model, 'name') ?>
 
     <?= $form->field($model, 'description') ?>
+
+    <?= $form->field($model, 'cover') ?>
 
     <?= $form->field($model, 'uid') ?>
 
@@ -29,13 +29,15 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'message_count') ?>
 
-    <?php // echo $form->field($model, 'views') ?>
+    <?php // echo $form->field($model, 'taps') ?>
+
+    <?php // echo $form->field($model, 'is_published') ?>
+
+    <?php // echo $form->field($model, 'status') ?>
 
     <?php // echo $form->field($model, 'create_time') ?>
 
     <?php // echo $form->field($model, 'last_modify_time') ?>
-
-    <?php // echo $form->field($model, 'status') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

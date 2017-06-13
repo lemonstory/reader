@@ -9,6 +9,7 @@ use Yii;
  *
  * @property integer $tag_id
  * @property string $name
+ * @property integer $number
  * @property string $create_time
  * @property string $last_modify_time
  * @property integer $status
@@ -30,8 +31,8 @@ class Tag extends \yii\db\ActiveRecord
     {
         return [
             [['name'], 'required'],
+            [['number', 'status'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
-            [['status'], 'integer'],
             [['name'], 'string', 'max' => 255],
         ];
     }
@@ -44,6 +45,7 @@ class Tag extends \yii\db\ActiveRecord
         return [
             'tag_id' => Yii::t('app', '标签id'),
             'name' => Yii::t('app', '名称'),
+            'number' => Yii::t('app', '序号'),
             'create_time' => Yii::t('app', '创建时间'),
             'last_modify_time' => Yii::t('app', '最后更新时间'),
             'status' => Yii::t('app', '状态'),
@@ -57,9 +59,5 @@ class Tag extends \yii\db\ActiveRecord
     public static function find()
     {
         return new TagQuery(get_called_class());
-    }
-
-    public function getStorys() {
-
     }
 }
