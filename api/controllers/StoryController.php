@@ -14,18 +14,6 @@ use Parsedown;
 use api\controllers\MessageParsedown;
 
 
-/**
- * Class StoryController
- * @package api\controllers
- *
- * 1）创建故事
- * 2）修改故事封面
- * 3）修改故事信息(标题,简介,标签)
- * 4）发布故事
- * 5）删除故事
- * 6）列出用户所有故事
- * 7）获取故事信息
- */
 class StoryController extends ActiveController
 {
     public $modelClass = 'common\models\Story';
@@ -51,6 +39,99 @@ class StoryController extends ActiveController
 //    {
 //        // 为"index"动作准备和返回数据provider
 //    }
+
+
+    /**
+     * 获取用户发布的故事
+     * @param $uid
+     * @param $page
+     * @param $page_size
+     * @return ActiveDataProvider
+     */
+    public function actionUserStoryList($uid,$page,$page_size) {
+
+        $response = Yii::$app->getResponse();
+        $offset = ($page - 1) * $page_size;
+        $story = Story::find()
+            ->with([
+                'actors' => function (\yii\db\ActiveQuery $query) {
+                    $query->andWhere(['is_visible' => Yii::$app->params['STATUS_ACTIVE'],'status' => Yii::$app->params['STATUS_ACTIVE']]);
+                },
+                'tags'=> function (\yii\db\ActiveQuery $query) {
+                    $query->andWhere(['status' => Yii::$app->params['STATUS_ACTIVE']]);
+                },
+            ])
+
+            ->where(['uid' => $uid,'status' => Yii::$app->params['STATUS_ACTIVE']])
+            ->offset($offset)
+            ->limit($page_size)
+            ->orderBy(['last_modify_time' => SORT_DESC]);
+
+        $provider =  new ActiveDataProvider([
+            'query' =>$story,
+            'pagination' => [
+                'pageSize' => $page_size,
+            ],
+        ]);
+
+        $storyModels = $provider->getModels();
+        $data = array();
+        foreach ($storyModels as $storyModelItem) {
+
+            $story = array();
+            $story['story_id'] = $storyModelItem->story_id;
+            $story['name'] = $storyModelItem->name;
+            $story['description'] = $storyModelItem->description;
+            $story['cover'] = $storyModelItem->cover;
+            $story['uid'] = $storyModelItem->uid;
+            $story['chapter_count'] = $storyModelItem->chapter_count;
+            $story['message_count'] = $storyModelItem->message_count;
+            $story['taps'] = $storyModelItem->taps;
+            $story['is_published'] = $storyModelItem->is_published;
+            $story['create_time'] = $storyModelItem->create_time;
+            $story['last_modify_time'] = $storyModelItem->last_modify_time;
+
+            //actor
+            $actorModels = $storyModelItem->actors;
+            $actorList = array();
+            foreach ($actorModels as $actorModelItem) {
+                $actor = array();
+                $actor['actor_id'] = $actorModelItem->actor_id;
+                $actor['name'] = $actorModelItem->name;
+                $actor['avator'] = $actorModelItem->avator;
+                $actor['number'] = $actorModelItem->number;
+                $actor['is_visible'] = $actorModelItem->is_visible;
+                $actorList[] = $actor;
+            }
+            $story['actor'] = $actorList;
+
+            //tag
+            $tagModels = $storyModelItem->tags;
+            $tagList = array();
+            foreach ($tagModels as $tagModelItem) {
+                $tag = array();
+                $tag['tag_id'] = $tagModelItem->tag_id;
+                $tag['name'] = $tagModelItem->name;
+                $tag['number'] = $tagModelItem->number;
+                $tagList[] = $tag;
+            }
+            $story['tag'] = $tagList;
+            $data['storyList'][] = $story;
+        }
+
+
+        $pagination = $provider->getPagination();
+        $data['page'] = array(
+            'totalCount' => $pagination->totalCount,
+            'pageCount' => $pagination->getPageCount(),
+            'currentPage' => $pagination->getPage() + 1,
+            'perPage' => $pagination->getPageSize(),
+        );
+
+        $data['code'] = $response->statusCode;
+        $data['message'] = $response->statusText;
+        return $data;
+    }
 
 
     public function actionCreate()

@@ -74,4 +74,26 @@ class Story extends \yii\db\ActiveRecord
     {
         return new StoryQuery(get_called_class());
     }
+
+    /**
+     * 获取故事角色
+     * @return \yii\db\ActiveQuery
+     */
+    public function getActors()
+    {
+        //hasMany relation story_actor表->story_id =>  story表 => story_id
+        return $this->hasMany(StoryActor::className(), ['story_id' => 'story_id']);
+    }
+
+    /**
+     * 获取故事标签
+     * @return $this
+     */
+    public function getTags() {
+
+        //hasMany relation tag表->tag_id =>  story_tag_relation表 => tag_id
+        return $this->hasMany(Tag::className(), ['tag_id' => 'tag_id'])
+            //viaTable relation story_tag_relation表->story_id => story表->story_id
+            ->viaTable('story_tag_relation', ['story_id' => 'story_id']);
+    }
 }

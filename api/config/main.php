@@ -17,7 +17,7 @@ return [
         'request' => [
             'csrfParam' => '_csrf-api',
             'parsers' => [
-                'application/json' => 'yii\web\JsonParser',
+                '*' => 'yii\web\JsonParser',
             ]
         ],
         'user' => [
@@ -32,10 +32,13 @@ return [
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
-                [
+                'file' => [
                     'class' => 'yii\log\FileTarget',
-                    'levels' => ['error', 'warning'],
+                    'levels' => ['error', 'warning','profile'],
+//                    'levels' => ['error', 'warning'],
+                    'logFile' => 'trace.log'
                 ],
+
             ],
         ],
         'errorHandler' => [
