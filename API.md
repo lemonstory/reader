@@ -32,19 +32,23 @@
     
      1)获取用户发布的故事
      
-        api:    /story/userStoryList
+        api:    /story/user-story-list
         method: GET
         params:
                 uid:用户uid
                 page:页码
                 page_size:每页显示内容数
         ret:    Json数组
+        example:http://api.youwei.xiaoningmeng.net/story/user-story-list?uid=1&page=1&page_size=1
+        
               {
                    "code": 200,
                    "data": {
-                       "page": "页码",
-                       "page_size": "每页显示内容数",
-                       "story_list": [
+                       "totalCount": "内容总数量",
+                       "pageCount": "总页数",
+                       "currentPage": "当前页码",
+                       "perPage": "每页显示内容数",
+                       "storyList": [
                            {
                                "story_id": "故事id",
                                "name": "故事标题",

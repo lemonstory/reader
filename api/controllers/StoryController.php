@@ -75,7 +75,7 @@ class StoryController extends ActiveController
         ]);
 
         $storyModels = $provider->getModels();
-        $data = array();
+        $ret = array();
         foreach ($storyModels as $storyModelItem) {
 
             $story = array();
@@ -116,21 +116,18 @@ class StoryController extends ActiveController
                 $tagList[] = $tag;
             }
             $story['tag'] = $tagList;
-            $data['storyList'][] = $story;
+            $ret['data']['storyList'][] = $story;
         }
 
 
         $pagination = $provider->getPagination();
-        $data['page'] = array(
-            'totalCount' => $pagination->totalCount,
-            'pageCount' => $pagination->getPageCount(),
-            'currentPage' => $pagination->getPage() + 1,
-            'perPage' => $pagination->getPageSize(),
-        );
-
-        $data['code'] = $response->statusCode;
-        $data['message'] = $response->statusText;
-        return $data;
+        $ret['data']['totalCount'] = $pagination->totalCount;
+        $ret['data']['pageCount'] = $pagination->getPageCount();
+        $ret['data']['currentPage'] = $pagination->getPage() + 1;
+        $ret['data']['perPage'] = $pagination->getPageSize();
+        $ret['code'] = $response->statusCode;
+        $ret['msg'] = $response->statusText;
+        return $ret;
     }
 
 
