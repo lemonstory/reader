@@ -34,7 +34,7 @@ class Chapter extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['story_id', 'background'], 'required'],
+            [['story_id'], 'required'],
             [['story_id', 'message_count', 'number', 'status', 'is_published'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['name'], 'string', 'max' => 150],

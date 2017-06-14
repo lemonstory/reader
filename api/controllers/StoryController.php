@@ -24,7 +24,6 @@ class StoryController extends ActiveController
         'class' => 'yii\rest\Serializer',
         'collectionEnvelope' => 'items',
     ];
-    public $viewAction = 'view';
 
     public function actions()
     {
@@ -145,6 +144,7 @@ class StoryController extends ActiveController
         $inputStorys = Yii::$app->getRequest()->post();
         $ret = array();
         $data = array();
+        $hasError = false;
         if(!empty($inputStorys['storys'])) {
             
             foreach ($inputStorys['storys'] as $storyItem) {
@@ -209,6 +209,7 @@ class StoryController extends ActiveController
                 }catch (\Exception $e){
 
                     //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
+                    $hasError = true;
                     $transaction->rollBack();
                     Yii::error($e->getMessage());
                     $response->statusCode = 400;
@@ -216,11 +217,18 @@ class StoryController extends ActiveController
                 }
             }
 
-            $ret['data'] = $data;
-            $ret['code'] = $response->statusCode;
-            $ret['msg'] = $response->statusText;
-            return $ret;
+            if(count($data) > 0 && $hasError) {
+                $response->statusCode = 206;
+                $response->statusText = '成功新建了部分故事' ;
+            }
+        }else{
+            $response->statusCode = 400;
+            $response->statusText = '参数错误' ;
         }
+        $ret['data'] = $data;
+        $ret['code'] = $response->statusCode;
+        $ret['msg'] = $response->statusText;
+        return $ret;
     }
 
     public function actionView($id)
@@ -273,32 +281,33 @@ class StoryController extends ActiveController
     public function actionTest()
     {
 
-        $str = <<<EOD
-#标题
-**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：请问您是\t心理咨询处的老师吗？这里很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长
-**<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：我是，有什么可以帮的到你的？
-_星期三 下午_
-...
-**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：您好，我是医学院的学生，我身边发生了一些很诡异的事情，我觉得自己快被逼疯了！希望能和您倾诉一下。
-**<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：你别着急，慢慢说，有什么问题我们一起解决。
-**>![]()陈明**：先给您介绍一下我的室友，所有事情都是由他引起的。
-    **<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：好的。
-**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：我是研究生，
-研究生的宿舍都是
-两人间，
-您知道吧？
-**<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：没错。
-**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：我的室友来自东部的一个农村，并不是我歧视农村人，但是我和他的关系十分不合。
-**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：在上面说
-![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=100)发生大发发
-EOD;
+//        $str = <<<EOD
+//#标题
+//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：请问您是\t心理咨询处的老师吗？这里很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长
+//**<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：我是，有什么可以帮的到你的？
+//_星期三 下午_
+//...
+//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：您好，我是医学院的学生，我身边发生了一些很诡异的事情，我觉得自己快被逼疯了！希望能和您倾诉一下。
+//**<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：你别着急，慢慢说，有什么问题我们一起解决。
+//**>![]()陈明**：先给您介绍一下我的室友，所有事情都是由他引起的。
+//    **<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：好的。
+//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：我是研究生，
+//研究生的宿舍都是
+//两人间，
+//您知道吧？
+//**<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：没错。
+//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：我的室友来自东部的一个农村，并不是我歧视农村人，但是我和他的关系十分不合。
+//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：在上面说
+//![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=100)发生大发发
+//EOD;
+//
+//
+//        $MessageParsedown = new MessageParsedown();
+//
+//        $MessageParsedown->setBreaksEnabled(true);
+//        echo $MessageParsedown->text($str); # prints: <p>Hello <em>Parsedown</em>!</p>
 
-
-        $MessageParsedown = new MessageParsedown();
-
-        $MessageParsedown->setBreaksEnabled(true);
-        echo $MessageParsedown->text($str); # prints: <p>Hello <em>Parsedown</em>!</p>
-
+        phpinfo();
     }
 }
 ?>

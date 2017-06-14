@@ -82,7 +82,7 @@
                    "msg": "OK"
               }
                     
-     2)创建故事[支持批量]
+     2)创建故事[支持批量][完成]
      
         api:    /story/batch-create
         method: POST
@@ -124,9 +124,10 @@
                             "story_id": 45
                         }
                     ],
-                    "code": 200,
+                    "code": 200,//200:全部新建成功;206:部分新建成功
                     "msg": "OK"
                 }
+        备注:    code=200:全部新建成功;code=206:部分新建成功
                     
      (选择封面,标题，描述; 选择标签; 点击发布; 设置角色不可见) 
      3)修改,删除故事[支持批量]
@@ -186,7 +187,7 @@
                     "msg": "OK"
                 }
                      
-     4)新建,修改,删除章节消息内容
+     4)新建,修改,删除章节消息内容[完成]
      
           api:    /chapter/upload
           method: POST(multipart/form-data)
@@ -199,6 +200,7 @@
                   status:新建,修改,删除
                   create_time:创建时间
                   last_modify_time:最后修改时间
+                  chapter_message_content:章节消息内容文件[type=file]
           ret:  Json
                 {
                     "code": 200,
