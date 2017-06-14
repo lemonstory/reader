@@ -30,7 +30,7 @@
  ```
  我的故事
     
-     1)获取用户发布的故事
+     1)获取用户发布的故事[已完成]
      
         api:    /story/user-story-list
         method: GET
@@ -84,58 +84,47 @@
                     
      2)创建故事[支持批量]
      
-        api:    /story/create
+        api:    /story/batch-create
         method: POST
         params:
                 uid:用户uid
-                story[]['local_story_id']:本地故事id
-                story[]['story_id']:故事id
-                story[]['name']:标题
-                story[]['description']:简介
-                story[]['cover']:封面
-                story[]['is_published']:是否发布
-                story[]['actor']:故事角色信息
-                story[]['tag']:故事标签信息
-                story[]['chapter_count']:章节总数量
-                story[]['message_count']:消息总数量
-                story[]['taps']:点击数
-                story[]['create_time']:创建时间
-                story[]['last_modify_time']:最后修改时间
+                storys[0][local_story_id]:本地故事id
+                storys[0][name]:标题
+                storys[0][description]:简介
+                storys[0][cover]:封面
+                storys[0][is_published]:是否发布
+                storys[0][actor]:故事角色信息 //[{"number":"角色序号-1","name":"角色姓名-1","avatar":"角色头像-2"},{"number":"角色序号-2","name":"角色姓名-2","avatar":"角色头像-2"}];
+                storys[0][tag]:故事标签信息//1,2,3
+                storys[0][chapter_count]:章节总数量
+                storys[0][message_count]:消息总数量
+                storys[0][taps]:点击数
+                storys[0][create_time]:创建时间
+                storys[0][last_modify_time]:最后修改时间
+                storys[1][local_story_id]:本地故事id
+                storys[1][name]:标题
+                storys[1][description]:简介
+                storys[1][cover]:封面
+                storys[1][is_published]:是否发布
+                storys[1][actor]:故事角色信息 //{"1": "张三","2": "李四","3": "王老五"}
+                storys[1][tag]:故事标签信息//1,2,3
+                storys[1][chapter_count]:章节总数量
+                storys[1][message_count]:消息总数量
+                storys[1][taps]:点击数
+                storys[1][create_time]:创建时间
+                storys[1][last_modify_time]:最后修改时间
         ret:    Json数组
                 {
-                    "code": 200,
                     "data": [
                         {
-                            "local_story_id": "本地故事id",
-                            "story_id": "故事id",
-                            "name": "故事标题",
-                            "description": "故事简介",
-                            "cover": "封面",
-                            "is_published": "是否发布",
-                            "actor": "故事角色信息",
-                            "tag": "故事标签信息",
-                            "chapter_count": "章节总数量",
-                            "message_count": "消息总数量",
-                            "taps": "点击数",
-                            "create_time": "创建时间",
-                            "last_modify_time": "最后修改时间"
+                            "local_story_id": "本地故事id-1",
+                            "story_id": 44
                         },
                         {
-                            "local_story_id": "本地故事id",
-                            "story_id": "故事id",
-                            "name": "故事标题",
-                            "description": "故事简介",
-                            "cover": "封面",
-                            "is_published": "是否发布",
-                            "actor": "故事角色信息",
-                            "tag": "故事标签信息",
-                            "chapter_count": "章节总数量",
-                            "message_count": "消息总数量",
-                            "taps": "点击数",
-                            "create_time": "创建时间",
-                            "last_modify_time": "最后修改时间"
+                            "local_story_id": "本地故事id-2",
+                            "story_id": 45
                         }
                     ],
+                    "code": 200,
                     "msg": "OK"
                 }
                     

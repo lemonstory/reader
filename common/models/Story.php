@@ -55,7 +55,7 @@ class Story extends \yii\db\ActiveRecord
             'name' => Yii::t('app', '名称'),
             'description' => Yii::t('app', '介绍'),
             'cover' => Yii::t('app', '封面图'),
-            'uid' => Yii::t('app', '作者id'),
+            'uid' => Yii::t('app', '作者uid'),
             'chapter_count' => Yii::t('app', '章节数量'),
             'message_count' => Yii::t('app', '消息数量'),
             'taps' => Yii::t('app', '点击数'),

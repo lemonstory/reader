@@ -3,8 +3,11 @@
 namespace api\controllers;
 
 use common\models\Story;
+use common\models\StoryActor;
 use common\models\StoryTag;
+use common\models\StoryTagRelation;
 use Yii;
+use yii\helpers\BaseJson;
 use yii\rest\ActiveController;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Url;
@@ -131,27 +134,93 @@ class StoryController extends ActiveController
     }
 
 
-    public function actionCreate()
+    /**
+     * 批量新建故事
+     * @return mixed
+     * @throws ServerErrorHttpException
+     */
+    public function actionBatchCreate()
     {
-        $body = Yii::$app->getRequest()->getBodyParams();
-        $body['create_time'] = time();
-        $body['views'] = 0;
-        $body['message_count'] = 0;
-        $body['chapter_count'] = 0;
-        $story = new Story();
-        if ($story->create($body)) {
-            $response = Yii::$app->getResponse();
-            $response->setStatusCode(201);
-            $id = implode(',', array_values($story->getPrimaryKey(true)));
-            $response->getHeaders()->set('Location', Url::toRoute([$this->viewAction, 'id' => $id], true));
-        } elseif (!$story->hasErrors()) {
-            throw new ServerErrorHttpException('Failed to create the object for unknown reason.');
-        }
+        $response = Yii::$app->getResponse();
+        $inputStorys = Yii::$app->getRequest()->post();
+        $ret = array();
+        $data = array();
+        if(!empty($inputStorys['storys'])) {
+            
+            foreach ($inputStorys['storys'] as $storyItem) {
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    //保存故事
+                    $story = new Story();
+                    $storyId = 0;
+                    $story->loadDefaultValues();
 
-        $data['code'] = $response->statusCode;
-        $data['message'] = $response->statusText;
-        $data['data'] = $story->getAttributes();
-        return $data;
+                    foreach ($story->attributes as $attName => $attValue) {
+                        if(!empty($storyItem[$attName])) {
+                            $story[$attName] = $storyItem[$attName];
+                        }
+                    }
+
+                    $story->save();
+                    if($story->hasErrors()) {
+                        Yii::error($story->getErrors());
+                        throw new ServerErrorHttpException('新建故事失败');
+                    }
+                    $storyErrors = $story->getErrors();
+                    $storyErrorStr = "";
+                    foreach ($storyErrors as $key => $value) {
+                        $storyErrorStr .= "{$key} : {$value}";
+                    }
+                    $storyId = $story->story_id;
+
+                    //保存角色
+                    //[{"number":"角色序号-1","name":"角色姓名-1","avatar":"角色头像-2"},{"number":"角色序号-2","name":"角色姓名-2","avatar":"角色头像-2"}];
+                    $actorJson = $storyItem['actor'];
+                    $actorArr = BaseJson::decode($actorJson);
+                    $actorRows = array();
+                    foreach ($actorArr as $actorItem) {
+                        $actorRow['story_id'] = $storyId;
+                        $actorRow['name'] = $actorItem['name'];
+                        $actorRow['avatar'] = $actorItem['avatar'];
+                        $actorRow['number'] = $actorItem['number'];
+                        $actorRows[] = $actorRow;
+                    }
+
+                    $actorColumns = ['story_id', 'name', 'avator', 'number'];
+                    $actorAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryActor::tableName(), $actorColumns, $actorRows)->execute();
+                    //保持标签
+                    $tagCommaStr = $storyItem['tag'];
+                    $tagArr = explode(",", $tagCommaStr);
+                    $tagRows = array();
+                    foreach ($tagArr as $tagItem) {
+                        $tagRow['story_id'] = $storyId;
+                        $tagRow['tag_id'] = $tagItem;
+                        $tagRows[] = $tagRow;
+                    }
+                    $tagColumns = ['story_id', 'tag_id'];
+                    $tagAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryTagRelation::tableName(), $tagColumns, $tagRows)->execute();
+                    $transaction->commit();
+                    if ($storyId > 0 && $actorAffectedRows > 0 && $tagAffectedRows > 0) {
+
+                        $dataItem['local_story_id'] = $storyItem['local_story_id'];
+                        $dataItem['story_id'] = $storyId;
+                        $data[] = $dataItem;
+                    }
+                }catch (\Exception $e){
+
+                    //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
+                    $transaction->rollBack();
+                    Yii::error($e->getMessage());
+                    $response->statusCode = 400;
+                    $response->statusText = '新建故事失败';
+                }
+            }
+
+            $ret['data'] = $data;
+            $ret['code'] = $response->statusCode;
+            $ret['msg'] = $response->statusText;
+            return $ret;
+        }
     }
 
     public function actionView($id)
