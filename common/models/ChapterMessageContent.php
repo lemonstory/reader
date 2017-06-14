@@ -30,7 +30,7 @@ class ChapterMessageContent extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['chapter_id', 'story_id', 'message_content'], 'required'],
+//            [['chapter_id', 'story_id', 'message_content'], 'required'],
             [['chapter_id', 'story_id', 'status'], 'integer'],
             [['message_content'], 'string'],
             [['create_time', 'last_modify_time'], 'safe'],
