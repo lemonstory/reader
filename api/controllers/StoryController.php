@@ -309,6 +309,33 @@ class StoryController extends ActiveController
         return $ret;
     }
 
+    public function actionView($id)
+    {
+
+        $storyId = $id;
+        $storyModel = Story::findOne($storyId);
+        $data = $storyModel->getAttributes();
+
+        //角色信息
+        $storyActorCondition = array(
+            'story_id' => $storyId,
+            'status' => Yii::$app->params['STATUS_ACTIVE'],
+            'is_visible' => Yii::$app->params['STATUS_ACTIVE']
+        );
+        $actorNames = array('actor_id','name','avator','number');
+        $data['actor'] = $storyModel->getActors()->select($actorNames)->andWhere($storyActorCondition)->asArray()->all();
+
+        $storyTagCondition = array(
+            'status' => Yii::$app->params['STATUS_ACTIVE']
+        );
+        $tagNames = array('tag_id','name','number');
+        $data['tag'] = $storyModel->getTags()->select($tagNames)->andWhere($storyTagCondition)->asArray()->all();
+        $ret['data'] = $data;
+        $ret['code'] = 200;
+        $ret['message'] = 'OK';
+        return $ret;
+    }
+
 
     /**
      * 拼接角色数组
@@ -353,19 +380,6 @@ class StoryController extends ActiveController
             }
         }
         return $tagRows;
-    }
-
-    public function actionView($id)
-    {
-
-        $data = array();
-        $storyId = $id;
-        $story = new Story();
-        $story = $story->getStory($storyId);
-        $data['data'] = $story;
-        $data['code'] = 200;
-        $data['message'] = 'OK';
-        return $data;
     }
 
 

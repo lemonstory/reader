@@ -224,55 +224,68 @@
                     "msg": "OK"
                 }
                       
-     5)查看故事基本信息
+     5)查看故事基本信息[已完成]
          api:    /story/view/{故事Id}
          method: GET
          params:
                 uid:用户uid
                 story_id:故事Id
          ret:    Json
+         
             {
-                "code": 200,
                 "data": {
-                    "chapter_count": 0,
-                    "cover": null,
-                    "create_time": "2017-05-23 09:50:38",
-                    "description": null,
-                    "last_modify_time": null,
-                    "message_count": 0,
-                    "name": "aaa",
-                    "status": 2,
                     "story_id": 1,
+                    "name": "超级怪兽工厂",
+                    "description": "叶不非是不幸的，不幸的是他被老板随手抡起的一本破书砸晕了头。",
+                    "cover": "http://qidian.qpic.cn/qdbimg/349573/1002959239/180",
+                    "uid": 1,
+                    "chapter_count": 1,
+                    "message_count": 21,
+                    "taps": "33",
+                    "is_published": 0,
+                    "status": 1,
+                    "create_time": "2017-06-13 09:37:28",
+                    "last_modify_time": "2017-06-13 10:09:09",
                     "actor": [
                         {
                             "actor_id": "1",
-                            "name": "张三",
-                            "avatar": "角色",
-                            "number": "序号",
-                            "is_visible": "是否可见"
+                            "name": "帅帅",
+                            "avator": "http://p5.gexing.com/GSF/touxiang/20170612/17/1onxfg31j60996l23ku7jdlyv.jpg@!200x200_3?recache=20131108",
+                            "number": "1"
                         },
                         {
                             "actor_id": "2",
-                            "name": "赵四",
-                            "avatar": "角色",
-                            "number": "序号",
-                            "is_visible": "是否可见"
+                            "name": "昭昭",
+                            "avator": "http://p5.gexing.com/GSF/touxiang/20170612/17/17y0gn7l1s62rca89urd0o3bx.jpg@!200x200_3?recache=20131108",
+                            "number": "2"
+                        },
+                        {
+                            "actor_id": "3",
+                            "name": "乐乐",
+                            "avator": "http://p5.gexing.com/GSF/touxiang/20170610/02/gmykod8dfr9xm2f99wdcefdg.jpg@!200x200_3?recache=20131108",
+                            "number": "3"
                         }
                     ],
                     "tag": [
                         {
-                            "name": "悬疑",
-                            "tag_id": "1"
+                            "tag_id": "1",
+                            "name": "言情",
+                            "number": "1"
                         },
                         {
-                            "name": "恐怖",
-                            "tag_id": "2"
+                            "tag_id": "2",
+                            "name": "悬疑",
+                            "number": "2"
+                        },
+                        {
+                            "tag_id": "3",
+                            "name": "搞笑",
+                            "number": "3"
                         }
-                    ],
-                    "uid": 1,
-                    "taps": "0"
+                    ]
                 },
-                "msg": "OK"
+                "code": 200,
+                "message": "OK"
             }
          6)查看故事章节
                api:    /chapter/view/{故事Id}
