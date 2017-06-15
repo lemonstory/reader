@@ -96,4 +96,13 @@ class Story extends \yii\db\ActiveRecord
             //viaTable relation story_tag_relation表->story_id => story表->story_id
             ->viaTable('story_tag_relation', ['story_id' => 'story_id']);
     }
+
+    /**
+     * 获取故事章节
+     */
+    public function getChapters() {
+
+        //hasMany relation chapter表->story_id =>  story表 => story_id
+        return $this->hasMany(Chapter::className(), ['story_id' => 'story_id']);
+    }
 }

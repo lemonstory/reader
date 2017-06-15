@@ -287,49 +287,39 @@
                 "code": 200,
                 "message": "OK"
             }
-         6)查看故事章节
-               api:    /chapter/view/{故事Id}
+         6)查看故事章节[已完成]
+               api:    /story/chapters/{故事Id}
                method: GET
                params:
                       uid:用户uid
                       (story_id)故事Id
                ret:    Json数组
-                       {
-                           "code": 200,
-                           "data": {
-                               "chapter_info":[
-                                   {
-                                       "chapter_id": "章节id",
-                                       "name": "章节名称(保留)",
-                                       "story_id": "故事id",
-                                       "background": "背景图",
-                                       "message_count": "消息数量",
-                                       "number": "序号",
-                                       "create_time": "创建时间",
-                                       "last_modify_time": "最后修改时间"
-                                   },
-                                   {
-                                       "chapter_id": "章节id",
-                                       "name": "章节名称(保留)",
-                                       "story_id": "故事id",
-                                       "background": "背景图",
-                                       "message_count": "消息数量",
-                                       "number": "序号",
-                                       "create_time": "创建时间",
-                                       "last_modify_time": "最后修改时间"
-                                   }
-                               ],
-                               "chapter_read_record": {
-                                       "story_id": "故事id",
-                                       "last_chapter_id": "最后阅读章节id",
-                                       "last_chapter_number": "最后阅读章节序号",
-                                       "last_message_id": "最后阅读的消息id",
-                                       "last_message_number": "最后阅读的消息序号",
-                                       "last_modify_time": "最后修改时间"
-                               }
-                           },
-                           "msg": "OK"
-                       }
+                {
+                    "data": [
+                        {
+                            "chapter_id": "1",
+                            "name": "",
+                            "background": "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1497318203&di=c12c42414d58b29942ee50fc0c72a610&src=http://img3.duitang.com/uploads/item/201605/08/20160508154716_QdWne.jpeg",
+                            "message_count": "3",
+                            "number": "1",
+                            "is_published": "0",
+                            "create_time": "2017-06-13 09:43:54",
+                            "last_modify_time": "2017-06-13 09:44:26"
+                        },
+                        {
+                            "chapter_id": "2",
+                            "name": "",
+                            "background": "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1497328288837&di=0210ff50c50444c32c2bb13922585ea8&imgtype=0&src=http%3A%2F%2Fimg16.3lian.com%2Fgif2016%2Fq6%2F7%2F101.jpg",
+                            "message_count": "4",
+                            "number": "2",
+                            "is_published": "1",
+                            "create_time": "2017-06-13 09:45:29",
+                            "last_modify_time": "2017-06-13 09:45:29"
+                        }
+                    ],
+                    "code": 200,
+                    "message": "OK"
+                }
                  
          7)查看故事章节消息内容
               api:    /chapter/view/{故事Id}

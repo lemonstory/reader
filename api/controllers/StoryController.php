@@ -312,24 +312,59 @@ class StoryController extends ActiveController
     public function actionView($id)
     {
 
+        $data = array();
         $storyId = $id;
-        $storyModel = Story::findOne($storyId);
-        $data = $storyModel->getAttributes();
-
-        //角色信息
-        $storyActorCondition = array(
+        $storyCondition = array(
             'story_id' => $storyId,
-            'status' => Yii::$app->params['STATUS_ACTIVE'],
-            'is_visible' => Yii::$app->params['STATUS_ACTIVE']
-        );
-        $actorNames = array('actor_id','name','avator','number');
-        $data['actor'] = $storyModel->getActors()->select($actorNames)->andWhere($storyActorCondition)->asArray()->all();
-
-        $storyTagCondition = array(
             'status' => Yii::$app->params['STATUS_ACTIVE']
         );
-        $tagNames = array('tag_id','name','number');
-        $data['tag'] = $storyModel->getTags()->select($tagNames)->andWhere($storyTagCondition)->asArray()->all();
+        $storyModel = Story::findOne($storyCondition);
+        if(!empty($storyModel)) {
+            $data = $storyModel->getAttributes();
+
+            //角色信息
+            $actorCondition = array(
+                'story_id' => $storyId,
+                'status' => Yii::$app->params['STATUS_ACTIVE'],
+                'is_visible' => Yii::$app->params['STATUS_ACTIVE']
+            );
+            $actorNames = array('actor_id','name','avator','number');
+            $data['actor'] = $storyModel->getActors()->select($actorNames)->andWhere($actorCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
+
+            //标签信息
+            $tagCondition = array(
+                'status' => Yii::$app->params['STATUS_ACTIVE']
+            );
+            $tagNames = array('tag_id','name','number');
+            $data['tag'] = $storyModel->getTags()->select($tagNames)->andWhere($tagCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
+        }
+
+        $ret['data'] = $data;
+        $ret['code'] = 200;
+        $ret['message'] = 'OK';
+        return $ret;
+    }
+
+    public function actionChapters($id) {
+
+        $data = array();
+        $storyId = $id;
+        $storyCondition = array(
+            'story_id' => $storyId,
+            'status' => Yii::$app->params['STATUS_ACTIVE']
+        );
+        $storyModel = Story::findOne($storyCondition);
+        if(!empty($storyModel)) {
+
+            //章节信息
+            $chapterCondition = array(
+                'story_id' => $storyId,
+                'status' => Yii::$app->params['STATUS_ACTIVE']
+            );
+            $chapterNames = array('chapter_id','name','background','message_count','number','is_published','create_time','last_modify_time');
+            $data = $storyModel->getChapters()->select($chapterNames)->andWhere($chapterCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
+        }
+
         $ret['data'] = $data;
         $ret['code'] = 200;
         $ret['message'] = 'OK';
