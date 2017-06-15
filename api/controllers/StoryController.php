@@ -121,7 +121,6 @@ class StoryController extends ActiveController
             $ret['data']['storyList'][] = $story;
         }
 
-
         $pagination = $provider->getPagination();
         $ret['data']['totalCount'] = $pagination->totalCount;
         $ret['data']['pageCount'] = $pagination->getPageCount();
@@ -151,53 +150,31 @@ class StoryController extends ActiveController
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     //保存故事
-                    $story = new Story();
-                    $storyId = 0;
-                    $story->loadDefaultValues();
+                    $storyModel = new Story();
+                    $storyModel->loadDefaultValues();
+                    $storyModel->setAttributes($storyItem);
 
-                    foreach ($story->attributes as $attName => $attValue) {
-                        if(!empty($storyItem[$attName])) {
-                            $story[$attName] = $storyItem[$attName];
-                        }
-                    }
-
-                    $story->save();
-                    if($story->hasErrors()) {
-                        Yii::error($story->getErrors());
+                    $storyModel->save();
+                    if($storyModel->hasErrors()) {
+                        Yii::error($storyModel->getErrors());
                         throw new ServerErrorHttpException('新建故事失败');
                     }
-                    $storyErrors = $story->getErrors();
-                    $storyErrorStr = "";
-                    foreach ($storyErrors as $key => $value) {
-                        $storyErrorStr .= "{$key} : {$value}";
-                    }
-                    $storyId = $story->story_id;
+                    $storyId = $storyModel->story_id;
 
                     //保存角色
-                    //[{"number":"角色序号-1","name":"角色姓名-1","avatar":"角色头像-2"},{"number":"角色序号-2","name":"角色姓名-2","avatar":"角色头像-2"}];
+                    //接收到的角色值:[{"number":"角色序号-1","name":"角色姓名-1","avatar":"角色头像-2","is_visible":"是否可见"},{"number":"角色序号-2","name":"角色姓名-2","avatar":"角色头像-2","is_visible":"是否可见"}];
                     $actorJson = $storyItem['actor'];
-                    $actorArr = BaseJson::decode($actorJson);
-                    $actorRows = array();
-                    foreach ($actorArr as $actorItem) {
-                        $actorRow['story_id'] = $storyId;
-                        $actorRow['name'] = $actorItem['name'];
-                        $actorRow['avatar'] = $actorItem['avatar'];
-                        $actorRow['number'] = $actorItem['number'];
-                        $actorRows[] = $actorRow;
-                    }
-
-                    $actorColumns = ['story_id', 'name', 'avator', 'number'];
+                    $actorRows = $this->parseActorJson($actorJson,$storyId);
+                    //TODO:角色信息格式输入检查
+                    $actorColumns = ['actor_id','story_id', 'name', 'avator', 'number','is_visible'];
                     $actorAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryActor::tableName(), $actorColumns, $actorRows)->execute();
-                    //保持标签
-                    $tagCommaStr = $storyItem['tag'];
-                    $tagArr = explode(",", $tagCommaStr);
-                    $tagRows = array();
-                    foreach ($tagArr as $tagItem) {
-                        $tagRow['story_id'] = $storyId;
-                        $tagRow['tag_id'] = $tagItem;
-                        $tagRows[] = $tagRow;
-                    }
-                    $tagColumns = ['story_id', 'tag_id'];
+
+                    //保存标签
+                    //接收到的标签值:[{"tag_id":1, "status":"1"},{"tag_id":2, "status":"1"}];
+                    $tagJson = $storyItem['tag'];
+                    $tagRows = $this->parseTagJson($tagJson,$storyId);
+                    //TODO:标签信息格式输入检查
+                    $tagColumns = ['story_id', 'tag_id','status'];
                     $tagAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryTagRelation::tableName(), $tagColumns, $tagRows)->execute();
                     $transaction->commit();
                     if ($storyId > 0 && $actorAffectedRows > 0 && $tagAffectedRows > 0) {
@@ -219,7 +196,7 @@ class StoryController extends ActiveController
 
             if(count($data) > 0 && $hasError) {
                 $response->statusCode = 206;
-                $response->statusText = '成功新建了部分故事' ;
+                $response->statusText = '成功新建部分故事' ;
             }
         }else{
             $response->statusCode = 400;
@@ -229,6 +206,153 @@ class StoryController extends ActiveController
         $ret['code'] = $response->statusCode;
         $ret['msg'] = $response->statusText;
         return $ret;
+    }
+
+
+    /**
+     * 批量更新故事
+     * @return mixed
+     * @throws ServerErrorHttpException
+     */
+    public function actionBatchUpdate()
+    {
+        $response = Yii::$app->getResponse();
+        $inputStorys = Yii::$app->getRequest()->post();
+        $ret = array();
+        $data = array();
+        $hasError = false;
+        if(!empty($inputStorys['storys'])) {
+
+            foreach ($inputStorys['storys'] as $storyItem) {
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+                    //保存故事
+                    $storyModel = Story::findOne($storyItem['story_id']);
+                    $storyModel->setAttributes($storyItem);
+                    $storyModel->save();
+                    if($storyModel->hasErrors()) {
+                        Yii::error($storyModel->getErrors());
+                        throw new ServerErrorHttpException('编辑故事失败');
+                    }
+                    $storyId = $storyModel->story_id;
+
+                    //更新角色
+                    //接收到的角色值:[{"actor_id":1, "number":"1","name":"姓名-1","avatar":"","is_visible":1},{"actor_id":2,"number":"2","name":"姓名-2","avatar":"","is_visible":1}];
+                    $actorJson = $storyItem['actor'];
+                    $actorRows = $this->parseActorJson($actorJson,$storyId);
+                    if(!empty($actorRows)) {
+                        foreach ($actorRows as $actorItem) {
+                            $storyActorModel = StoryActor::findOne($actorItem['actor_id']);
+                            if($storyActorModel === null) {
+                                $storyActorModel = new StoryActor();
+                            }
+                            $storyActorModel->setAttributes($actorItem);
+                            $storyActorModel->save();
+                            if($storyActorModel->hasErrors()) {
+                                Yii::error($storyActorModel->getErrors());
+                                throw new ServerErrorHttpException('角色修改失败');
+                            }
+                        }
+                    }
+                    //更新标签
+                    //接收到的标签值:[{"tag_id":1, "status":"1"},{"tag_id":2, "status":"1"}];
+                    $tagJson = $storyItem['tag'];
+                    $tagRows = $this->parseTagJson($tagJson,$storyId);
+
+                    if(!empty($tagRows)) {
+                        foreach ($tagRows as $tagItem) {
+
+                            $condition = array(
+                                'story_id' => $tagItem['story_id'],
+                                'tag_id' => $tagItem['tag_id']
+                            );
+                            $storyTagRelationModel = StoryTagRelation::findOne($condition);
+                            if($storyTagRelationModel === null) {
+                                $storyTagRelationModel = new StoryTagRelation();
+                            }
+                            $storyTagRelationModel->setAttributes($tagItem);
+                            $storyTagRelationModel->save();
+                            if($storyTagRelationModel->hasErrors()) {
+                                Yii::error($storyTagRelationModel->getErrors());
+                                throw new ServerErrorHttpException('标签修改失败');
+                            }
+                        }
+                    }
+
+                    $transaction->commit();
+                    $dataItem['local_story_id'] = $storyItem['local_story_id'];
+                    $dataItem['story_id'] = $storyId;
+                    $data[] = $dataItem;
+
+                }catch (\Exception $e){
+
+                    //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
+                    $hasError = true;
+                    $transaction->rollBack();
+                    Yii::error($e->getMessage());
+                    $response->statusCode = 400;
+                    $response->statusText = '编辑故事失败';
+                }
+            }
+
+            if(count($data) > 0 && $hasError) {
+                $response->statusCode = 206;
+                $response->statusText = '成功编辑部分故事' ;
+            }
+        }else{
+            $response->statusCode = 400;
+            $response->statusText = '参数错误' ;
+        }
+        $ret['data'] = $data;
+        $ret['code'] = $response->statusCode;
+        $ret['msg'] = $response->statusText;
+        return $ret;
+    }
+
+
+    /**
+     * 拼接角色数组
+     * @param $actorJson
+     * @param $storyId
+     * @return array
+     */
+    private function parseActorJson($actorJson,$storyId) {
+
+        $actorArr = BaseJson::decode($actorJson);
+        $actorRows = array();
+        if(!empty($actorArr) && !empty($storyId)) {
+            foreach ($actorArr as $actorItem) {
+                $actorRow['actor_id'] = isset($actorItem['actor_id']) ? $actorItem['actor_id'] : null;
+                $actorRow['story_id'] = $storyId;
+                $actorRow['name'] = $actorItem['name'];
+                $actorRow['avatar'] = $actorItem['avatar'];
+                $actorRow['number'] = $actorItem['number'];
+                $actorRow['is_visible'] = isset($actorItem['is_visible']) ? $actorItem['is_visible'] : 1;
+                $actorRows[] = $actorRow;
+            }
+        }
+        return $actorRows;
+    }
+
+    /**
+     * 拼接标签数组
+     * @param $tagJson
+     * @param $storyId
+     * @return array
+     */
+    private function parseTagJson($tagJson,$storyId) {
+
+        $tagArr = BaseJson::decode($tagJson);
+        $tagRows = array();
+        if(!empty($tagArr) && !empty($storyId)) {
+            foreach ($tagArr as $tagItem) {
+                $tagRow['story_id'] = $storyId;
+                $tagRow['tag_id'] = $tagItem['tag_id'];
+                $tagRow['status'] = isset($tagItem['status']) ? $tagItem['status'] : 1;
+                $tagRows[] = $tagRow;
+            }
+        }
+        return $tagRows;
     }
 
     public function actionView($id)

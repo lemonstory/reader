@@ -33,7 +33,7 @@ class StoryActor extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['story_id', 'name', 'avator', 'is_visible'], 'required'],
+            [['story_id', 'name', 'is_visible'], 'required'],
             [['story_id', 'number', 'is_visible', 'status'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['name'], 'string', 'max' => 16],
