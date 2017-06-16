@@ -8,6 +8,7 @@ use common\models\Story;
 use common\models\User;
 use common\models\UserReadStoryRecord;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use yii\web\UploadedFile;
@@ -54,10 +55,10 @@ class UserController extends ActiveController
         $offset = ($page - 1) * $pre_page;
         $story = Story::find()
             ->with([
-                'actors' => function (\yii\db\ActiveQuery $query) {
+                'actors' => function (ActiveQuery $query) {
                     $query->andWhere(['is_visible' => Yii::$app->params['STATUS_ACTIVE'],'status' => Yii::$app->params['STATUS_ACTIVE']]);
                 },
-                'tags'=> function (\yii\db\ActiveQuery $query) {
+                'tags'=> function (ActiveQuery $query) {
                     $query->andWhere(['status' => Yii::$app->params['STATUS_ACTIVE']]);
                 },
             ])
