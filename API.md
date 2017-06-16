@@ -398,7 +398,7 @@
                       uid:用户uid
                       page:页码
                       page_size:每页显示内容数
-              example:http://api.youwei.xiaoningmeng.net/user/read-story-record?uid=1&page=1&per_page=19
+              example:http://api.youwei.xiaoningmeng.net/user/read-story-record?uid=1&page=20&per_page=1
               ret:    Json数组
                         {
                             "data": [
