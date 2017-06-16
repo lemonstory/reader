@@ -343,53 +343,69 @@
                           "msg": "OK"
                       }
  首页                     
-         8)首页故事精选
+         8)首页故事精选[已完成]
          
                api:    /home/index
                method: GET
                params:
                        uid:用户uid
                        page:页码
-                       page_size:每页显示内容数
+                       pre_page:每页显示内容数
+               example:http://api.youwei.xiaoningmeng.net/home/index?page=1&pre_page=1
                ret:    Json数组
-                      {
-                           "code": 200,
-                           "data": {
-                               "page": "页码",
-                               "page_size": "每页显示内容数",
-                               "story_list": [
-                                   {
-                                       "story_id": "故事id",
-                                       "name": "故事标题",
-                                       "description": "故事简介",
-                                       "cover": "封面",
-                                       "is_published": "是否发布",
-                                       "actor": "故事角色信息",
-                                       "tag": "故事标签信息",
-                                       "chapter_count": "章节总数量",
-                                       "message_count": "消息总数量",
-                                       "taps": "点击数",
-                                       "create_time": "创建时间",
-                                       "last_modify_time": "最后修改时间"
-                                   },
-                                   {
-                                       "story_id": "故事id",
-                                       "name": "故事标题",
-                                       "description": "故事简介",
-                                       "cover": "封面",
-                                       "is_published": "是否发布",
-                                       "actor": "故事角色信息",
-                                       "tag": "故事标签信息",
-                                       "chapter_count": "章节总数量",
-                                       "message_count": "消息总数量",
-                                       "taps": "点击数",
-                                       "create_time": "创建时间",
-                                       "last_modify_time": "最后修改时间"
-                                   }
-                               ]
-                           },
-                           "msg": "OK"
-                      }
+                {
+                    "data": {
+                        "storyList": [
+                            {
+                                "story_id": 45,
+                                "name": "标题2",
+                                "description": "简介1",
+                                "cover": "https://a-ssl.duitang.com/uploads/item/201611/15/20161115141534_ePJAM.thumb.700_0.jpeg",
+                                "uid": 2,
+                                "chapter_count": 0,
+                                "message_count": 0,
+                                "taps": "0",
+                                "is_published": 1,
+                                "create_time": "2017-06-14 12:32:29",
+                                "last_modify_time": "2017-06-16 17:53:06",
+                                "actor": [
+                                    {
+                                        "actor_id": 56,
+                                        "name": "角色姓名-1",
+                                        "avator": "",
+                                        "number": 1,
+                                        "is_visible": 1
+                                    },
+                                    {
+                                        "actor_id": 57,
+                                        "name": "角色姓名-2",
+                                        "avator": "",
+                                        "number": 2,
+                                        "is_visible": 1
+                                    }
+                                ],
+                                "tag": [
+                                    {
+                                        "tag_id": 1,
+                                        "name": "言情",
+                                        "number": 1
+                                    },
+                                    {
+                                        "tag_id": 2,
+                                        "name": "悬疑",
+                                        "number": 2
+                                    }
+                                ]
+                            }
+                        ],
+                        "totalCount": 25,
+                        "pageCount": 25,
+                        "currentPage": 1,
+                        "perPage": 1
+                    },
+                    "code": 200,
+                    "msg": "OK"
+                }
  阅读记录                           
          9)阅读记录列表[已完成]
               api:    /user-read-story-record/index
