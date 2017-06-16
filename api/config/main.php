@@ -55,8 +55,10 @@ return [
                 '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
                 '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>',
 
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'story'],
-                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+                //TODO:待研究
+//                ['class' => 'yii\rest\UrlRule', 'controller' => 'story'],
+//                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
+//                ['class' => 'yii\rest\UrlRule', 'controller' => 'user'],
             ],
         ],
     ],

@@ -225,11 +225,12 @@
                 }
                       
      5)查看故事基本信息[已完成]
-         api:    /story/view/{故事Id}
+         api:    /story/{故事Id}
          method: GET
          params:
                 uid:用户uid
                 story_id:故事Id
+         example:http://api.youwei.xiaoningmeng.net/story/1
          ret:    Json
          
             {
@@ -293,6 +294,7 @@
                params:
                       uid:用户uid
                       (story_id)故事Id
+               example:http://api.youwei.xiaoningmeng.net/story/chapters/1
                ret:    Json数组
                 {
                     "data": [
@@ -321,12 +323,14 @@
                     "message": "OK"
                 }
                  
-         7)查看故事章节消息内容
-              api:    /chapter/view/{故事Id}
+         7)查看故事章节消息内容[已完成]
+              api:    /chapter-message-content/view?story_id={故事Id}&chapter_id={章节id}
               method: GET
               params:
                      uid:用户uid
                      story_id:故事Id
+                     chapter_id:章节id
+              example:http://api.youwei.xiaoningmeng.net/chapter-message-content/view?story_id=1&chapter_id=19
               ret:    Json
                       {
                           "code": 200,
