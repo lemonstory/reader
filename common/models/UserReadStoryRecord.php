@@ -31,8 +31,8 @@ class UserReadStoryRecord extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['uid', 'story_id', 'last_chapter_id', 'last_message_id'], 'required'],
-            [['uid', 'story_id', 'last_chapter_id', 'last_message_id', 'status'], 'integer'],
+            [['uid', 'story_id', 'last_chapter_id', 'last_message_line_number'], 'required'],
+            [['uid', 'story_id', 'last_chapter_id', 'last_message_line_number', 'status'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
         ];
     }
@@ -46,7 +46,7 @@ class UserReadStoryRecord extends \yii\db\ActiveRecord
             'uid' => Yii::t('app', '用户id'),
             'story_id' => Yii::t('app', '故事id'),
             'last_chapter_id' => Yii::t('app', '最后阅读章节id'),
-            'last_message_id' => Yii::t('app', '最后阅读信息id'),
+            'last_message_line_number' => Yii::t('app', '最后阅读信息行号'),
             'create_time' => Yii::t('app', '创建时间'),
             'last_modify_time' => Yii::t('app', '最后更新时间'),
             'status' => Yii::t('app', '状态'),

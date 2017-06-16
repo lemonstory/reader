@@ -429,19 +429,23 @@
                             "message": "OK"
                         }
                         
-         10)提交阅读记录更改(新增,修改,删除)
-               api:    /readStoryRecord/index
+         10)提交阅读记录更改(新增,修改,删除)[已完成]
+               api:    /user-read-story-record/batch-process
                method: POST
                params:
-                       uid:用户uid
-                       read_story_record[]['story_id']:故事id
-                       read_story_record[]['last_chapter_id']:最后阅读章节id
-                       read_story_record[]['last_chapter_number']:最后阅读章节序号
-                       read_story_record[]['last_message_id']:最后阅读的消息id
-                       read_story_record[]['last_message_number']:最后阅读的消息序号
-                       read_story_record[]['status']:状态
-                       read_story_record[]['create_time']:创建时间
-                       read_story_record[]['last_modify_time']:修改时间
+                      uid:用户uid
+                      read_story_records[0][story_id]:故事id
+                      read_story_records[0][last_chapter_id]:最后阅读章节id
+                      read_story_records[0][last_message_line_number]:最后阅读的消息行号
+                      read_story_records[0][status]:状态
+                      read_story_records[0][create_time]:创建时间
+                      read_story_records[0][last_modify_time]:修改时间
+                      read_story_records[1][story_id]:故事id
+                      read_story_records[1][last_chapter_id]:最后阅读章节id
+                      read_story_records[1][last_message_line_number]:最后阅读的消息序号
+                      read_story_records[1][status]:状态
+                      read_story_records[1][create_time]:创建时间
+                      read_story_records[1][last_modify_time]:修改时间
                ret:    Json数组
                              {
                                  "code": 200,

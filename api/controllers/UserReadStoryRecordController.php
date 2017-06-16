@@ -69,7 +69,7 @@ class UserReadStoryRecordController extends ActiveController
             'story.create_time AS story_create_time',
             'story.last_modify_time AS story_last_modify_time',
             'user_read_story_record.last_chapter_id',
-            'user_read_story_record.last_message_id',
+            'user_read_story_record.last_message_line_number',
             'user_read_story_record.create_time',
             'user_read_story_record.last_modify_time'
         );
@@ -138,7 +138,7 @@ class UserReadStoryRecordController extends ActiveController
                 $dataItem['story_create_time'] = $item->story->create_time;
                 $dataItem['story_last_modify_time'] = $item->story->last_modify_time;
                 $dataItem['last_chapter_id'] = $item->last_chapter_id;
-                $dataItem['last_message_id'] = $item->last_message_id;
+                $dataItem['last_message_line_number'] = $item->last_message_line_number;
                 $dataItem['create_time'] = $item->create_time;
                 $dataItem['last_modify_time'] = $item->last_modify_time;
 
@@ -153,6 +153,76 @@ class UserReadStoryRecordController extends ActiveController
         $ret['data'] = $data;
         $ret['code'] = 200;
         $ret['message'] = 'OK';
+        return $ret;
+    }
+
+    /**
+     * 提交阅读记录更改(新增,修改,删除)
+     * {该方法的命名不是特别满意}
+     * @return mixed
+     */
+    public function actionBatchProcess() {
+
+        //TODO:用户登录检查
+        $response = Yii::$app->getResponse();
+        $inputReadStoryRecords = Yii::$app->getRequest()->post('read_story_records');
+        $uid = Yii::$app->getRequest()->post('uid');
+        $ret = array();
+        $data = array();
+        $hasError = false;
+
+        if(!empty($inputReadStoryRecords)) {
+
+            foreach ($inputReadStoryRecords as $readStoryRecordItem) {
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+
+                    $readStoryRecordItem['uid'] = $uid;
+                    $condition = array(
+                        'uid' => $readStoryRecordItem['uid'],
+                        'story_id' => $readStoryRecordItem['story_id']
+                    );
+                    $readStoryRecordModel = UserReadStoryRecord::findOne($condition);
+                    if(is_null($readStoryRecordModel)) {
+                        $readStoryRecordModel = new UserReadStoryRecord();
+                        $readStoryRecordModel->loadDefaultValues();
+                    }
+
+                    $readStoryRecordModel->setAttributes($readStoryRecordItem);
+                    $readStoryRecordItem['create_time'] = DateTimeHelper::inputCheck($readStoryRecordItem['create_time']);
+                    $readStoryRecordItem['last_modify_time'] = DateTimeHelper::inputCheck($readStoryRecordItem['last_modify_time']);
+
+                    $readStoryRecordModel->save();
+                    if($readStoryRecordModel->hasErrors()) {
+                        Yii::error($readStoryRecordModel->getErrors());
+                        throw new ServerErrorHttpException('操作失败');
+                    }
+
+                    $transaction->commit();
+                    $data['userReadStoryRecordList'][] = $readStoryRecordModel->getAttributes();
+
+                }catch (\Exception $e){
+
+                    //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
+                    $hasError = true;
+                    $transaction->rollBack();
+                    Yii::error($e->getMessage());
+                    $response->statusCode = 400;
+                    $response->statusText = '系统出现错误';
+                }
+            }
+
+            if(count($data) > 0 && $hasError) {
+                $response->statusCode = 206;
+                $response->statusText = '成功处理部分数据' ;
+            }
+        }else{
+            $response->statusCode = 400;
+            $response->statusText = '输入参数错误' ;
+        }
+        $ret['data'] = $data;
+        $ret['code'] = $response->statusCode;
+        $ret['msg'] = $response->statusText;
         return $ret;
     }
 

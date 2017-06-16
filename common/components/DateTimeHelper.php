@@ -1,6 +1,7 @@
 <?php
 namespace common\components;
 
+use DateTime;
 use Yii;
 use yii\base\Component;
 class DateTimeHelper extends Component {
