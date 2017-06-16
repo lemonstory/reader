@@ -237,10 +237,9 @@ class UserController extends ActiveController
                 }else {
                     $dataItem['user'] = array();
                 }
-                $data[] = $dataItem;
+                $data['storyList'][] = $dataItem;
             }
         }
-
         $ret['data'] = $data;
         $ret['code'] = 200;
         $ret['message'] = 'OK';
