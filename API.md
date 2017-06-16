@@ -551,26 +551,34 @@
                             "msg": "OK"
                        }
  标签
-         12)标签列表
+         12)标签列表[已完成]
                api:    /tag/index
                method: GET
                params:
                        uid:用户uid
+               example:http://api.youwei.xiaoningmeng.net/tag/index     
                ret:    Json数组
-                       {
-                           "code": 200,
-                           "data": [
-                               {
-                                   "name": "悬疑",
-                                   "tag_id": "1"
-                               },
-                               {
-                                   "name": "恐怖",
-                                   "tag_id": "2"
-                               }
-                           ],
-                           "msg": "OK"
-                       }
+                        {
+                            "data": [
+                                {
+                                    "tag_id": "1",
+                                    "number": "1",
+                                    "name": "言情"
+                                },
+                                {
+                                    "tag_id": "2",
+                                    "number": "2",
+                                    "name": "悬疑"
+                                },
+                                {
+                                    "tag_id": "3",
+                                    "number": "3",
+                                    "name": "搞笑"
+                                }
+                            ],
+                            "code": 200,
+                            "msg": "OK"
+                        }
                
          13)标签下的故事列表
                api:    /tag/storyList
