@@ -105,4 +105,13 @@ class Story extends \yii\db\ActiveRecord
         //hasMany relation chapter表->story_id =>  story表 => story_id
         return $this->hasMany(Chapter::className(), ['story_id' => 'story_id']);
     }
+
+    /**
+     *
+     */
+    public function getUserReadStoryRecord() {
+
+        //hasMany relation user_read_story_record表->story_id =>  story表 => story_id
+        return $this->hasMany(UserReadStoryRecord::className(), ['story_id' => 'story_id']);
+    }
 }

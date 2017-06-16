@@ -391,40 +391,44 @@
                            "msg": "OK"
                       }
  阅读记录                           
-         9)阅读记录列表
-              api:    /readStoryRecord/index
+         9)阅读记录列表[已完成]
+              api:    /user/read-story-record
               method: GET
               params:
                       uid:用户uid
                       page:页码
                       page_size:每页显示内容数
+              example:http://api.youwei.xiaoningmeng.net/user/read-story-record?uid=1&page=1&per_page=19
               ret:    Json数组
                         {
-                            "code": 200,
-                            "data": {
-                                "page": "页码",
-                                "page_size": "每页显示内容数",
-                                "read_story_record_list": [
-                                    {
-                                        "story_id": "故事id",
-                                        "last_chapter_id": "最后阅读章节id",
-                                        "last_chapter_number": "最后阅读章节序号",
-                                        "last_message_id": "最后阅读的消息id",
-                                        "last_message_number": "最后阅读的消息序号",
-                                        "last_modify_time": "最后修改时间"
-                                    },
-                                    {
-                                        "story_id": "故事id",
-                                        "last_chapter_id": "最后阅读章节id",
-                                        "last_chapter_number": "最后阅读章节序号",
-                                        "last_message_id": "最后阅读的消息id",
-                                        "last_message_number": "最后阅读的消息序号",
-                                        "last_modify_time": "最后修改时间"
+                            "data": [
+                                {
+                                    "story_id": "1",
+                                    "name": "超级怪兽工厂",
+                                    "description": "叶不非是不幸的，不幸的是他被老板随手抡起的一本破书砸晕了头。",
+                                    "cover": "http://qidian.qpic.cn/qdbimg/349573/1002959239/180",
+                                    "chapter_count": "1",
+                                    "message_count": "21",
+                                    "taps": "33",
+                                    "is_published": "0",
+                                    "story_create_time": "2017-06-13 09:37:28",
+                                    "story_last_modify_time": "2017-06-13 10:09:09",
+                                    "last_chapter_id": "1",
+                                    "last_message_id": "1",
+                                    "create_time": "2017-06-16 11:24:34",
+                                    "last_modify_time": "2017-06-16 11:24:34",
+                                    "user": {
+                                        "uid": "1",
+                                        "name": "小逗",
+                                        "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                        "signature": "这是签名"
                                     }
-                                ]
-                            },
-                            "msg": "OK"
+                                }
+                            ],
+                            "code": 200,
+                            "message": "OK"
                         }
+                        
          10)提交阅读记录更改(新增,修改,删除)
                api:    /readStoryRecord/index
                method: POST

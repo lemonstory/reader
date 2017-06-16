@@ -61,4 +61,10 @@ class UserReadStoryRecord extends \yii\db\ActiveRecord
     {
         return new UserReadStoryRecordQuery(get_called_class());
     }
+
+    public function getStory() {
+
+        //hasOne relation story->story_id =>  user_read_story_record表 => story_id
+        return $this->hasOne(Story::className(), ['story_id' => 'story_id']);
+    }
 }
