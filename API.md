@@ -32,14 +32,14 @@
     
      1)获取用户发布的故事[已完成]
      
-        api:    /story/user-story-list
+        api:    /user/storys
         method: GET
         params:
                 uid:用户uid
                 page:页码
-                page_size:每页显示内容数
+                pre_page:每页显示内容数
         ret:    Json数组
-        example:http://api.youwei.xiaoningmeng.net/story/user-story-list?uid=1&page=1&page_size=1
+        example:http://api.youwei.xiaoningmeng.net/user/storys?uid=1&page=1&pre_page=1
         
               {
                    "code": 200,
