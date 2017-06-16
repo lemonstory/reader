@@ -392,13 +392,13 @@
                       }
  阅读记录                           
          9)阅读记录列表[已完成]
-              api:    /user/read-story-record
+              api:    /user-read-story-record/index
               method: GET
               params:
                       uid:用户uid
                       page:页码
                       page_size:每页显示内容数
-              example:http://api.youwei.xiaoningmeng.net/user/read-story-record?uid=1&page=20&per_page=1
+              example:http://api.youwei.xiaoningmeng.net/user-read-story-record/index?uid=1&page=20&per_page=1
               ret:    Json数组
                         {
                             "data": [
