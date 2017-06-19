@@ -489,7 +489,7 @@
                                  "msg": "OK"
                              }
  搜索
-         11)搜索故事
+         11)搜索故事[已完成]
                api:    search/stories
                method: GET
                params:
@@ -584,7 +584,7 @@
                        
                备注：<em>关键字</em>:em是飘红的字的标签
                              
-         12)搜索用户
+         12)搜索用户[已完成]
                api:    search/users
                method: GET
                params:
@@ -616,9 +616,8 @@
                             "msg": "OK"
                         }
                         
-         13）下拉提示
  标签
-         14)标签列表[已完成]
+         13)标签列表[已完成]
                api:    /tag/index
                method: GET
                params:
@@ -647,7 +646,7 @@
                             "msg": "OK"
                         }
                
-         15)标签下的故事列表[已完成]
+         14)标签下的故事列表[已完成]
                api:    /tag/storys
                method: GET
                params:
