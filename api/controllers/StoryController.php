@@ -54,6 +54,7 @@ class StoryController extends ActiveController
     {
         $response = Yii::$app->getResponse();
         $inputStorys = Yii::$app->getRequest()->post();
+        $uid = Yii::$app->getRequest()->post('uid');
         $ret = array();
         $data = array();
         $hasError = false;
@@ -62,7 +63,9 @@ class StoryController extends ActiveController
             foreach ($inputStorys['storys'] as $storyItem) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
+
                     //保存故事
+                    $storyItem['uid'] = $uid;
                     $storyModel = new Story();
                     $storyModel->loadDefaultValues();
                     $storyModel->setAttributes($storyItem);
@@ -70,7 +73,7 @@ class StoryController extends ActiveController
                     $storyModel->save();
                     if($storyModel->hasErrors()) {
                         Yii::error($storyModel->getErrors());
-                        throw new ServerErrorHttpException('新建故事失败');
+                        throw new ServerErrorHttpException('保存故事失败');
                     }
                     $storyId = $storyModel->story_id;
 
@@ -90,7 +93,8 @@ class StoryController extends ActiveController
                     $tagColumns = ['story_id', 'tag_id','status'];
                     $tagAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryTagRelation::tableName(), $tagColumns, $tagRows)->execute();
                     $transaction->commit();
-                    if ($storyId > 0 && $actorAffectedRows > 0 && $tagAffectedRows > 0) {
+
+                    if ($storyId > 0 && $actorAffectedRows >= 0 && $tagAffectedRows >= 0) {
 
                         $dataItem['local_story_id'] = $storyItem['local_story_id'];
                         $dataItem['story_id'] = $storyId;
@@ -103,6 +107,7 @@ class StoryController extends ActiveController
                     $transaction->rollBack();
                     Yii::error($e->getMessage());
                     $response->statusCode = 400;
+                    var_dump($e->getMessage());
                     $response->statusText = '新建故事失败';
                 }
             }
@@ -120,6 +125,7 @@ class StoryController extends ActiveController
         $ret['msg'] = $response->statusText;
         return $ret;
     }
+
 
 
     /**
@@ -144,6 +150,7 @@ class StoryController extends ActiveController
                     $storyModel->setAttributes($storyItem);
                     $storyModel->save();
                     if($storyModel->hasErrors()) {
+
                         Yii::error($storyModel->getErrors());
                         throw new ServerErrorHttpException('编辑故事失败');
                     }
