@@ -489,85 +489,136 @@
                                  "msg": "OK"
                              }
  搜索
-         11)关键字搜索
-               api:    /search/index
+         11)搜索故事
+               api:    search/stories
                method: GET
                params:
                        uid:用户uid
                        keyword:关键字
-                       type:1(故事),2(用户)
                        page:页码
-                       page_size:每页显示内容数
+                       per_page:每页显示内容数
+               example:http://api.youwei.xiaoningmeng.net/search/stories?keyword=%E5%A4%A7&page=1&per_page=20
                ret:    Json数组
-                       搜索故事:
                        {
-                            "code": 200,
-                            "data": {
-                                "page": "页码",
-                                "page_size": "每页显示内容数",
-                                "story_list": [
-                                    {
-                                        "story_id": "故事id",
-                                        "name": "故事标题",
-                                        "description": "故事简介",
-                                        "cover": "封面",
-                                        "is_published": "是否发布",
-                                        "actor": "故事角色信息",
-                                        "tag": "故事标签信息",
-                                        "chapter_count": "章节总数量",
-                                        "message_count": "消息总数量",
-                                        "taps": "点击数",
-                                        "create_time": "创建时间",
-                                        "last_modify_time": "最后修改时间"
-                                    },
-                                    {
-                                        "story_id": "故事id",
-                                        "name": "故事标题",
-                                        "description": "故事简介",
-                                        "cover": "封面",
-                                        "is_published": "是否发布",
-                                        "actor": "故事角色信息",
-                                        "tag": "故事标签信息",
-                                        "chapter_count": "章节总数量",
-                                        "message_count": "消息总数量",
-                                        "taps": "点击数",
-                                        "create_time": "创建时间",
-                                        "last_modify_time": "最后修改时间"
-                                    }
-                                ]
-                            },
-                            "msg": "OK"
+                           "data": {
+                               "totalCount": 5,
+                               "pageCount": 1,
+                               "currentPage": "1",
+                               "perPage": "20",
+                               "storyList": [
+                                   {
+                                       "story_id": "9",
+                                       "name": "我是<em>大</em>科学家",
+                                       "description": "有人说：周兴是现代科学之父.,未来科学之祖. 周兴笑着摇了摇头:“不,叫我大科学家就好,因为我只是一位大科学家.”",
+                                       "cover": "http://qidian.qpic.cn/qdbimg/349573/1007090965/180",
+                                       "uid": "1",
+                                       "chapter_count": "2",
+                                       "message_count": "36",
+                                       "taps": "22",
+                                       "is_published": "1",
+                                       "status": "1",
+                                       "create_time": "1497320453000",
+                                       "last_modify_time": "1497320453000"
+                                   },
+                                   {
+                                       "story_id": "8",
+                                       "name": "红楼大官人",
+                                       "description": "没什么可以把薛蟠打倒的，除了……红楼世界里的美女们！",
+                                       "cover": "http://qidian.qpic.cn/qdbimg/349573/1006466556/180",
+                                       "uid": "1",
+                                       "chapter_count": "2",
+                                       "message_count": "36",
+                                       "taps": "22",
+                                       "is_published": "1",
+                                       "status": "1",
+                                       "create_time": "1497320372000",
+                                       "last_modify_time": "1497321439000"
+                                   },
+                                   {
+                                       "story_id": "2",
+                                       "name": "大盗贼",
+                                       "description": "没炒过股，没买过彩票，官道商场一窍不通，陆离发现自己唯一能做的就是玩游戏。",
+                                       "cover": "http://qidian.qpic.cn/qdbimg/349573/3434900/180",
+                                       "uid": "2",
+                                       "chapter_count": "11",
+                                       "message_count": "222",
+                                       "taps": "14",
+                                       "is_published": "1",
+                                       "status": "1",
+                                       "create_time": "1497318101000",
+                                       "last_modify_time": "1497319778000"
+                                   },
+                                   {
+                                       "story_id": "10",
+                                       "name": "圣墟",
+                                       "description": "沧海成尘，雷电枯竭，那一缕幽雾又一次临近大地，世间的枷锁被打开了，一个全新的世界就此揭开神秘的一角",
+                                       "cover": "http://qidian.qpic.cn/qdbimg/349573/1004608738/180",
+                                       "uid": "1",
+                                       "chapter_count": "2",
+                                       "message_count": "36",
+                                       "taps": "22",
+                                       "is_published": "1",
+                                       "status": "1",
+                                       "create_time": "1497321093000",
+                                       "last_modify_time": "1497321411000"
+                                   },
+                                   {
+                                       "story_id": "5",
+                                       "name": "悟空看私聊",
+                                       "description": "说起来你可能不信，郭大路的山寨手机被一道闪电劈中之后，微信好友里莫名其妙地多了一个名叫“孙悟空”的人。",
+                                       "cover": "http://qidian.qpic.cn/qdbimg/349573/1004600274/180",
+                                       "uid": "2",
+                                       "chapter_count": "2",
+                                       "message_count": "56",
+                                       "taps": "12",
+                                       "is_published": "1",
+                                       "status": "1",
+                                       "create_time": "1497320119000",
+                                       "last_modify_time": "1497320119000"
+                                   }
+                               ]
+                           },
+                           "code": 200,
+                           "msg": "OK"
                        }
+                       
+               备注：<em>关键字</em>:em是飘红的字的标签
                              
-                       搜索用户:
-                       {
-                            "code": 200,
+         12)搜索用户
+               api:    search/users
+               method: GET
+               params:
+                       uid:用户uid
+                       keyword:关键字
+                       page:页码
+                       per_page:每页显示内容数
+               example:http://api.youwei.xiaoningmeng.net/search/users?keyword=爱&page=1&per_page=5
+               ret:    Json数组
+                        {
                             "data": {
-                                "page": "页码",
-                                "page_size": "每页显示内容数",
-                                "user_list": [
+                                "totalCount": 1,
+                                "pageCount": 1,
+                                "currentPage": "1",
+                                "perPage": "5",
+                                "userList": [
                                     {
-                                        "uid": "用户uid",
-                                        "name": "用户姓名",
-                                        "avatar": "头像",
-                                        "signature": "个性签名",
-                                        "followed_count": "用户被关注(粉丝)总数量",
-                                        "story_count": "故事总数量"
-                                    },
-                                    {
-                                        "uid": "用户uid",
-                                        "name": "用户姓名",
-                                        "avatar": "头像",
-                                        "signature": "个性签名",
-                                        "followed_count": "用户被关注(粉丝)总数量",
-                                        "story_count": "故事总数量"
+                                        "uid": "2",
+                                        "name": "小爱",
+                                        "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                        "signature": "也是签名",
+                                        "status": "1",
+                                        "create_time": "1497658790000",
+                                        "last_modify_time": "1497593052000"
                                     }
                                 ]
                             },
+                            "code": 200,
                             "msg": "OK"
-                       }
+                        }
+                        
+         13）下拉提示
  标签
-         12)标签列表[已完成]
+         14)标签列表[已完成]
                api:    /tag/index
                method: GET
                params:
@@ -596,7 +647,7 @@
                             "msg": "OK"
                         }
                
-         13)标签下的故事列表[已完成]
+         15)标签下的故事列表[已完成]
                api:    /tag/storys
                method: GET
                params:
