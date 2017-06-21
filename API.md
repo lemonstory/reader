@@ -707,10 +707,6 @@
                 api:    /sts/token
                 method: GET
                 params:
-                        uid:用户uid
-                        tag_id:关键字
-                        page:页码
-                        pre_page:每页显示内容数
                 example:http://api.youwei.xiaoningmeng.net/sts/token
                 ret:    Json
                 {
