@@ -702,6 +702,35 @@
                             "code": 200,
                             "msg": "OK"
                         }
+                        
+         15)获取oss Token
+                api:    /sts/token
+                method: GET
+                params:
+                        uid:用户uid
+                        tag_id:关键字
+                        page:页码
+                        pre_page:每页显示内容数
+                example:http://api.youwei.xiaoningmeng.net/sts/token
+                ret:    Json
+                {
+                    "code": 200,
+                    "msg": "OK",
+                    "data": {
+                        "AccessKeyId": "STS.GXBYqvZaDhDBRwrwK3TsUe8bA",
+                        "AccessKeySecret": "GZZS5o2GZg7geQopb1e5qBnYsVWHNGKbc78VZwVwrse7",
+                        "Expiration": "2017-06-20T09:20:20Z",
+                        "SecurityToken": "CAISogN1q6Ft5B2yfSjIppv3EsvCt75l34apUFHDk0tmWPx5iv3Jozz2IH1MenZvBO0Ztvk+nW5X6voYlqJ4T55IQ1Dza8J148yHZd5vx8mT1fau5Jko1bcrcAr6Umxzta2/SuH9S8ynkJ7PD3nPii50x5bjaDymRCbLGJaViJlhHNZ1Ow6jdmhpCctxLAlvo9N4UHzKLqSVLwLNiGjdB1YKwg1nkjFT5KCy3sC74BjTh0GYr+gOvNbVI4O4V8B2IIwdI9Cux75ffK3bzAtN7wRL7K5skJFc/TDOsrP6BEJKsTGHKPbz+N9iJxNiHJJYfZRJt//hj/Z1l/XOnoDssXZ3MPpSTj7USfL+ornNE/j7Mc0iJ/SpeSaB+O2kFbTJhCUNRF9cdmE6ctE6eHhrEk5uGHOIZoWa03PnXjCFYo2o8tlviMAtlgW5oYDVfAXUGurJ60tCZM9gNXFPHgUNwGnsfpUBdwFxaF59D96XN94uNE4B9v614lWPB3Q+kS0L5eeNbvfXq70Zbp7kQpVF3IwSaZJLqWI2SE7tTLajmvXwhOPr8CA/GoABJfEMsR+RRiF9dWq0AweADBkUtsB805+kAFRKrBOR0cBRU9heojRytXaYSIaBAYvvgZfk6tylcdqVuvw1T8ZE4iDdF+zPp5V5HIyNGS9BkXu1ZKOG/WLfGoBy/GVPLJwMdJyyAKBxQ6ODParsSseMBzwM0AsjzENP2zPv1wHSX8A="
+                    }
+                }
+                备注:各个字段说明如下：
+                    status:表示获取Token的状态，获取成功时，返回值是200。
+                    AccessKeyId: 表示Android/iOS应用初始化OSSClient获取的 AccessKeyId。
+                    AccessKeySecret: 表示Android/iOS应用初始化OSSClient获取AccessKeySecret。
+                    SecurityToken：表示Android/iOS应用初始化的Token。
+                    Expiration: 表示该Token失效的时间。主要在Android SDK会自动判断是否失效，自动获取Token。注意上述这四个变量将构成了一个Token。
+                参考文档：https://help.aliyun.com/document_detail/31920.html?spm=5176.product31815.6.623.KYJRp1
+         
 
  ```
  
