@@ -2,22 +2,16 @@
 
 namespace api\controllers;
 
+use api\controllers\MessageParsedown;
 use common\models\Story;
 use common\models\StoryActor;
 use common\models\StoryTag;
 use common\models\StoryTagRelation;
-use common\models\User;
-use common\models\UserReadStoryRecord;
 use Yii;
-use yii\helpers\ArrayHelper;
+use yii\data\ActiveDataProvider;
 use yii\helpers\BaseJson;
 use yii\rest\ActiveController;
-use yii\data\ActiveDataProvider;
-use yii\helpers\Url;
 use yii\web\ServerErrorHttpException;
-use yii\rest\Serializer;
-use Parsedown;
-use api\controllers\MessageParsedown;
 
 
 class StoryController extends ActiveController
@@ -79,19 +73,26 @@ class StoryController extends ActiveController
 
                     //保存角色
                     //接收到的角色值:[{"number":"角色序号-1","name":"角色姓名-1","avatar":"角色头像-2","is_visible":"是否可见"},{"number":"角色序号-2","name":"角色姓名-2","avatar":"角色头像-2","is_visible":"是否可见"}];
-                    $actorJson = $storyItem['actor'];
-                    $actorRows = $this->parseActorJson($actorJson,$storyId);
-                    //TODO:角色信息格式输入检查
-                    $actorColumns = ['actor_id','story_id', 'name', 'avator', 'number','is_visible'];
-                    $actorAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryActor::tableName(), $actorColumns, $actorRows)->execute();
+                    $actorAffectedRows = 0;
+                    if(isset($storyItem['actor']) && !empty($storyItem['actor'])) {
+                        $actorJson = $storyItem['actor'];
+                        $actorRows = $this->parseActorJson($actorJson,$storyId);
+                        //TODO:角色信息格式输入检查
+                        $actorColumns = ['actor_id','story_id', 'name', 'avator', 'number','is_visible'];
+                        $actorAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryActor::tableName(), $actorColumns, $actorRows)->execute();
+                    }
 
                     //保存标签
                     //接收到的标签值:[{"tag_id":1, "status":"1"},{"tag_id":2, "status":"1"}];
-                    $tagJson = $storyItem['tag'];
-                    $tagRows = $this->parseTagJson($tagJson,$storyId);
-                    //TODO:标签信息格式输入检查
-                    $tagColumns = ['story_id', 'tag_id','status'];
-                    $tagAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryTagRelation::tableName(), $tagColumns, $tagRows)->execute();
+                    $tagAffectedRows = 0;
+                    if(isset($storyItem['tag']) && !empty($storyItem['tag'])) {
+                        $tagJson = $storyItem['tag'];
+                        $tagRows = $this->parseTagJson($tagJson,$storyId);
+                        //TODO:标签信息格式输入检查
+                        $tagColumns = ['story_id', 'tag_id','status'];
+                        $tagAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryTagRelation::tableName(), $tagColumns, $tagRows)->execute();
+                    }
+
                     $transaction->commit();
 
                     if ($storyId > 0 && $actorAffectedRows >= 0 && $tagAffectedRows >= 0) {
@@ -105,9 +106,9 @@ class StoryController extends ActiveController
                     //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
                     $hasError = true;
                     $transaction->rollBack();
-                    Yii::error($e->getMessage());
-                    $response->statusCode = 400;
+                    //Yii::error($e->getMessage());
                     var_dump($e->getMessage());
+                    $response->statusCode = 400;
                     $response->statusText = '新建故事失败';
                 }
             }
