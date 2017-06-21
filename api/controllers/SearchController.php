@@ -75,9 +75,11 @@ class SearchController extends ActiveController
                 $ret['msg'] = "OK";
 
                 foreach ($searchRet['result']['items'] as $item) {
-
                     $story['story_id'] = $item['fields']['story_id'];
-                    $story['name'] = $item['fields']['story_name'];
+                    //story_name的飘红会有bug,所以这里是有story_sws_name
+                    //在为某个字段配有摘要的情况下，该字段不可以创建2种不同类型的分词,会触发个别文档有可能会飘红，而有些则不会飘红.
+                    //目前该bug暂时还不好解，您这边目前需要避免同一个字段进入不同分词组合索引的情况进行避免，或者再针对这些部分字段单独创建对应分词索引，通过AND,OR之类的逻辑操作进行查询
+                    $story['name'] = $item['fields']['story_sws_name'];
                     $story['description'] = $item['fields']['story_description'];
                     $story['cover'] = $item['fields']['story_cover'];
                     $story['uid'] = $item['fields']['story_uid'];

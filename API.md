@@ -592,7 +592,7 @@
                        keyword:关键字
                        page:页码
                        per_page:每页显示内容数
-               example:http://api.youwei.xiaoningmeng.net/search/users?keyword=爱&page=1&per_page=5
+               example:http://api.youwei.xiaoningmeng.net/search/users?keyword=小&page=1&per_page=5
                ret:    Json数组
                         {
                             "data": {
