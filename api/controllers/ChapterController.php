@@ -48,7 +48,9 @@ class ChapterController extends ActiveController
             $input['chapter_id'] = Yii::$app->request->post('chapter_id');
             $input['status'] = Yii::$app->request->post('status');
             $input['create_time'] = DateTimeHelper::inputCheck(Yii::$app->request->post('create_time'));
+            $input['create_time'] = $input['create_time'] = DateTimeHelper::convert($input['create_time'], 'datetime');
             $input['last_modify_time'] = DateTimeHelper::inputCheck(Yii::$app->request->post('last_modify_time'));
+            $input['last_modify_time'] = $input['last_modify_time'] = DateTimeHelper::convert($input['last_modify_time'], 'datetime');
 
             $data['local_story_id'] = $input['local_story_id'];
             $data['local_chapter_id'] = $input['local_chapter_id'];

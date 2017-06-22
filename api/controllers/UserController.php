@@ -6,6 +6,7 @@ use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Story;
 use common\models\User;
+use common\models\UserOauth;
 use common\models\UserReadStoryRecord;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
@@ -129,5 +130,58 @@ class UserController extends ActiveController
         $ret['msg'] = $response->statusText;
         return $ret;
     }
+
+
+    /**
+     * QQ登录
+     * @return array 用户个人信息
+     */
+    public function actionQqLogin() {
+
+        $accessToken = Yii::$app->request->get('accessToken','');
+        $openId = Yii::$app->request->get('openId','');
+        $userInfo = array();
+
+        if(!empty($accessToken) && !empty($openId)) {
+
+
+            $oauthCondition = ['oauth_id' => $openId];
+            $userOauthModel = UserOauth::find()->where($oauthCondition);
+            $count = $userOauthModel->count();
+
+            if($count == 1) {
+
+                $userOauthModel->oauth_access_token = $accessToken;
+                $userOauthModel->save();
+
+                $uid = $userOauthModel->uid;
+                $userCondition = ['uid' => $uid];
+                $userModel = User::findOne($userCondition);
+
+                $userInfo['uid'] = $userModel->uid;
+                $userInfo['name'] = $userModel->name;
+                $userInfo['cellphone'] = $userModel->cellphone;
+                $userInfo['avatar'] = $userModel->avatar;
+                $userInfo['signature'] = $userModel->signature;
+                $userInfo['status'] = $userModel->status;
+
+            }elseif ($count == 0) {
+
+                $qcObj = null;
+                $getInfo = $qcObj->get_user_info();
+
+
+            }else {
+
+                //TODO:系统出现错误
+            }
+
+
+        }
+
+        return $userInfo;
+
+    }
+
 
 }

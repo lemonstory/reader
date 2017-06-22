@@ -68,4 +68,22 @@ class UserOauth extends \yii\db\ActiveRecord
     {
         return new UserOauthQuery(get_called_class());
     }
+
+    public function isQQReg($openId) {
+
+        $ret = false;
+        $condition = ['oauth_id' => $openId];
+        $count = UserOauth::find()->where($condition)->count();
+        if($count == 1) {
+            $ret = true;
+        }
+        return $ret;
+    }
+
+//    public function QQLogin($accessToken, $openId) {
+//
+//        $userOauthModel = new
+//
+//
+//    }
 }

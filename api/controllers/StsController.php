@@ -34,7 +34,6 @@ class StsController extends ActiveController
      */
     public function actionToken() {
 
-
         include_once Yii::$app->vendorPath.'/sts-server/aliyun-php-sdk-core/Config.php';
         function read_file($fname)
         {
@@ -76,11 +75,14 @@ class StsController extends ActiveController
                 $request->setPolicy($policy);
                 $request->setDurationSeconds($tokenExpire);
                 $response = $client->doAction($request);
+//                var_dump($response);
+//                exit;
 
                 $rows = array();
                 $body = $response->getBody();
                 $content = json_decode($body);
                 $rows['status'] = $response->getStatus();
+
                 if ($response->getStatus() == 200)
                 {
                     $rows['AccessKeyId'] = $content->Credentials->AccessKeyId;
@@ -99,14 +101,18 @@ class StsController extends ActiveController
 //                echo json_encode($rows);
 //                exit;
 
+                $ret['code'] = $rows['status'];
                 if($rows['status'] == 200) {
-                    $ret['code'] = 200;
                     $ret['msg'] = "OK";
-                    $ret['data']['AccessKeyId'] = $rows['AccessKeyId'];
-                    $ret['data']['AccessKeySecret'] = $rows['AccessKeySecret'];
-                    $ret['data']['Expiration'] = $rows['Expiration'];
-                    $ret['data']['SecurityToken'] = $rows['SecurityToken'];
+                }else{
+                    $ret['msg'] = "Code : " . $content->Code . " ; " . "Message : " . $content->Message;
                 }
+
+                $ret['data']['AccessKeyId'] = $rows['AccessKeyId'];
+                $ret['data']['AccessKeySecret'] = $rows['AccessKeySecret'];
+                $ret['data']['Expiration'] = $rows['Expiration'];
+                $ret['data']['SecurityToken'] = $rows['SecurityToken'];
+
             }else {
                 $ret['code'] = 500;
                 $ret['msg'] = $policy ." 文件不存在";

@@ -3,6 +3,8 @@
 namespace common\models;
 
 use Yii;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "story".
@@ -36,7 +38,7 @@ class Story extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'uid'], 'required'],
+            [['uid'], 'required'],
             [['uid', 'chapter_count', 'message_count', 'taps', 'is_published', 'status'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['name'], 'string', 'max' => 150],
@@ -89,7 +91,8 @@ class Story extends \yii\db\ActiveRecord
      * 获取故事标签
      * @return $this
      */
-    public function getTags() {
+    public function getTags()
+    {
 
         //hasMany relation tag表->tag_id =>  story_tag_relation表 => tag_id
         return $this->hasMany(Tag::className(), ['tag_id' => 'tag_id'])
@@ -100,7 +103,8 @@ class Story extends \yii\db\ActiveRecord
     /**
      * 获取故事章节
      */
-    public function getChapters() {
+    public function getChapters()
+    {
 
         //hasMany relation chapter表->story_id =>  story表 => story_id
         return $this->hasMany(Chapter::className(), ['story_id' => 'story_id']);
@@ -109,7 +113,8 @@ class Story extends \yii\db\ActiveRecord
     /**
      *
      */
-    public function getUserReadStoryRecord() {
+    public function getUserReadStoryRecord()
+    {
 
         //hasMany relation user_read_story_record表->story_id =>  story表 => story_id
         return $this->hasMany(UserReadStoryRecord::className(), ['story_id' => 'story_id']);

@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use api\controllers\MessageParsedown;
+use common\components\DateTimeHelper;
 use common\models\Story;
 use common\models\StoryActor;
 use common\models\StoryTag;
@@ -60,9 +61,14 @@ class StoryController extends ActiveController
 
                     //保存故事
                     $storyItem['uid'] = $uid;
+                    $storyItem['create_time'] = DateTimeHelper::inputCheck($storyItem['create_time']);
+                    $storyItem['last_modify_time'] = DateTimeHelper::inputCheck($storyItem['last_modify_time']);
+
                     $storyModel = new Story();
                     $storyModel->loadDefaultValues();
                     $storyModel->setAttributes($storyItem);
+                    $storyModel->create_time = DateTimeHelper::convert($storyModel->create_time, 'datetime');
+                    $storyModel->last_modify_time = DateTimeHelper::convert($storyModel->last_modify_time, 'datetime');
 
                     $storyModel->save();
                     if($storyModel->hasErrors()) {
@@ -107,7 +113,6 @@ class StoryController extends ActiveController
                     $hasError = true;
                     $transaction->rollBack();
                     //Yii::error($e->getMessage());
-                    var_dump($e->getMessage());
                     $response->statusCode = 400;
                     $response->statusText = '新建故事失败';
                 }
@@ -149,6 +154,8 @@ class StoryController extends ActiveController
                     //保存故事
                     $storyModel = Story::findOne($storyItem['story_id']);
                     $storyModel->setAttributes($storyItem);
+                    $storyModel->create_time = DateTimeHelper::convert($storyModel->create_time, 'datetime');
+                    $storyModel->last_modify_time = DateTimeHelper::convert($storyModel->last_modify_time, 'datetime');
                     $storyModel->save();
                     if($storyModel->hasErrors()) {
 
@@ -338,70 +345,5 @@ class StoryController extends ActiveController
         return $tagRows;
     }
 
-
-    public function actionAddTags()
-    {
-
-        $storyId = Yii::$app->request->post('storyId');
-        $tagIds = explode(',', Yii::$app->request->post('tagIds'));
-        if (count($tagIds) > 0) {
-            $story = new Story();
-            $rowsAffected = $story->addTags($storyId, $tagIds);
-        }
-        $data['data'] = $rowsAffected;
-        $data['code'] = 200;
-        $data['message'] = 'OK';
-        return $data;
-    }
-
-
-    /**
-     * 获取用户的故事
-     * @param $uid
-     * @return array
-     */
-    public function actionStorys($uid)
-    {
-
-        $provider =  new ActiveDataProvider([
-            'query' => Story::find(),
-            'pagination' => [
-                'pageSize' => 2,
-            ],
-        ]);
-        return $provider;
-    }
-
-    public function actionTest()
-    {
-
-//        $str = <<<EOD
-//#标题
-//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：请问您是\t心理咨询处的老师吗？这里很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长,很长
-//**<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：我是，有什么可以帮的到你的？
-//_星期三 下午_
-//...
-//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：您好，我是医学院的学生，我身边发生了一些很诡异的事情，我觉得自己快被逼疯了！希望能和您倾诉一下。
-//**<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：你别着急，慢慢说，有什么问题我们一起解决。
-//**>![]()陈明**：先给您介绍一下我的室友，所有事情都是由他引起的。
-//    **<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：好的。
-//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：我是研究生，
-//研究生的宿舍都是
-//两人间，
-//您知道吧？
-//**<![](https://avatars1.githubusercontent.com/u/7226606?v=3&s=40)李洁**：没错。
-//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：我的室友来自东部的一个农村，并不是我歧视农村人，但是我和他的关系十分不合。
-//**>![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=40)陈明**：在上面说
-//![](https://avatars0.githubusercontent.com/u/10001124?v=3&s=100)发生大发发
-//EOD;
-//
-//
-//        $MessageParsedown = new MessageParsedown();
-//
-//        $MessageParsedown->setBreaksEnabled(true);
-//        echo $MessageParsedown->text($str); # prints: <p>Hello <em>Parsedown</em>!</p>
-
-        phpinfo();
-    }
 }
 ?>
