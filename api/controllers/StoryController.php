@@ -160,55 +160,62 @@ class StoryController extends ActiveController
                     if($storyModel->hasErrors()) {
 
                         Yii::error($storyModel->getErrors());
-                        throw new ServerErrorHttpException('编辑故事失败');
+                        throw new ServerErrorHttpException('编辑故事输入错误');
                     }
                     $storyId = $storyModel->story_id;
 
                     //更新角色
                     //接收到的角色值:[{"actor_id":1, "number":"1","name":"姓名-1","avatar":"","is_visible":1},{"actor_id":2,"number":"2","name":"姓名-2","avatar":"","is_visible":1}];
-                    $actorJson = $storyItem['actor'];
-                    $actorRows = $this->parseActorJson($actorJson,$storyId);
-                    if(!empty($actorRows)) {
-                        foreach ($actorRows as $actorItem) {
-                            $storyActorModel = StoryActor::findOne($actorItem['actor_id']);
-                            if($storyActorModel === null) {
-                                $storyActorModel = new StoryActor();
-                            }
-                            $storyActorModel->setAttributes($actorItem);
-                            $storyActorModel->save();
-                            if($storyActorModel->hasErrors()) {
-                                Yii::error($storyActorModel->getErrors());
-                                throw new ServerErrorHttpException('角色修改失败');
+                    if(isset($storyItem['actor']) && !empty($storyItem['actor'])) {
+                        $actorJson = $storyItem['actor'];
+                        $actorRows = $this->parseActorJson($actorJson,$storyId);
+                        if(!empty($actorRows)) {
+                            foreach ($actorRows as $actorItem) {
+                                $storyActorModel = StoryActor::findOne($actorItem['actor_id']);
+                                if($storyActorModel === null) {
+                                    $storyActorModel = new StoryActor();
+                                }
+                                $storyActorModel->setAttributes($actorItem);
+                                $storyActorModel->save();
+                                if($storyActorModel->hasErrors()) {
+                                    Yii::error($storyActorModel->getErrors());
+                                    throw new ServerErrorHttpException('角色修改失败');
+                                }
                             }
                         }
                     }
+
                     //更新标签
                     //接收到的标签值:[{"tag_id":1, "status":"1"},{"tag_id":2, "status":"1"}];
-                    $tagJson = $storyItem['tag'];
-                    $tagRows = $this->parseTagJson($tagJson,$storyId);
+                    if(isset($storyItem['tag']) && !empty($storyItem['tag'])) {
+                        $tagJson = $storyItem['tag'];
+                        $tagRows = $this->parseTagJson($tagJson,$storyId);
 
-                    if(!empty($tagRows)) {
-                        foreach ($tagRows as $tagItem) {
+                        if(!empty($tagRows)) {
+                            foreach ($tagRows as $tagItem) {
 
-                            $condition = array(
-                                'story_id' => $tagItem['story_id'],
-                                'tag_id' => $tagItem['tag_id']
-                            );
-                            $storyTagRelationModel = StoryTagRelation::findOne($condition);
-                            if($storyTagRelationModel === null) {
-                                $storyTagRelationModel = new StoryTagRelation();
-                            }
-                            $storyTagRelationModel->setAttributes($tagItem);
-                            $storyTagRelationModel->save();
-                            if($storyTagRelationModel->hasErrors()) {
-                                Yii::error($storyTagRelationModel->getErrors());
-                                throw new ServerErrorHttpException('标签修改失败');
+                                $condition = array(
+                                    'story_id' => $tagItem['story_id'],
+                                    'tag_id' => $tagItem['tag_id']
+                                );
+                                $storyTagRelationModel = StoryTagRelation::findOne($condition);
+                                if($storyTagRelationModel === null) {
+                                    $storyTagRelationModel = new StoryTagRelation();
+                                }
+                                $storyTagRelationModel->setAttributes($tagItem);
+                                $storyTagRelationModel->save();
+                                if($storyTagRelationModel->hasErrors()) {
+                                    Yii::error($storyTagRelationModel->getErrors());
+                                    throw new ServerErrorHttpException('标签修改失败');
+                                }
                             }
                         }
                     }
-
                     $transaction->commit();
-                    $dataItem['local_story_id'] = $storyItem['local_story_id'];
+                    $dataItem['local_story_id'] = null;
+                    if(isset($storyItem['local_story_id'])) {
+                        $dataItem['local_story_id'] = $storyItem['local_story_id'];
+                    }
                     $dataItem['story_id'] = $storyId;
                     $data[] = $dataItem;
 
@@ -229,7 +236,7 @@ class StoryController extends ActiveController
             }
         }else{
             $response->statusCode = 400;
-            $response->statusText = '参数错误' ;
+            $response->statusText = '参数错误';
         }
         $ret['data'] = $data;
         $ret['code'] = $response->statusCode;

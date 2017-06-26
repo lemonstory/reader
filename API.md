@@ -154,39 +154,17 @@
                  storys[0][last_modify_time]:最后修改时间
          ret:    Json数组
                 {
-                    "code": 200,
                     "data": [
                         {
-                            "local_story_id": "本地故事id",
-                            "story_id": "故事id",
-                            "name": "故事标题",
-                            "description": "故事简介",
-                            "cover": "封面",
-                            "is_published": "是否发布",
-                            "actor": "故事角色信息",
-                            "tag": "故事标签信息",
-                            "chapter_count": "章节总数量",
-                            "message_count": "消息总数量",
-                            "taps": "点击数",
-                            "create_time": "创建时间",
-                            "last_modify_time": "最后修改时间"
+                            "local_story_id": "本地故事id-1",
+                            "story_id": 44
                         },
                         {
-                            "local_story_id": "本地故事id",
-                            "story_id": "故事id",
-                            "name": "故事标题",
-                            "description": "故事简介",
-                            "cover": "封面",
-                            "is_published": "是否发布",
-                            "actor": "故事角色信息",
-                            "tag": "故事标签信息",
-                            "chapter_count": "章节总数量",
-                            "message_count": "消息总数量",
-                            "taps": "点击数",
-                            "create_time": "创建时间",
-                            "last_modify_time": "最后修改时间"
+                            "local_story_id": "本地故事id-2",
+                            "story_id": 45
                         }
                     ],
+                    "code": 200,//200:全部新建成功;206:部分新建成功
                     "msg": "OK"
                 }
             备注:    
@@ -364,7 +342,7 @@
                                 "uid": 2,
                                 "chapter_count": 0,
                                 "message_count": 0,
-                                "taps": "0",
+                                "taps": "0",****
                                 "is_published": 1,
                                 "create_time": "2017-06-14 12:32:29",
                                 "last_modify_time": "2017-06-16 17:53:06",
