@@ -34,7 +34,7 @@ class ChapterController extends ActiveController
     //新建章节: 新建章节信息,写入章节消息内容
     //修改章节: 修改章节内容
     //删除章节: 消息内容已同步->章节信息及内容状态设置为删除,消息内容未同步->写入章节消息内容,章节信息及内容状态设置为删除
-    public function actionUploadMessageContent()
+    public function actionCommitMessageContent()
     {
         $response = Yii::$app->getResponse();
         $data = array();
@@ -51,7 +51,6 @@ class ChapterController extends ActiveController
             $input['create_time'] = $input['create_time'] = DateTimeHelper::convert($input['create_time'], 'datetime');
             $input['last_modify_time'] = DateTimeHelper::inputCheck(Yii::$app->request->post('last_modify_time'));
             $input['last_modify_time'] = $input['last_modify_time'] = DateTimeHelper::convert($input['last_modify_time'], 'datetime');
-
             $data['local_story_id'] = $input['local_story_id'];
             $data['local_chapter_id'] = $input['local_chapter_id'];
 
@@ -62,48 +61,89 @@ class ChapterController extends ActiveController
                 define ('SITE_ROOT', realpath(dirname(__FILE__)));
                 $file = SITE_ROOT.'/../uploads/' . $uploadFormModel->file->baseName . '.' . $uploadFormModel->file->extension;
                 $uploadFormModel->file->saveAs($file);
-                $messageContent = file_get_contents($file);
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
 
-                if(!empty($messageContent)) {
-                    $transaction = Yii::$app->db->beginTransaction();
-                    try {
+                        if(!empty($input['story_id']) && !empty($input['chapter_id'])) {
+                            $chapterCondition = array(
+                                'chapter_id' => $input['chapter_id'],
+                                'story_id' => $input['story_id'],
+                            );
+                            $chapterModel = Chapter::findOne($chapterCondition);
+                        }
+
+                        if($chapterModel === null) {
                             $chapterModel = new Chapter();
                             $chapterModel->loadDefaultValues();
-                            foreach ($chapterModel->attributes as $attName => $attValue) {
-                                if(!empty($input[$attName])) {
-                                    $chapterModel[$attName] = $input[$attName];
+                        }
+
+                        foreach ($chapterModel->attributes as $attName => $attValue) {
+                            if(!empty($input[$attName])) {
+                                $chapterModel[$attName] = $input[$attName];
+                            }
+                        }
+
+                        //处理章节消息内容
+                        $messageCount = 0;
+                        if (file_exists($file)) {
+                            $messageContentXml = simplexml_load_file($file, null, LIBXML_NOCDATA);
+                            if ($messageContentXml) {
+                                $messageCount = count($messageContentXml->chapter_message_content->message);
+                            }
+                        }
+
+                        $chapterModel->message_count = $messageCount;
+                        $chapterModel->save();
+                        if($chapterModel->hasErrors()) {
+                            Yii::error($chapterModel->getErrors());
+                            throw new ServerErrorHttpException('章节操作失败');
+                        }
+                        $chapterId = $chapterModel->chapter_id;
+
+                        //这里可能有新增,或修改
+                        if($messageCount > 0) {
+                            foreach ($messageContentXml->chapter_message_content->message as $messageItem) {
+
+                                $messageId = (string)$messageItem->message_id;
+                                $chapterMessageContentModel = null;
+                                if(!empty($messageId)) {
+                                    $messageCondition = array(
+                                        'message_id' => $messageId,
+                                        'chapter_id' => $chapterId,
+                                        'story_id' => $chapterModel->story_id,
+                                    );
+                                    $chapterMessageContentModel = ChapterMessageContent::findOne($messageCondition);
+                                }
+                                if($chapterMessageContentModel === null) {
+                                    $chapterMessageContentModel = new ChapterMessageContent();
+                                }
+                                $chapterMessageContentModel->chapter_id = $chapterId;
+                                $chapterMessageContentModel->story_id = $chapterModel->story_id;
+                                $chapterMessageContentModel->message_id = $messageId;
+                                $chapterMessageContentModel->number = (string)$messageItem->number;
+                                $chapterMessageContentModel->voice_over = (string)$messageItem->content->voice_over;
+                                $chapterMessageContentModel->actor_id = (string)$messageItem->content->actor->actor_id;
+                                $chapterMessageContentModel->text = (string)$messageItem->content->text;
+                                $chapterMessageContentModel->img = (string)$messageItem->content->img;
+                                $chapterMessageContentModel->status = (string)$messageItem->status;
+
+                                $chapterMessageContentModel->save();
+                                if($chapterMessageContentModel->hasErrors()) {
+                                    Yii::error($chapterMessageContentModel->getErrors());
+                                    throw new ServerErrorHttpException('消息内容操作失败');
                                 }
                             }
-
-                            $chapterModel->save();
-                            if($chapterModel->hasErrors()) {
-                                Yii::error($chapterModel->getErrors());
-                                throw new ServerErrorHttpException('章节操作失败');
-                            }
-
-                            $chapterMessageContentModel = new ChapterMessageContent();
-                            $chapterMessageContentModel->chapter_id = $chapterModel->chapter_id;
-                            $chapterMessageContentModel->story_id = $chapterModel->story_id;
-                            $chapterMessageContentModel->message_content = $messageContent;
-                            $chapterMessageContentModel->status = $chapterModel->status;
-                            $chapterMessageContentModel->create_time = $chapterModel->create_time;
-                            $chapterMessageContentModel->last_modify_time = $chapterModel->last_modify_time;
-                            $chapterMessageContentModel->save();
-                            if($chapterMessageContentModel->hasErrors()) {
-                                Yii::error($chapterModel->getErrors());
-                                throw new ServerErrorHttpException('消息内容操作失败');
-                            }
-
+                            //处理成功的文件会被删除
                             unlink($file);
-                            $transaction->commit();
+                        }
 
-                            $data['story_id'] = $chapterModel->story_id;
-                            $data['chapter_id'] = $chapterModel->chapter_id;
-                            $data['status'] = $chapterModel->status;
-                            $data['create_time'] = $chapterModel->create_time;
-                            $data['last_modify_time'] = $chapterModel->last_modify_time;
-                            $data['message_content'] = $chapterMessageContentModel->message_content;
-
+                        $transaction->commit();
+                        $data['story_id'] = $chapterModel->story_id;
+                        $data['chapter_id'] = $chapterModel->chapter_id;
+                        $data['status'] = $chapterModel->status;
+                        $data['create_time'] = $chapterModel->create_time;
+                        $data['last_modify_time'] = $chapterModel->last_modify_time;
+                        $data['message_count'] = $messageCount;
 
                     }catch (\Exception $e){
 
@@ -111,12 +151,9 @@ class ChapterController extends ActiveController
                         $transaction->rollBack();
                         Yii::error($e->getMessage());
                         $response->statusCode = 400;
-                        $response->statusText = $e->getMessage();
+                        $response->statusText = "消息内容操作出现系统错误";
                     }
-                }else{
-                    $response->statusCode = 400;
-                    $response->statusText = '消息内容为空';
-                }
+
             }else {
                 $response->statusCode = 400;
                 $response->statusText = '参数错误';
@@ -132,8 +169,4 @@ class ChapterController extends ActiveController
         $ret['msg'] = $response->statusText;
         return $ret;
     }
-
-
-
-
 }

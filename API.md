@@ -174,7 +174,7 @@
                      
      4)新建,修改,删除章节消息内容[已完成]
      
-          api:    /chapter/upload-message-content
+          api:    /chapter/commit-message-content
           method: POST(multipart/form-data)
           params:
                   uid:用户uid
@@ -197,6 +197,7 @@
                         "status": "正常，新建，修改，删除",
                         "create_time": "创建时间",
                         "last_modify_time": "最后修改时间"
+                        "message_count": "章节消息数量"
                     },
                     "msg": "OK"
                 }
@@ -308,46 +309,43 @@
                      uid:用户uid
                      story_id:故事Id
                      chapter_id:章节id
-              example:http://api.youwei.xiaoningmeng.net/chapter-message-content/view?story_id=1&chapter_id=19
+              example:http://api.youwei.xiaoningmeng.net/chapter-message-content/view?story_id=1&chapter_id=503
               ret:    xml
                       <?xml version="1.0" encoding="utf-8"?>
                       <chapter>
                       	<story_id>故事Id</story_id>
                       	<!-- 新建上传时: 为空-->
-                        	<chapter_id>章节Id</chapter_id>
-                        	<number>章节序号</number>
-                        	<!-- 新建上传时：为空 -->
-                        	<name>章节名称</name>
-                        	<chapter_message_content>
-                      	    <message>
-                      	      <!-- 新建上传时: 为空-->
-                      	      <message_id>消息id</message_id>
-                      	      <!-- 新建上传时：为空 -->
-                      	      <number>消息序号</number>
-                      	      <content> 
-                      	        <voice_over>旁白</voice_over>
-                      	        <actor>
-                      	        	<actor_id>角色Id</actor_id>
-                      	        </actor>
-                      	        <text>消息文字</text>
-                      	        <img>图片网址</img>
-                      	      </content> 
-                      	      <status>消息状态</status>
-                      	    </message>
-                      	    <message>
-                      	      <message_id>消息id</message_id>
-                      	      <number>消息序号</number>
-                      	      <content> 
-                      	        <voice_over>旁白</voice_over>
-                      	        <actor>
-                      	        	<actor_id>角色Id</actor_id>
-                      	        </actor>
-                      	        <text>消息文字</text>
-                      	        <img>图片网址</img>
-                      	      </content> 
-                      	      <status>消息状态</status>
-                      	    </message>
-                      	</chapter_message_content>
+                        <chapter_id>章节Id</chapter_id>
+                        <chapter_message_content>
+                            <message>
+                              <!-- 新建上传时: 为空-->
+                              <message_id>消息id</message_id>
+                              <!-- 新建上传时：为空 -->
+                              <number>消息序号</number>
+                              <content> 
+                                <voice_over>旁白</voice_over>
+                                <actor>
+                                    <actor_id>角色Id</actor_id>
+                                </actor>
+                                <text>消息文字</text>
+                                <img>图片网址</img>
+                              </content> 
+                              <status>消息状态</status>
+                            </message>
+                            <message>
+                              <message_id>消息id</message_id>
+                              <number>消息序号</number>
+                              <content> 
+                                <voice_over>旁白</voice_over>
+                                <actor>
+                                    <actor_id>角色Id</actor_id>
+                                </actor>
+                                <text>消息文字</text>
+                                <img>图片网址</img>
+                              </content> 
+                              <status>消息状态</status>
+                            </message>
+                        </chapter_message_content>
                       </chapter>
  首页                     
          8)首页故事精选[已完成]

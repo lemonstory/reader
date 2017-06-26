@@ -18,8 +18,8 @@ class ChapterMessageContentSearch extends ChapterMessageContent
     public function rules()
     {
         return [
-            [['chapter_id', 'story_id', 'status'], 'integer'],
-            [['message_content', 'create_time', 'last_modify_time'], 'safe'],
+            [['message_id', 'chapter_id', 'story_id', 'number', 'actor_id', 'status'], 'integer'],
+            [['voice_over', 'text', 'img', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -59,14 +59,19 @@ class ChapterMessageContentSearch extends ChapterMessageContent
 
         // grid filtering conditions
         $query->andFilterWhere([
+            'message_id' => $this->message_id,
             'chapter_id' => $this->chapter_id,
             'story_id' => $this->story_id,
+            'number' => $this->number,
+            'actor_id' => $this->actor_id,
             'create_time' => $this->create_time,
             'last_modify_time' => $this->last_modify_time,
             'status' => $this->status,
         ]);
 
-        $query->andFilterWhere(['like', 'message_content', $this->message_content]);
+        $query->andFilterWhere(['like', 'voice_over', $this->voice_over])
+            ->andFilterWhere(['like', 'text', $this->text])
+            ->andFilterWhere(['like', 'img', $this->img]);
 
         return $dataProvider;
     }

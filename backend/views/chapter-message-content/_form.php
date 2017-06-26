@@ -16,7 +16,15 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'story_id')->textInput() ?>
 
-    <?= $form->field($model, 'message_content')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'number')->textInput() ?>
+
+    <?= $form->field($model, 'voice_over')->textarea(['rows' => 6]) ?>
+
+    <?= $form->field($model, 'actor_id')->textInput() ?>
+
+    <?= $form->field($model, 'text')->textarea(['rows' => 6]) ?>
+
+    <?= $form->field($model, 'img')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'create_time')->textInput() ?>
 

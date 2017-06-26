@@ -7,9 +7,9 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('app', 'Update {modelClass}: ', [
     'modelClass' => 'Chapter Message Content',
-]) . $model->chapter_id;
+]) . $model->message_id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Chapter Message Contents'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->chapter_id, 'url' => ['view', 'chapter_id' => $model->chapter_id, 'story_id' => $model->story_id]];
+$this->params['breadcrumbs'][] = ['label' => $model->message_id, 'url' => ['view', 'id' => $model->message_id]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="chapter-message-content-update">

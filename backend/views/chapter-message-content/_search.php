@@ -15,15 +15,25 @@ use yii\widgets\ActiveForm;
         'method' => 'get',
     ]); ?>
 
+    <?= $form->field($model, 'message_id') ?>
+
     <?= $form->field($model, 'chapter_id') ?>
 
     <?= $form->field($model, 'story_id') ?>
 
-    <?= $form->field($model, 'message_content') ?>
+    <?= $form->field($model, 'number') ?>
 
-    <?= $form->field($model, 'create_time') ?>
+    <?= $form->field($model, 'voice_over') ?>
 
-    <?= $form->field($model, 'last_modify_time') ?>
+    <?php // echo $form->field($model, 'actor_id') ?>
+
+    <?php // echo $form->field($model, 'text') ?>
+
+    <?php // echo $form->field($model, 'img') ?>
+
+    <?php // echo $form->field($model, 'create_time') ?>
+
+    <?php // echo $form->field($model, 'last_modify_time') ?>
 
     <?php // echo $form->field($model, 'status') ?>
 
