@@ -196,12 +196,11 @@
                         "chapter_id": "章节id",
                         "status": "正常，新建，修改，删除",
                         "create_time": "创建时间",
-                        "last_modify_time": "最后修改时间",
-                        "message_content": "消息内容(markdown文本)"
+                        "last_modify_time": "最后修改时间"
                     },
                     "msg": "OK"
                 }
-                      
+                
      5)查看故事基本信息[已完成]
          api:    /story/{故事Id}
          method: GET
@@ -266,6 +265,7 @@
                 "code": 200,
                 "message": "OK"
             }
+            
          6)查看故事章节[已完成]
                api:    /story/chapters/{故事Id}
                method: GET
@@ -309,17 +309,46 @@
                      story_id:故事Id
                      chapter_id:章节id
               example:http://api.youwei.xiaoningmeng.net/chapter-message-content/view?story_id=1&chapter_id=19
-              ret:    Json
-                      {
-                          "code": 200,
-                          "data": {
-                                      "story_id":"故事id"
-                                      "chapter_id": "章节id",
-                                      "message_content": "章节内容",
-                                  },
-                          },
-                          "msg": "OK"
-                      }
+              ret:    xml
+                      <?xml version="1.0" encoding="utf-8"?>
+                      <chapter>
+                      	<story_id>故事Id</story_id>
+                      	<!-- 新建上传时: 为空-->
+                        	<chapter_id>章节Id</chapter_id>
+                        	<number>章节序号</number>
+                        	<!-- 新建上传时：为空 -->
+                        	<name>章节名称</name>
+                        	<chapter_message_content>
+                      	    <message>
+                      	      <!-- 新建上传时: 为空-->
+                      	      <message_id>消息id</message_id>
+                      	      <!-- 新建上传时：为空 -->
+                      	      <number>消息序号</number>
+                      	      <content> 
+                      	        <voice_over>旁白</voice_over>
+                      	        <actor>
+                      	        	<actor_id>角色Id</actor_id>
+                      	        </actor>
+                      	        <text>消息文字</text>
+                      	        <img>图片网址</img>
+                      	      </content> 
+                      	      <status>消息状态</status>
+                      	    </message>
+                      	    <message>
+                      	      <message_id>消息id</message_id>
+                      	      <number>消息序号</number>
+                      	      <content> 
+                      	        <voice_over>旁白</voice_over>
+                      	        <actor>
+                      	        	<actor_id>角色Id</actor_id>
+                      	        </actor>
+                      	        <text>消息文字</text>
+                      	        <img>图片网址</img>
+                      	      </content> 
+                      	      <status>消息状态</status>
+                      	    </message>
+                      	</chapter_message_content>
+                      </chapter>
  首页                     
          8)首页故事精选[已完成]
          
