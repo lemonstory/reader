@@ -103,8 +103,8 @@ class StoryController extends ActiveController
 
                     if ($storyId > 0 && $actorAffectedRows >= 0 && $tagAffectedRows >= 0) {
 
+                        $dataItem = $this->getStoryInfoWithModel($storyModel);
                         $dataItem['local_story_id'] = $storyItem['local_story_id'];
-                        $dataItem['story_id'] = $storyId;
                         $data[] = $dataItem;
                     }
                 }catch (\Exception $e){
@@ -149,6 +149,7 @@ class StoryController extends ActiveController
         if(!empty($inputStorys['storys'])) {
 
             foreach ($inputStorys['storys'] as $storyItem) {
+
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     //保存故事
@@ -213,10 +214,11 @@ class StoryController extends ActiveController
                     }
                     $transaction->commit();
                     $dataItem['local_story_id'] = null;
+                    $dataItem = $this->getStoryInfoWithModel($storyModel);
                     if(isset($storyItem['local_story_id'])) {
                         $dataItem['local_story_id'] = $storyItem['local_story_id'];
                     }
-                    $dataItem['story_id'] = $storyId;
+
                     $data[] = $dataItem;
 
                 }catch (\Exception $e){
@@ -254,26 +256,7 @@ class StoryController extends ActiveController
             'status' => Yii::$app->params['STATUS_ACTIVE']
         );
         $storyModel = Story::findOne($storyCondition);
-        if(!empty($storyModel)) {
-            $data = $storyModel->getAttributes();
-
-            //角色信息
-            $actorCondition = array(
-                'story_id' => $storyId,
-                'status' => Yii::$app->params['STATUS_ACTIVE'],
-                'is_visible' => Yii::$app->params['STATUS_ACTIVE']
-            );
-            $actorNames = array('actor_id','name','avator','number');
-            $data['actor'] = $storyModel->getActors()->select($actorNames)->andWhere($actorCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
-
-            //标签信息
-            $tagCondition = array(
-                'status' => Yii::$app->params['STATUS_ACTIVE']
-            );
-            $tagNames = array('tag_id','name','number');
-            $data['tag'] = $storyModel->getTags()->select($tagNames)->andWhere($tagCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
-        }
-
+        $data = $this->getStoryInfoWithModel($storyModel);
         $ret['data'] = $data;
         $ret['code'] = 200;
         $ret['message'] = 'OK';
@@ -350,6 +333,33 @@ class StoryController extends ActiveController
             }
         }
         return $tagRows;
+    }
+
+    private function getStoryInfoWithModel($storyModel) {
+
+
+        $data = array();
+        if(!empty($storyModel)) {
+            $data = $storyModel->getAttributes();
+            $storyId = $storyModel->story_id;
+
+            //角色信息
+            $actorCondition = array(
+                'story_id' => $storyId,
+                'status' => Yii::$app->params['STATUS_ACTIVE'],
+                'is_visible' => Yii::$app->params['STATUS_ACTIVE']
+            );
+            $actorNames = array('actor_id','name','avator','number');
+            $data['actor'] = $storyModel->getActors()->select($actorNames)->andWhere($actorCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
+
+            //标签信息
+            $tagCondition = array(
+                'status' => Yii::$app->params['STATUS_ACTIVE']
+            );
+            $tagNames = array('tag_id','name','number');
+            $data['tag'] = $storyModel->getTags()->select($tagNames)->andWhere($tagCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
+        }
+        return $data;
     }
 
 }
