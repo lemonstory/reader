@@ -708,7 +708,7 @@
                             "msg": "OK"
                         }
                         
-         15)获取oss Token
+         15)获取oss Token[已完成]
                 api:    /sts/token
                 method: GET
                 params:
@@ -731,8 +731,114 @@
                     SecurityToken：表示Android/iOS应用初始化的Token。
                     Expiration: 表示该Token失效的时间。主要在Android SDK会自动判断是否失效，自动获取Token。注意上述这四个变量将构成了一个Token。
                 参考文档：https://help.aliyun.com/document_detail/31920.html?spm=5176.product31815.6.623.KYJRp1
-         
+                
+         16)获取消息的评论(投票)数据[已完成]
+                api:    /comment/votes
+                method: GET
+                params:
+                       uid:用户uid
+                       story_id:故事id
+                       chapter_id:章节id
+                       message_id:消息id
+                example:api.youwei.xiaoningmeng.net/comment/votes?story_id=1&chapter_id=1&message_id=1
+                ret:    Json
+                        {
+                            "data": [
+                                {
+                                    "content": 1,
+                                    "count": "2"
+                                },
+                                {
+                                    "content": 2,
+                                    "count": "1"
+                                },
+                                {
+                                    "content": 3,
+                                    "count": "1"
+                                },
+                                {
+                                    "content": 4,
+                                    "count": "1"
+                                }
+                            ],
+                            "code": 200,
+                            "msg": "OK"
+                        }
 
+         17)提交消息的评论(投票)数据[已完成]
+                api:    /comment/vote-commit
+                method: POST
+                params:
+                       uid:用户uid
+                       story_id:故事id
+                       chapter_id:章节id
+                       message_id:消息id
+                       content:内容(枚举值：1，2，3，4)
+                example:api.youwei.xiaoningmeng.net/comment/vote-commit
+                ret:    Json
+                    {
+                        "data": {
+                            "comment_id": 6
+                        },
+                        "code": 200,
+                        "msg": "OK"
+                    }
+         
+         18)获取故事[及章节]的评论内容[已完成]
+                api:    /comment/index
+                method: GET
+                params:
+                       uid:用户uid
+                       story_id:故事id
+                       chapter_id:章节id
+                       page:页码
+                       pre_page:每页显示内容数
+                example:api.youwei.xiaoningmeng.net/comment/index?story_id=1&chapter_id=1&page=1&pre_page=10
+                ret:    Json
+                    {
+                        "data": {
+                            "commentList": [
+                                {
+                                    "comment_id": 7,
+                                    "message_id": 1,
+                                    "chapter_id": 1,
+                                    "story_id": 1,
+                                    "content": "aaaa",
+                                    "create_time": "2017-06-28 21:30:04",
+                                    "last_modify_time": "2017-06-28 21:30:04",
+                                    "uid": 1,
+                                    "name": "小逗",
+                                    "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                    "signature": "这是签名"
+                                }
+                            ],
+                            "totalCount": 1,
+                            "pageCount": 1,
+                            "currentPage": 1,
+                            "perPage": 10
+                        },
+                        "code": 200,
+                        "msg": "OK"
+                    }
+                
+         19)提交故事[及章节]的评论数据[已完成]
+                api:    /comment/commit
+                method: POST
+                params:
+                       uid:用户uid
+                       story_id:故事id
+                       chapter_id:章节id
+                       message_id:0
+                       content:评论文字内容
+                example:http://api.youwei.xiaoningmeng.net/comment/commit
+                ret:    Json
+         
+         //待开发
+         20)评论点赞
+                
+         21)取消评论点赞
+
+         
  ```
  
  

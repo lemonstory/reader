@@ -13,4 +13,7 @@ return [
 
     'STATUS_PUBLISHED'     => 1,   //已发布
     'STATUS_UNPUBLISHED'   => 0,   //未发布
+
+    'STATUS_IS_VOTE'   => 1,   //投票
+    'STATUS_IS_NOTE_VOTE'   => 0,   //非投票
 ];
