@@ -5,6 +5,7 @@ namespace api\controllers;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Comment;
+use common\models\Like;
 use common\models\Story;
 use common\models\User;
 use common\models\UserOauth;
@@ -140,19 +141,93 @@ class CommentController extends ActiveController
     public function actionIndex($story_id,$chapter_id,$page,$pre_page) {
 
         //TODO:chapter_id,message_id可以不传,则取整个故事的评论
-
         $response = Yii::$app->getResponse();
-        $offset = ($page - 1) * $pre_page;
+        $ret = array();
+        $ret['data']['commentList'] = array();
+        $ret['data']['commentList']['hot'] = array();
+        $ret['data']['commentList']['new'] = array();
 
-        $condition = array(
-
+        $commentCondition = array(
             'comment.story_id' => $story_id,
-            'comment.chapter_id' => $chapter_id,
-            'comment.is_vote' => Yii::$app->params['STATUS_IS_NOTE_VOTE'],
+            'comment.is_vote' => Yii::$app->params['STATUS_IS_NOT_VOTE'],
             'comment.status' => Yii::$app->params['STATUS_ACTIVE'],
         );
-        $columns = array(
 
+        //当chapter_id为空时：则取整个故事的评论
+        //当chapter_id不为空时：则取故事下面该章节的评论
+        if(isset($chapter_id) && !empty($chapter_id)) {
+            $commentCondition['comment.chapter_id'] = $chapter_id;
+        }
+
+        //所有故事评论id
+        $commentAllIdArr = Comment::find()
+            ->select('comment.comment_id as comment_id')
+            ->where($commentCondition)
+            ->asArray()
+            ->all();
+
+        $commentAllIdArr = ArrayHelper::getColumn($commentAllIdArr,'comment_id');
+        $likeColumns = array(
+            'count(*) as count',
+            'object_id',
+        );
+
+        $hotLikeCondition = array(
+            'like.status' => Yii::$app->params['STATUS_ACTIVE'],
+            'like.object_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
+            'like.object_id' => $commentAllIdArr,
+        );
+
+        $commentHotLikeArr = Like::find()
+            ->select($likeColumns)
+            ->where($hotLikeCondition)
+            ->groupBy('object_id')
+            ->orderBy('count DESC')
+            ->limit(Yii::$app->params['COMMENT_HOT_MAX_COUNT'])
+            ->asArray()
+            ->all();
+
+
+        $commentHotLikeArr = ArrayHelper::map($commentHotLikeArr,'object_id','count');
+        $commentHotIdArr = array_keys($commentHotLikeArr);
+
+        //热门评论
+        $commentHotArr = Comment::find()
+            ->where(['comment_id' => $commentHotIdArr])
+            ->joinWith([
+                'user'=> function (ActiveQuery $query)  {
+                    $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
+                },
+            ])
+            ->asArray()
+            ->all();
+
+        foreach ($commentHotArr as $hotItem) {
+            $comment = array();
+            $comment['comment_id'] = $hotItem['comment_id'];
+            $comment['message_id'] = $hotItem['message_id'];
+            $comment['chapter_id'] = $hotItem['chapter_id'];
+            $comment['story_id'] = $hotItem['story_id'];
+            $comment['content'] = $hotItem['content'];
+            $comment['create_time'] = $hotItem['create_time'];
+            $comment['last_modify_time'] = $hotItem['last_modify_time'];
+
+            //user
+            $comment['uid'] = $hotItem['user']['uid'];
+            $comment['name'] = $hotItem['user']['name'];
+            $comment['avatar'] = $hotItem['user']['avatar'];
+            $comment['signature'] = $hotItem['user']['signature'];
+
+            //赞数
+            $comment['like'] = $commentHotLikeArr[$hotItem['comment_id']];
+            $ret['data']['commentList']['hot'][] = $comment;
+        }
+        //按照赞数排序
+        ArrayHelper::multisort($ret['data']['commentList']['hot'], 'like',SORT_DESC,SORT_NUMERIC);
+
+        //最新评论
+        $offset = ($page - 1) * $pre_page;
+        $commentColumns = array(
             'comment.comment_id as comment_id',
             'comment.message_id as message_id',
             'comment.chapter_id as chapter_id',
@@ -165,19 +240,20 @@ class CommentController extends ActiveController
             'user.avatar as avatar',
             'user.signature as signature'
         );
+
         //SELECT `comment`.`comment_id` AS `comment_id`, `comment`.`message_id` AS `message_id`, `comment`.`chapter_id` AS `chapter_id`, `comment`.`story_id` AS `story_id`, `comment`.`content` AS `content`, `comment`.`create_time` AS `create_time`, `comment`.`last_modify_time` AS `last_modify_time`, `user`.`uid` AS `uid`, `user`.`name` AS `name`, `user`.`avatar` AS `avatar`, `user`.`signature` AS `signature` FROM `comment` LEFT JOIN `user` ON `comment`.`uid` = `user`.`uid` WHERE ((`comment`.`story_id`='1') AND (`comment`.`chapter_id`='1') AND (`comment`.`is_vote`=0) AND (`comment`.`status`=1)) AND (`user`.`status`=1) ORDER BY `comment`.`last_modify_time` DESC LIMIT 10
         $query = Comment::find()
-                ->select($columns)
-                ->joinWith([
-                    'user'=> function (ActiveQuery $query)  {
-                        $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
-                    },
-                ])
+            ->select($commentColumns)
+            ->joinWith([
+                'user'=> function (ActiveQuery $query)  {
+                    $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
+                },
+            ])
 
-                ->where($condition)
-                ->offset($offset)
-                ->limit($pre_page)
-                ->orderBy(['comment.last_modify_time' => SORT_DESC]);
+            ->where($commentCondition)
+            ->offset($offset)
+            ->limit($pre_page)
+            ->orderBy(['comment.last_modify_time' => SORT_DESC]);
 
         $provider =  new ActiveDataProvider([
             'query' =>$query,
@@ -187,39 +263,81 @@ class CommentController extends ActiveController
         ]);
 
         $commentModels = $provider->getModels();
-        $ret = array();
-        $ret['data']['commentList'] = array();
-        foreach ($commentModels as $commentModelItem) {
+        if(count($commentModels) > Yii::$app->params['COMMENT_HOT_MAX_COUNT']) {
 
-            $comment = array();
-            $comment['comment_id'] = $commentModelItem->comment_id;
-            $comment['message_id'] = $commentModelItem->message_id;
-            $comment['chapter_id'] = $commentModelItem->chapter_id;
-            $comment['story_id'] = $commentModelItem->story_id;
-            $comment['content'] = $commentModelItem->content;
-            $comment['create_time'] = $commentModelItem->create_time;
-            $comment['last_modify_time'] = $commentModelItem->last_modify_time;
+            $pagination = $provider->getPagination();
+            $ret['data']['totalCount'] = $pagination->totalCount;
+            $ret['data']['pageCount'] = $pagination->getPageCount();
+            $ret['data']['currentPage'] = $pagination->getPage() + 1;
+            $ret['data']['perPage'] = $pagination->getPageSize();
+            $commentIdArr = array();
+            foreach ($commentModels as $commentModelItem) {
 
-            //user
-            $userModel = $commentModelItem->user;
-            $comment['uid'] = $userModel['uid'];
-            $comment['name'] = $userModel['name'];
-            $comment['avatar'] = $userModel['avatar'];
-            $comment['signature'] = $userModel['signature'];
+                $comment = array();
+                $commentIdArr[] = $commentModelItem->comment_id;
+                $comment['comment_id'] = $commentModelItem->comment_id;
+                $comment['message_id'] = $commentModelItem->message_id;
+                $comment['chapter_id'] = $commentModelItem->chapter_id;
+                $comment['story_id'] = $commentModelItem->story_id;
+                $comment['content'] = $commentModelItem->content;
+                $comment['create_time'] = $commentModelItem->create_time;
+                $comment['last_modify_time'] = $commentModelItem->last_modify_time;
 
-            $ret['data']['commentList'][] = $comment;
+                //user
+                $userModel = $commentModelItem->user;
+                $comment['uid'] = $userModel['uid'];
+                $comment['name'] = $userModel['name'];
+                $comment['avatar'] = $userModel['avatar'];
+                $comment['signature'] = $userModel['signature'];
+
+                $ret['data']['commentList']['new'][] = $comment;
+            }
+
+            //评论点赞数
+            //select count(*) as count,object_id from `like` where status=1 and object_id in (1,2,3,4) and object_type=1 group by object_id
+            $likeCondition = array(
+                'like.status' => Yii::$app->params['STATUS_ACTIVE'],
+                'like.object_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
+                'like.object_id' => $commentIdArr,
+            );
+            $commentLikeArr = Like::find()
+                ->select($likeColumns)
+                ->where($likeCondition)
+                ->groupBy('object_id')
+                ->asArray()
+                ->all();
+
+            $commentLikeArr = ArrayHelper::map($commentLikeArr,'object_id','count');
+            if(is_array($commentLikeArr) && !empty($commentLikeArr)) {
+
+                foreach ($ret['data']['commentList']['new'] as $key => $item) {
+
+                    $commentId = $item['comment_id'];
+                    if (array_key_exists($commentId, $commentLikeArr)) {
+                        $ret['data']['commentList']['new'][$key]['like'] = $commentLikeArr[$commentId];
+                    } else {
+                        $ret['data']['commentList']['new'][$key]['like'] = 0;
+                    }
+                }
+            }
+
+        }else {
+
+            $ret['data']['pageCount'] = 1;
+            $ret['data']['currentPage'] = 1;
+            $ret['data']['perPage'] = $pre_page;
         }
 
-        $pagination = $provider->getPagination();
-        $ret['data']['totalCount'] = $pagination->totalCount;
-        $ret['data']['pageCount'] = $pagination->getPageCount();
-        $ret['data']['currentPage'] = $pagination->getPage() + 1;
-        $ret['data']['perPage'] = $pagination->getPageSize();
         $ret['code'] = $response->statusCode;
         $ret['msg'] = $response->statusText;
         return $ret;
     }
 
+
+    /**
+     * 提交评论
+     * @return mixed
+     */
     public function actionCommit() {
 
         $response = Yii::$app->getResponse();
@@ -237,7 +355,7 @@ class CommentController extends ActiveController
             $commentModel->story_id = $storyId;
             $commentModel->chapter_id = $chapterId;
             $commentModel->message_id = $messageId;
-            $commentModel->is_vote = Yii::$app->params['STATUS_IS_NOTE_VOTE'];
+            $commentModel->is_vote = Yii::$app->params['STATUS_IS_NOT_VOTE'];
             $commentModel->content = $content;
             $commentModel->save();
             if ($commentModel->hasErrors()) {

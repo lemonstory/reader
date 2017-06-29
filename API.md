@@ -788,29 +788,62 @@
                 params:
                        uid:用户uid
                        story_id:故事id
-                       chapter_id:章节id
+                       chapter_id:章节id //当chapter_id为空时：则取整个故事的评论; 当chapter_id不为空时：则取故事下面该章节的评论
                        page:页码
                        pre_page:每页显示内容数
                 example:api.youwei.xiaoningmeng.net/comment/index?story_id=1&chapter_id=1&page=1&pre_page=10
                 ret:    Json
                     {
                         "data": {
-                            "commentList": [
-                                {
-                                    "comment_id": 7,
-                                    "message_id": 1,
-                                    "chapter_id": 1,
-                                    "story_id": 1,
-                                    "content": "aaaa",
-                                    "create_time": "2017-06-28 21:30:04",
-                                    "last_modify_time": "2017-06-28 21:30:04",
-                                    "uid": 1,
-                                    "name": "小逗",
-                                    "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
-                                    "signature": "这是签名"
-                                }
-                            ],
-                            "totalCount": 1,
+                            "commentList": {
+                                "hot": [
+                                    {
+                                        "comment_id": "8",
+                                        "message_id": "1",
+                                        "chapter_id": "1",
+                                        "story_id": "1",
+                                        "content": "3的点点滴滴",
+                                        "create_time": "2017-06-28 21:45:30",
+                                        "last_modify_time": "2017-06-28 21:45:30",
+                                        "uid": "3",
+                                        "name": "小的",
+                                        "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                        "signature": "也是签名",
+                                        "like": "3"
+                                    },
+                                    {
+                                        "comment_id": "7",
+                                        "message_id": "1",
+                                        "chapter_id": "1",
+                                        "story_id": "1",
+                                        "content": "aaaa",
+                                        "create_time": "2017-06-28 21:30:04",
+                                        "last_modify_time": "2017-06-28 21:30:04",
+                                        "uid": "1",
+                                        "name": "小逗",
+                                        "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                        "signature": "这是签名",
+                                        "like": "1"
+                                    }
+                                ],
+                                "new": [
+                                    {
+                                        "comment_id": 10,
+                                        "message_id": 1,
+                                        "chapter_id": 1,
+                                        "story_id": 1,
+                                        "content": "55555",
+                                        "create_time": "2017-06-29 16:35:38",
+                                        "last_modify_time": "2017-06-29 16:35:46",
+                                        "uid": 5,
+                                        "name": "小就",
+                                        "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                        "signature": "也是签名",
+                                        "like": 0
+                                    }
+                                ]
+                            },
+                            "totalCount": 4,
                             "pageCount": 1,
                             "currentPage": 1,
                             "perPage": 10
@@ -818,6 +851,7 @@
                         "code": 200,
                         "msg": "OK"
                     }
+                备注：hot:热门评论,new:最新评论
                 
          19)提交故事[及章节]的评论数据[已完成]
                 api:    /comment/commit

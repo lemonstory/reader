@@ -14,4 +14,7 @@ return [
     //点赞对象类型
     'LIKE_TYPE_COMMENT' => 1,
     'LIKE_TYPE_STORY' => 2,
+
+    //热门评论最大数量
+    'COMMENT_HOT_MAX_COUNT' => 3,
 ];
