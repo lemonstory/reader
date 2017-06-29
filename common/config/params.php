@@ -10,4 +10,8 @@ return [
     'openSearchAppName' => 'youwei',
     'openSearchOptions' => array('debug' => true),
     'openSearchSuggestAllName' => 'all',
+
+    //点赞对象类型
+    'LIKE_TYPE_COMMENT' => 1,
+    'LIKE_TYPE_STORY' => 2,
 ];

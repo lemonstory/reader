@@ -210,62 +210,60 @@
                 story_id:故事Id
          example:http://api.youwei.xiaoningmeng.net/story/1
          ret:    Json
-         
-            {
-                "data": {
-                    "story_id": 1,
-                    "name": "超级怪兽工厂",
-                    "description": "叶不非是不幸的，不幸的是他被老板随手抡起的一本破书砸晕了头。",
-                    "cover": "http://qidian.qpic.cn/qdbimg/349573/1002959239/180",
-                    "uid": 1,
-                    "chapter_count": 1,
-                    "message_count": 21,
-                    "taps": "33",
-                    "is_published": 0,
-                    "status": 1,
-                    "create_time": "2017-06-13 09:37:28",
-                    "last_modify_time": "2017-06-13 10:09:09",
-                    "actor": [
-                        {
-                            "actor_id": "1",
-                            "name": "帅帅",
-                            "avator": "http://p5.gexing.com/GSF/touxiang/20170612/17/1onxfg31j60996l23ku7jdlyv.jpg@!200x200_3?recache=20131108",
-                            "number": "1"
-                        },
-                        {
-                            "actor_id": "2",
-                            "name": "昭昭",
-                            "avator": "http://p5.gexing.com/GSF/touxiang/20170612/17/17y0gn7l1s62rca89urd0o3bx.jpg@!200x200_3?recache=20131108",
-                            "number": "2"
-                        },
-                        {
-                            "actor_id": "3",
-                            "name": "乐乐",
-                            "avator": "http://p5.gexing.com/GSF/touxiang/20170610/02/gmykod8dfr9xm2f99wdcefdg.jpg@!200x200_3?recache=20131108",
-                            "number": "3"
+                {
+                    "data": {
+                        "story_id": 1,
+                        "name": "超级怪兽工厂",
+                        "description": "叶不非是不幸的，不幸的是他被老板随手抡起的一本破书砸晕了头。",
+                        "cover": "http://qidian.qpic.cn/qdbimg/349573/1002959239/180",
+                        "chapter_count": 1,
+                        "message_count": 21,
+                        "taps": "33",
+                        "is_published": 0,
+                        "status": 1,
+                        "create_time": "2017-06-13 09:37:28",
+                        "last_modify_time": "2017-06-13 10:09:09",
+                        "actor": [
+                            {
+                                "actor_id": "2",
+                                "name": "昭昭",
+                                "avator": "http://p5.gexing.com/GSF/touxiang/20170612/17/17y0gn7l1s62rca89urd0o3bx.jpg@!200x200_3?recache=20131108",
+                                "number": "2"
+                            },
+                            {
+                                "actor_id": "3",
+                                "name": "乐乐",
+                                "avator": "http://p5.gexing.com/GSF/touxiang/20170610/02/gmykod8dfr9xm2f99wdcefdg.jpg@!200x200_3?recache=20131108",
+                                "number": "3"
+                            }
+                        ],
+                        "tag": [
+                            {
+                                "tag_id": "1",
+                                "name": "言情",
+                                "number": "1"
+                            },
+                            {
+                                "tag_id": "2",
+                                "name": "悬疑",
+                                "number": "2"
+                            },
+                            {
+                                "tag_id": "3",
+                                "name": "搞笑",
+                                "number": "3"
+                            }
+                        ],
+                        "user": {
+                            "uid": 1,
+                            "name": "小逗",
+                            "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                            "signature": "这是签名"
                         }
-                    ],
-                    "tag": [
-                        {
-                            "tag_id": "1",
-                            "name": "言情",
-                            "number": "1"
-                        },
-                        {
-                            "tag_id": "2",
-                            "name": "悬疑",
-                            "number": "2"
-                        },
-                        {
-                            "tag_id": "3",
-                            "name": "搞笑",
-                            "number": "3"
-                        }
-                    ]
-                },
-                "code": 200,
-                "message": "OK"
-            }
+                    },
+                    "code": 200,
+                    "message": "OK"
+                }
             
          6)查看故事章节[已完成]
                api:    /story/chapters/{故事Id}
@@ -833,10 +831,35 @@
                 example:http://api.youwei.xiaoningmeng.net/comment/commit
                 ret:    Json
          
-         //待开发
-         20)评论点赞
+         20)评论点赞[已完成]
+                 api:    /like/comment-like
+                 method: get
+                 params:
+                        comment_id:评论id
+                        uid:用户uid
+                 example:http://api.youwei.xiaoningmeng.net/like/comment-like?comment_id=1&uid=1
+                 ret:    Json
+                     {
+                         "data": [],
+                         "code": 200,
+                         "msg": "OK"
+                     }      
                 
-         21)取消评论点赞
+         21)取消评论点赞[已完成]
+             api:    /like/comment-dislike
+             method: get
+             params:
+                    comment_id:评论id
+                    uid:用户uid
+             example:http://api.youwei.xiaoningmeng.net/like/comment-dislike?comment_id=1&uid=1
+             ret:    Json
+                 {
+                     "data": [],
+                     "code": 200,
+                     "msg": "OK"
+                 }
+         
+         
 
          
  ```
