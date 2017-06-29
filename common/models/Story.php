@@ -119,4 +119,11 @@ class Story extends \yii\db\ActiveRecord
         //hasMany relation user_read_story_record表->story_id =>  story表 => story_id
         return $this->hasMany(UserReadStoryRecord::className(), ['story_id' => 'story_id']);
     }
+
+    // 获取故事的作者
+    public function getUser()
+    {
+        //同样第一个参数指定关联的子表模型类名
+        return $this->hasOne(User::className(), ['uid' => 'uid']);
+    }
 }

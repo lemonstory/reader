@@ -10,6 +10,7 @@ use common\models\StoryTag;
 use common\models\StoryTagRelation;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\db\ActiveQuery;
 use yii\helpers\BaseJson;
 use yii\rest\ActiveController;
 use yii\web\ServerErrorHttpException;
@@ -252,11 +253,22 @@ class StoryController extends ActiveController
         $data = array();
         $storyId = $id;
         $storyCondition = array(
-            'story_id' => $storyId,
-            'status' => Yii::$app->params['STATUS_ACTIVE']
+            'story.story_id' => $storyId,
+            'story.status' => Yii::$app->params['STATUS_ACTIVE']
         );
-        $storyModel = Story::findOne($storyCondition);
-        $data = $this->getStoryInfoWithModel($storyModel);
+
+        $storyModel = Story::find()
+            ->joinWith([
+            'user'=> function (ActiveQuery $query)  {
+                $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
+            },])
+            ->where($storyCondition)
+            ->limit(1)
+            ->all();
+
+        if(isset($storyModel[0]) && !empty($storyModel[0])) {
+            $data = $this->getStoryInfoWithModel($storyModel[0]);
+        }
         $ret['data'] = $data;
         $ret['code'] = 200;
         $ret['message'] = 'OK';
@@ -337,7 +349,6 @@ class StoryController extends ActiveController
 
     private function getStoryInfoWithModel($storyModel) {
 
-
         $data = array();
         if(!empty($storyModel)) {
             $data = $storyModel->getAttributes();
@@ -358,6 +369,17 @@ class StoryController extends ActiveController
             );
             $tagNames = array('tag_id','name','number');
             $data['tag'] = $storyModel->getTags()->select($tagNames)->andWhere($tagCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
+
+            //作者信息
+            if(isset($storyModel->user) && !empty($storyModel->user)) {
+
+                unset($data['uid']);
+                $data['user'] = array();
+                $data['user']['uid'] = $storyModel->user->uid;
+                $data['user']['name'] = $storyModel->user->name;
+                $data['user']['avatar'] = $storyModel->user->avatar;
+                $data['user']['signature'] = $storyModel->user->signature;
+            }
         }
         return $data;
     }
