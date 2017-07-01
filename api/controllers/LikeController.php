@@ -4,6 +4,7 @@ namespace api\controllers;
 
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
+use common\models\Comment;
 use common\models\Like;
 use common\models\Story;
 use common\models\User;
@@ -48,34 +49,50 @@ class LikeController extends ActiveController
         $uid = Yii::$app->getRequest()->get('uid',null);
 
         $data = array();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
+
+            //记录赞
             $condition = array(
-              
                 'like.object_id' => $commentId,
                 'like.object_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
                 'like.uid' => $uid,
             );
-            
             $likeModel = Like::findOne($condition);
             if(is_null($likeModel)) {
                 $likeModel = new Like();
             }
 
-            $likeModel->uid = $uid;
-            $likeModel->object_id = $commentId;
-            $likeModel->object_type = Yii::$app->params['LIKE_TYPE_COMMENT'];
-            $likeModel->status = Yii::$app->params['STATUS_ACTIVE'];
-            $likeModel->save();
-            if ($likeModel->hasErrors()) {
+            if($likeModel->getIsNewRecord() || (!$likeModel->getIsNewRecord() && $likeModel->status == Yii::$app->params['STATUS_DELETED'])) {
 
-                Yii::error($likeModel->getErrors());
-                throw new ServerErrorHttpException('评论点赞保存失败');
+                //评论赞数+1
+                $commentModel = Comment::findOne(['comment_id' => $comment_id]);
+                $commentModel->updateCounters(['like_count' => 1]);
+
+                $likeModel->uid = $uid;
+                $likeModel->object_id = $commentId;
+                $likeModel->object_type = Yii::$app->params['LIKE_TYPE_COMMENT'];
+                $likeModel->status = Yii::$app->params['STATUS_ACTIVE'];
+                $likeModel->save();
+                if ($likeModel->hasErrors()) {
+
+                    Yii::error($likeModel->getErrors());
+                    throw new ServerErrorHttpException('评论点赞保存失败');
+                }
+
+            }else {
+                //不能重复点赞
+                $response->statusCode = 400;
+                $response->statusText = '不能重复点赞';
             }
+            $transaction->commit();
+
         }catch (\Exception $e){
 
+            $transaction->rollBack();
             Yii::error($e->getMessage());
             $response->statusCode = 400;
-            $response->statusText = '评论点赞保存失败';
+            $response->statusText = $e->getMessage();
         }
 
         $ret['data'] = $data;
@@ -91,12 +108,16 @@ class LikeController extends ActiveController
         $commentId = Yii::$app->getRequest()->get('comment_id',null);
         $uid = Yii::$app->getRequest()->get('uid',null);
         $data = array();
+        $transaction = Yii::$app->db->beginTransaction();
         try {
+
+            //删除记录赞
             $condition = array(
 
                 'like.object_id' => $commentId,
                 'like.object_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
                 'like.uid' => $uid,
+                'like.status' => Yii::$app->params['STATUS_ACTIVE'],
             );
 
             $likeModel = Like::findOne($condition);
@@ -110,17 +131,26 @@ class LikeController extends ActiveController
                     Yii::error($likeModel->getErrors());
                     throw new ServerErrorHttpException('评论点赞保存失败');
                 }
+
+                //评论赞数-1
+                $commentModel = Comment::findOne(['comment_id' => $comment_id]);
+                if($commentModel->like_count > 0) {
+                    $commentModel->updateCounters(['like_count' => -1]);
+                }
+
             }else{
                 $response->statusCode = 400;
                 $response->statusText = '没有点赞记录';
             }
-
+            $transaction->commit();
 
         }catch (\Exception $e){
 
+            $transaction->rollBack();
             Yii::error($e->getMessage());
             $response->statusCode = 400;
-            $response->statusText = '评论点赞保存失败';
+            var_dump($e->getMessage());
+            $response->statusText = $e->getMessage();
         }
 
         $ret['data'] = $data;
