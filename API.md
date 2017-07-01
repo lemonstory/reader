@@ -416,34 +416,40 @@
               params:
                       uid:用户uid
                       page:页码
-                      page_size:每页显示内容数
-              example:http://api.youwei.xiaoningmeng.net/user-read-story-record/index?uid=1&page=20&per_page=1
+                      per_page:每页显示内容数
+              example:http://api.youwei.xiaoningmeng.net/user-read-story-record/index?uid=1&page=1&per_page=1
               ret:    Json数组
                         {
-                            "data": [
-                                {
-                                    "story_id": "1",
-                                    "name": "超级怪兽工厂",
-                                    "description": "叶不非是不幸的，不幸的是他被老板随手抡起的一本破书砸晕了头。",
-                                    "cover": "http://qidian.qpic.cn/qdbimg/349573/1002959239/180",
-                                    "chapter_count": "1",
-                                    "message_count": "21",
-                                    "taps": "33",
-                                    "is_published": "0",
-                                    "story_create_time": "2017-06-13 09:37:28",
-                                    "story_last_modify_time": "2017-06-13 10:09:09",
-                                    "last_chapter_id": "1",
-                                    "last_message_id": "1",
-                                    "create_time": "2017-06-16 11:24:34",
-                                    "last_modify_time": "2017-06-16 11:24:34",
-                                    "user": {
-                                        "uid": "1",
-                                        "name": "小逗",
-                                        "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
-                                        "signature": "这是签名"
+                            "data": {
+                                "totalCount": 5,
+                                "pageCount": 5,
+                                "currentPage": 1,
+                                "perPage": 1,
+                                "storyList": [
+                                    {
+                                        "story_id": 11,
+                                        "name": "狂探",
+                                        "description": "一个打架不要命,无节操无底线的小痞子，意外穿越到平行空间，摇身变成了一名重案组探员。",
+                                        "cover": "http://qidian.qpic.cn/qdbimg/349573/1005392714/180",
+                                        "chapter_count": 2,
+                                        "message_count": 36,
+                                        "taps": "22",
+                                        "is_published": 1,
+                                        "story_create_time": "2017-06-13 10:32:45",
+                                        "story_last_modify_time": "2017-06-13 10:32:45",
+                                        "last_chapter_id": 1,
+                                        "last_message_line_number": 1,
+                                        "create_time": "2017-06-16 16:16:35",
+                                        "last_modify_time": "2017-06-16 16:16:35",
+                                        "user": {
+                                            "uid": "1",
+                                            "name": "小逗",
+                                            "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "signature": "这是签名"
+                                        }
                                     }
-                                }
-                            ],
+                                ]
+                            },
                             "code": 200,
                             "message": "OK"
                         }
@@ -791,7 +797,7 @@
                         "msg": "OK"
                     }
 
-         17)提交消息的评论(投票)数据[已完成]
+         18)提交消息的评论(投票)数据[已完成]
                 api:    /comment/vote-commit
                 method: POST
                 params:
@@ -808,7 +814,7 @@
                         "msg": "OK"
                     }
          
-         18)获取故事的评论内容[已完成]
+         19)获取故事的评论内容[已完成]
                 api:    /comment/index
                 method: GET
                 params:
@@ -1006,7 +1012,7 @@
                         }
                 备注：hot:热门评论,new:最新评论,parent:父级评论,status:parent节点下面的status=0,表示父级评论被删除
                 
-         19)提交故事的评论数据[已完成]
+         20)提交故事的评论数据[已完成]
                 api:    /comment/commit
                 method: POST
                 params:
@@ -1024,7 +1030,7 @@
                         "msg": "OK"
                     }
          
-         20)评论点赞[已完成]
+         21)评论点赞[已完成]
                  api:    /like/comment-like
                  method: get
                  params:
@@ -1038,7 +1044,7 @@
                          "msg": "OK"
                      }      
                 
-         21)取消评论点赞[已完成]
+         22)取消评论点赞[已完成]
              api:    /like/comment-dislike
              method: get
              params:
