@@ -54,8 +54,8 @@ class LikeController extends ActiveController
 
             //记录赞
             $condition = array(
-                'like.object_id' => $commentId,
-                'like.object_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
+                'like.target_id' => $commentId,
+                'like.target_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
                 'like.uid' => $uid,
             );
             $likeModel = Like::findOne($condition);
@@ -70,8 +70,8 @@ class LikeController extends ActiveController
                 $commentModel->updateCounters(['like_count' => 1]);
 
                 $likeModel->uid = $uid;
-                $likeModel->object_id = $commentId;
-                $likeModel->object_type = Yii::$app->params['LIKE_TYPE_COMMENT'];
+                $likeModel->target_id = $commentId;
+                $likeModel->target_type = Yii::$app->params['LIKE_TYPE_COMMENT'];
                 $likeModel->status = Yii::$app->params['STATUS_ACTIVE'];
                 $likeModel->save();
                 if ($likeModel->hasErrors()) {
@@ -114,8 +114,8 @@ class LikeController extends ActiveController
             //删除记录赞
             $condition = array(
 
-                'like.object_id' => $commentId,
-                'like.object_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
+                'like.target_id' => $commentId,
+                'like.target_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
                 'like.uid' => $uid,
                 'like.status' => Yii::$app->params['STATUS_ACTIVE'],
             );
@@ -123,8 +123,8 @@ class LikeController extends ActiveController
             $likeModel = Like::findOne($condition);
             if(!is_null($likeModel)) {
                 $likeModel->uid = $uid;
-                $likeModel->object_id = $commentId;
-                $likeModel->object_type = Yii::$app->params['LIKE_TYPE_COMMENT'];
+                $likeModel->target_id = $commentId;
+                $likeModel->target_type = Yii::$app->params['LIKE_TYPE_COMMENT'];
                 $likeModel->status = Yii::$app->params['STATUS_DELETED'];
                 $likeModel->save();
                 if ($likeModel->hasErrors()) {
@@ -149,7 +149,6 @@ class LikeController extends ActiveController
             $transaction->rollBack();
             Yii::error($e->getMessage());
             $response->statusCode = 400;
-            var_dump($e->getMessage());
             $response->statusText = $e->getMessage();
         }
 
