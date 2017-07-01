@@ -17,4 +17,18 @@ return [
 
     //热门评论最大数量
     'COMMENT_HOT_MAX_COUNT' => 3,
+    //评论对象类型：故事
+    'COMMENT_TARGET_TYPE_STORY' => 1,
+    //评论对象类型：章节
+    'COMMENT_TARGET_TYPE_CHAPTER' => 2,
+    //评论对象类型：消息
+    'COMMENT_TARGET_TYPE_MESSAGE' => 3,
+
+    //消息评论[投票]内容项
+    'COMMENT_MESSAGE_VOTE_CONTENT' => array(
+        1, //
+        2,
+        3,
+        4
+    )
 ];

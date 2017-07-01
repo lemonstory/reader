@@ -731,45 +731,71 @@
                 参考文档：https://help.aliyun.com/document_detail/31920.html?spm=5176.product31815.6.623.KYJRp1
                 
          16)获取消息的评论(投票)数据[已完成]
-                api:    /comment/votes
+                api:    /comment/message-votes
                 method: GET
                 params:
                        uid:用户uid
-                       story_id:故事id
-                       chapter_id:章节id
                        message_id:消息id
-                example:api.youwei.xiaoningmeng.net/comment/votes?story_id=1&chapter_id=1&message_id=1
+                example:api.youwei.xiaoningmeng.net/comment/message-votes?message_id=1
                 ret:    Json
                         {
                             "data": [
                                 {
                                     "content": 1,
-                                    "count": "2"
+                                    "count": 1
                                 },
                                 {
                                     "content": 2,
-                                    "count": "1"
+                                    "count": 1
                                 },
                                 {
                                     "content": 3,
-                                    "count": "1"
+                                    "count": 0
                                 },
                                 {
                                     "content": 4,
-                                    "count": "1"
+                                    "count": 0
                                 }
                             ],
                             "code": 200,
                             "msg": "OK"
                         }
+         17)获取故事的评论(投票)汇总数据[已完成]
+                api:    /comment/story-votes
+                method: GET
+                params:
+                       uid:用户uid
+                       story_id:故事id
+                example:api.youwei.xiaoningmeng.net/comment/story-votes?story_id=1
+                ret:Json
+                    {
+                        "data": [
+                            {
+                                "content": 1,
+                                "count": 1
+                            },
+                            {
+                                "content": 2,
+                                "count": 1
+                            },
+                            {
+                                "content": 3,
+                                "count": 1
+                            },
+                            {
+                                "content": 4,
+                                "count": 0
+                            }
+                        ],
+                        "code": 200,
+                        "msg": "OK"
+                    }
 
          17)提交消息的评论(投票)数据[已完成]
                 api:    /comment/vote-commit
                 method: POST
                 params:
                        uid:用户uid
-                       story_id:故事id
-                       chapter_id:章节id
                        message_id:消息id
                        content:内容(枚举值：1，2，3，4)
                 example:api.youwei.xiaoningmeng.net/comment/vote-commit
@@ -782,88 +808,221 @@
                         "msg": "OK"
                     }
          
-         18)获取故事[及章节]的评论内容[已完成]
+         18)获取故事的评论内容[已完成]
                 api:    /comment/index
                 method: GET
                 params:
                        uid:用户uid
                        story_id:故事id
-                       chapter_id:章节id //当chapter_id为空时：则取整个故事的评论; 当chapter_id不为空时：则取故事下面该章节的评论
                        page:页码
                        pre_page:每页显示内容数
-                example:api.youwei.xiaoningmeng.net/comment/index?story_id=1&chapter_id=1&page=1&pre_page=10
+                example:api.youwei.xiaoningmeng.net/comment/index?story_id=1&page=1&pre_page=10
                 ret:    Json
-                    {
-                        "data": {
-                            "commentList": {
-                                "hot": [
-                                    {
-                                        "comment_id": "8",
-                                        "message_id": "1",
-                                        "chapter_id": "1",
-                                        "story_id": "1",
-                                        "content": "3的点点滴滴",
-                                        "create_time": "2017-06-28 21:45:30",
-                                        "last_modify_time": "2017-06-28 21:45:30",
-                                        "uid": "3",
-                                        "name": "小的",
-                                        "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
-                                        "signature": "也是签名",
-                                        "like": "3"
-                                    },
-                                    {
-                                        "comment_id": "7",
-                                        "message_id": "1",
-                                        "chapter_id": "1",
-                                        "story_id": "1",
-                                        "content": "aaaa",
-                                        "create_time": "2017-06-28 21:30:04",
-                                        "last_modify_time": "2017-06-28 21:30:04",
-                                        "uid": "1",
-                                        "name": "小逗",
-                                        "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
-                                        "signature": "这是签名",
-                                        "like": "1"
-                                    }
-                                ],
-                                "new": [
-                                    {
-                                        "comment_id": 10,
-                                        "message_id": 1,
-                                        "chapter_id": 1,
-                                        "story_id": 1,
-                                        "content": "55555",
-                                        "create_time": "2017-06-29 16:35:38",
-                                        "last_modify_time": "2017-06-29 16:35:46",
-                                        "uid": 5,
-                                        "name": "小就",
-                                        "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
-                                        "signature": "也是签名",
-                                        "like": 0
-                                    }
-                                ]
+                        {
+                            "data": {
+                                "commentList": {
+                                    "new": [
+                                        {
+                                            "comment_id": "1",
+                                            "parent_comment_id": "0",
+                                            "target_id": "1",
+                                            "target_type": "1",
+                                            "content": "范德萨发生",
+                                            "target_uid": "0",
+                                            "like_count": "1",
+                                            "create_time": "2017-06-30 15:31:32",
+                                            "last_modify_time": "2017-06-30 15:31:32",
+                                            "owner_uid": "1",
+                                            "owner_name": "小逗",
+                                            "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "owner_signature": "这是签名"
+                                        },
+                                        {
+                                            "comment_id": "2",
+                                            "parent_comment_id": "0",
+                                            "target_id": "1",
+                                            "target_type": "1",
+                                            "content": "哦哦范德萨发",
+                                            "target_uid": "0",
+                                            "like_count": "3",
+                                            "create_time": "2017-06-30 15:31:59",
+                                            "last_modify_time": "2017-06-30 15:31:59",
+                                            "owner_uid": "2",
+                                            "owner_name": "小爱",
+                                            "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "owner_signature": "也是签名"
+                                        },
+                                        {
+                                            "comment_id": "3",
+                                            "parent_comment_id": "1",
+                                            "target_id": "1",
+                                            "target_type": "1",
+                                            "content": "回复111",
+                                            "target_uid": "1",
+                                            "like_count": "666",
+                                            "create_time": "2017-06-30 15:32:23",
+                                            "last_modify_time": "2017-06-30 15:32:23",
+                                            "owner_uid": "3",
+                                            "owner_name": "小的",
+                                            "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "owner_signature": "也是签名",
+                                            "parent": {
+                                                "comment_id": "1",
+                                                "parent_comment_id": "0",
+                                                "target_id": "1",
+                                                "target_type": "1",
+                                                "content": "范德萨发生",
+                                                "target_uid": "0",
+                                                "like_count": "1",
+                                                "create_time": "2017-06-30 15:31:32",
+                                                "last_modify_time": "2017-06-30 15:31:32",
+                                                "status": "1",
+                                                "owner_uid": "1",
+                                                "owner_name": "小逗",
+                                                "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                                "owner_signature": "这是签名"
+                                            }
+                                        },
+                                        {
+                                            "comment_id": "4",
+                                            "parent_comment_id": "0",
+                                            "target_id": "1",
+                                            "target_type": "1",
+                                            "content": "sadfasdf",
+                                            "target_uid": "0",
+                                            "like_count": "0",
+                                            "create_time": "2017-06-30 16:34:36",
+                                            "last_modify_time": "2017-06-30 16:34:36",
+                                            "owner_uid": "4",
+                                            "owner_name": "小都",
+                                            "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "owner_signature": "也是签名"
+                                        },
+                                        {
+                                            "comment_id": "9",
+                                            "parent_comment_id": "0",
+                                            "target_id": "1",
+                                            "target_type": "1",
+                                            "content": "2fasfa",
+                                            "target_uid": "0",
+                                            "like_count": "0",
+                                            "create_time": "2017-07-01 10:33:44",
+                                            "last_modify_time": "2017-07-01 10:33:44",
+                                            "owner_uid": "2",
+                                            "owner_name": "小爱",
+                                            "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "owner_signature": "也是签名"
+                                        },
+                                        {
+                                            "comment_id": "10",
+                                            "parent_comment_id": "5",
+                                            "target_id": "1",
+                                            "target_type": "1",
+                                            "content": "斤斤计较军军",
+                                            "target_uid": "0",
+                                            "like_count": "0",
+                                            "create_time": "2017-07-01 10:44:29",
+                                            "last_modify_time": "2017-07-01 10:53:14",
+                                            "owner_uid": "2",
+                                            "owner_name": "小爱",
+                                            "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "owner_signature": "也是签名",
+                                            "parent": {
+                                                "status": "0"
+                                            }
+                                        }
+                                    ],
+                                    "hot": [
+                                        {
+                                            "comment_id": "3",
+                                            "parent_comment_id": "1",
+                                            "target_id": "1",
+                                            "target_type": "1",
+                                            "content": "回复111",
+                                            "target_uid": "1",
+                                            "like_count": "666",
+                                            "create_time": "2017-06-30 15:32:23",
+                                            "last_modify_time": "2017-06-30 15:32:23",
+                                            "owner_uid": "3",
+                                            "owner_name": "小的",
+                                            "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "owner_signature": "也是签名",
+                                            "parent": {
+                                                "comment_id": "1",
+                                                "parent_comment_id": "0",
+                                                "target_id": "1",
+                                                "target_type": "1",
+                                                "content": "范德萨发生",
+                                                "target_uid": "0",
+                                                "like_count": "1",
+                                                "create_time": "2017-06-30 15:31:32",
+                                                "last_modify_time": "2017-06-30 15:31:32",
+                                                "status": "1",
+                                                "owner_uid": "1",
+                                                "owner_name": "小逗",
+                                                "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                                "owner_signature": "这是签名"
+                                            }
+                                        },
+                                        {
+                                            "comment_id": "2",
+                                            "parent_comment_id": "0",
+                                            "target_id": "1",
+                                            "target_type": "1",
+                                            "content": "哦哦范德萨发",
+                                            "target_uid": "0",
+                                            "like_count": "3",
+                                            "create_time": "2017-06-30 15:31:59",
+                                            "last_modify_time": "2017-06-30 15:31:59",
+                                            "owner_uid": "2",
+                                            "owner_name": "小爱",
+                                            "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "owner_signature": "也是签名"
+                                        },
+                                        {
+                                            "comment_id": "1",
+                                            "parent_comment_id": "0",
+                                            "target_id": "1",
+                                            "target_type": "1",
+                                            "content": "范德萨发生",
+                                            "target_uid": "0",
+                                            "like_count": "1",
+                                            "create_time": "2017-06-30 15:31:32",
+                                            "last_modify_time": "2017-06-30 15:31:32",
+                                            "owner_uid": "1",
+                                            "owner_name": "小逗",
+                                            "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
+                                            "owner_signature": "这是签名"
+                                        }
+                                    ]
+                                },
+                                "totalCount": "6",
+                                "currentPage": "1",
+                                "perPage": "10",
+                                "pageCount": 1
                             },
-                            "totalCount": 4,
-                            "pageCount": 1,
-                            "currentPage": 1,
-                            "perPage": 10
-                        },
-                        "code": 200,
-                        "msg": "OK"
-                    }
-                备注：hot:热门评论,new:最新评论
+                            "code": 200,
+                            "msg": "OK"
+                        }
+                备注：hot:热门评论,new:最新评论,parent:父级评论,status:parent节点下面的status=0,表示父级评论被删除
                 
-         19)提交故事[及章节]的评论数据[已完成]
+         19)提交故事的评论数据[已完成]
                 api:    /comment/commit
                 method: POST
                 params:
                        uid:用户uid
                        story_id:故事id
-                       chapter_id:章节id
-                       message_id:0
                        content:评论文字内容
+                       parent_comment_id:父级评论id
                 example:http://api.youwei.xiaoningmeng.net/comment/commit
                 ret:    Json
+                    {
+                        "data": {
+                            "comment_id": 11
+                        },
+                        "code": 200,
+                        "msg": "OK"
+                    }
          
          20)评论点赞[已完成]
                  api:    /like/comment-like

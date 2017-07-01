@@ -8,12 +8,13 @@ use Yii;
  * This is the model class for table "comment".
  *
  * @property integer $comment_id
- * @property integer $message_id
- * @property integer $chapter_id
- * @property integer $story_id
- * @property integer $uid
+ * @property integer $parent_comment_id
+ * @property string $target_id
+ * @property integer $target_type
  * @property string $content
- * @property integer $is_vote
+ * @property integer $owner_uid
+ * @property integer $target_uid
+ * @property integer $like_count
  * @property string $create_time
  * @property string $last_modify_time
  * @property integer $status
@@ -34,8 +35,8 @@ class Comment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['message_id', 'chapter_id', 'story_id', 'uid', 'content'], 'required'],
-            [['message_id', 'chapter_id', 'story_id', 'uid', 'is_vote', 'status'], 'integer'],
+            [['target_id', 'target_type', 'content', 'owner_uid'], 'required'],
+            [['parent_comment_id', 'target_id', 'target_type', 'owner_uid', 'target_uid', 'like_count', 'status'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['content'], 'string', 'max' => 1024],
         ];
@@ -48,12 +49,13 @@ class Comment extends \yii\db\ActiveRecord
     {
         return [
             'comment_id' => Yii::t('app', '评论id'),
-            'message_id' => Yii::t('app', '消息id'),
-            'chapter_id' => Yii::t('app', '章节id'),
-            'story_id' => Yii::t('app', '故事id'),
-            'uid' => Yii::t('app', '用户id'),
+            'parent_comment_id' => Yii::t('app', '父评论id'),
+            'target_id' => Yii::t('app', '评论的目标id'),
+            'target_type' => Yii::t('app', '评论的目标类型'),
             'content' => Yii::t('app', '内容'),
-            'is_vote' => Yii::t('app', '是否是投票'),
+            'owner_uid' => Yii::t('app', '发表评论的uid'),
+            'target_uid' => Yii::t('app', '评论的目标用户id'),
+            'like_count' => Yii::t('app', '点赞数量'),
             'create_time' => Yii::t('app', '创建时间'),
             'last_modify_time' => Yii::t('app', '最后修改时间'),
             'status' => Yii::t('app', '状态'),
@@ -73,6 +75,6 @@ class Comment extends \yii\db\ActiveRecord
     public function getUser()
     {
         //同样第一个参数指定关联的子表模型类名
-        return $this->hasOne(User::className(), ['uid' => 'uid']);
+        return $this->hasOne(User::className(), ['uid' => 'owner_uid']);
     }
 }
