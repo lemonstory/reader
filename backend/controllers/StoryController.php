@@ -2,12 +2,14 @@
 
 namespace backend\controllers;
 
+use common\models\UploadForm;
 use Yii;
 use common\models\Story;
 use common\models\StorySearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * StoryController implements the CRUD actions for Story model.
@@ -82,10 +84,24 @@ class StoryController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->story_id]);
+        $uid = 0;
+        $model = $this->findModel($id);
+        $uploadFormModel = new UploadForm();
+
+        if (Yii::$app->request->isPost) {
+
+            $model->load(Yii::$app->request->post());
+            $uploadFormModel->file = UploadedFile::getInstanceByName('Story[cover]');
+            if(!empty($uploadFormModel->file)) {
+                $coverUrl = $uploadFormModel->uploadPicOss($uid);
+                if (!empty($coverUrl)) {
+                    $model->cover = $coverUrl;
+                }
+            }
+            if($model->save()) {
+                return $this->redirect(['view', 'id' => $model->story_id]);
+            }
         } else {
             return $this->render('update', [
                 'model' => $model,

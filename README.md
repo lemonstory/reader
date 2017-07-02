@@ -53,3 +53,4 @@ environments/            contains environment-based overrides
     https://github.com/PizzaLiu/PHP-FIG/blob/master/PSR-1-basic-coding-standard-cn.md
     http://docs-aliyun.cn-hangzhou.oss.aliyun-inc.com/pdf/opensearch-best-practice-cn-zh-2016-05-12.pdf
     http://cdn.s.aliyun.com/L1/272/7933/opensearch/css/search/guide.pdf
+    https://adminlte.io/themes/AdminLTE/

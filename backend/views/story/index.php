@@ -3,41 +3,152 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
+
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\StorySearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Stories');
+$this->title = Yii::t('app', '故事');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="story-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+<!--    <h1>--><?//= Html::encode($this->title) ?><!--</h1>-->
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create Story'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', '创建故事'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
-<?php Pjax::begin(); ?>    <?= GridView::widget([
+    <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
+//            ['class' => 'yii\grid\SerialColumn'],
+            [
+                'attribute' => 'story_id',
+                'contentOptions' => ['style' => 'width:10px;'],
+                'format' => 'raw',
+                'value' => function ($m) {
+                    $ret =  Html::a($m->story_id,
+                        ['story/update', 'id' => $m->story_id,]);
 
-            'story_id',
-            'name',
-            'description',
-            'cover',
-            'uid',
-            // 'chapter_count',
-            // 'message_count',
-            // 'taps',
-            // 'is_published',
-            // 'status',
-            // 'create_time',
-            // 'last_modify_time',
+                    return $ret;
+                },
+            ],
+            [
+                'attribute' => 'cover',
+                'format' => 'raw',
+                'value' => function ($m) {
+                    $cover = Html::img($m->cover,
+                        ['class' => 'img-rounded', 'width' => 90]
+                    );
+                    return Html::a($cover,
+                        ['story/update', 'id' => $m->story_id]);
+                    ;
+                }
+            ],
+            [
+                'attribute' => 'name',
+                'format' => 'raw',
+                'value' => function ($m) {
 
+                    $ret = Html::a($m->name,
+                        ['story/update', 'id' => $m->story_id]);
+
+                    if(!empty($m->tags)) {
+
+                        //TODO:下面的tag_id是硬编码,需要更改
+                        //'tag_id' => 'bg color'
+                        $bg = [
+                            '1' => 'bg-yellow',
+                            '2' => 'bg-green',
+                            '3' => 'bg-red',
+                        ];
+
+                        $ret .= "<p >";
+                        foreach ($m->tags as $tag) {
+                            $tagNameUrl = Html::a($tag->name,
+                                ['tag/view', 'id' => $tag->tag_id],['style' => 'color:#fff']);
+                            $ret .= " <small class=\"label {$bg[$tag->tag_id]}\">{$tagNameUrl}</small>";
+                        }
+                       $ret .= "</p>";
+                    }
+                    return $ret;
+                },
+            ],
+//            'description',
+            [
+                'attribute' => 'uid',
+                'headerOptions' => ['style' => 'width:100px'],
+                'format' => 'raw',
+                'value' => function ($m) {
+                    return Html::a($m->user->name,
+                        ['user/view', 'id' => $m->uid]);
+                },
+            ],
+
+            [
+                'attribute' => 'chapter_count',
+                'headerOptions' => ['style' => 'width:100px'],
+                'value' => function ($model) {
+                    return $model->chapter_count."章";
+                },
+            ],
+            [
+                'attribute' => 'message_count',
+                'headerOptions' => ['style' => 'width:100px'],
+                'value' => function ($model) {
+                    return $model->message_count."条";
+                },
+            ],
+            [
+                'attribute' => 'taps',
+                'headerOptions' => ['style' => 'width:100px'],
+                'value' => function ($model) {
+                    return $model->taps."次";
+                },
+            ],
+            [
+                'attribute' => 'is_published',
+                'format' => 'raw',
+                'headerOptions' => ['style' => 'width:100px'],
+                'contentOptions' => ['style' => 'width:10px;'],
+                'value' => function ($model) {
+                    $state = [
+                        '0' => '未发布',
+                        '1' => '已发布',
+                    ];
+                    if ($model->is_published == 0){
+                        $ret = Html::tag('span', $state[$model->is_published], ['class' => 'not-set']);
+                    }else {
+                        $ret = $state[$model->is_published];
+                    }
+                    return $ret;
+                },
+            ],
+            [
+                'attribute' => 'status',
+                'format' => 'raw',
+                'headerOptions' => ['style' => 'width:10px'],
+                'value' => function ($model) {
+                    $state = [
+                        '0' => '已删除',
+                        '1' => '正常',
+                    ];
+
+                    if(!isset($state[$model->status])) {
+                        $ret = Html::tag('span', '未知', ['class' => 'not-set']);
+                    }else if ($model->status == 0){
+                        $ret = Html::tag('span', $state[$model->status], ['class' => 'not-set']);
+                    }else {
+                        $ret = $state[$model->status];
+                    }
+                    return $ret;
+                },
+            ],
+            'create_time',
+            'last_modify_time',
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
-<?php Pjax::end(); ?></div>
+    <?php Pjax::end(); ?></div>
