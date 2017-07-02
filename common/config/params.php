@@ -13,6 +13,7 @@ return [
     'openSearchSuggestAllName' => 'all',
 
     //aliyun oss
+    //TODO:线上endpoint可以走内网
     'ossEndPoint' => 'oss-cn-shanghai.aliyuncs.com',
     'ossPicObjectBucket' => 'youwei-pic',
     'ossPicObjectCoverPrefix' => 'cover/',
