@@ -24,6 +24,7 @@ class UploadForm extends Model
     {
         return [
             [['file'], 'file'],
+
         ];
     }
 
@@ -39,8 +40,8 @@ class UploadForm extends Model
 
         $accessKeyId = $configObj->AccessKeyID;
         $accessKeySecret = $configObj->AccessKeySecret;
-        $bucket = Yii::$app->params['ossEndPoint'];
-        $endpoint = Yii::$app->params['ossPicObjectBucket'];
+        $bucket = Yii::$app->params['ossPicObjectBucket'];
+        $endpoint = Yii::$app->params['ossEndPoint'];
 
         if ($this->validate()) {
 
