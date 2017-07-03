@@ -89,6 +89,7 @@ class StoryController extends Controller
     public function actionUpdate($id)
     {
 
+        //TODO:获取用户UID
         $uid = 0;
         $model = $this->findModel($id);
         $uploadFormModel = new UploadForm();
@@ -125,7 +126,7 @@ class StoryController extends Controller
                 $uploadFormModel->file = UploadedFile::getInstanceByName('Story[cover]');
 
                 if(!empty($uploadFormModel->file)) {
-                    $coverUrl = $uploadFormModel->uploadPicOss($uid);
+                    $coverUrl = $uploadFormModel->uploadPicOss($uid,Yii::$app->params['ossPicObjectCoverPrefix']);
                     if (!empty($coverUrl)) {
                         $model->cover = $coverUrl;
                     }

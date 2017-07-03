@@ -2,12 +2,14 @@
 
 namespace backend\controllers;
 
+use common\models\UploadForm;
 use Yii;
 use common\models\Chapter;
 use common\models\ChapterSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * ChapterController implements the CRUD actions for Chapter model.
@@ -82,10 +84,38 @@ class ChapterController extends Controller
      */
     public function actionUpdate($id)
     {
+        //TODO:获取用户UID
+        $uid = 0;
         $model = $this->findModel($id);
+        $uploadFormModel = new UploadForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->chapter_id]);
+        if (Yii::$app->request->isPost) {
+
+            $background = $model->background;
+            $model->load(Yii::$app->request->post());
+            $uploadFormModel->file = UploadedFile::getInstanceByName('Chapter[background]');
+
+            if(!empty($uploadFormModel->file)) {
+                $backgroundUrl = $uploadFormModel->uploadPicOss($uid,Yii::$app->params['ossPicObjectBackgroundPrefix']);
+                if (!empty($backgroundUrl)) {
+                    $model->background = $backgroundUrl;
+                }
+            }
+
+            //Yii2 会自动生成一个hidden的cover,但是value却未空
+            //导致什么都不做更改的情况下,cover会被2次设置为空
+            //原因没有找到.通过下面的方法规避一下
+            //https://stackoverflow.com/questions/34593023/yii-2-file-input-renders-hidden-file-input-tag
+            if(empty($model->background)) {
+                $model->background = $background;
+            }
+
+            if($model->save()) {
+                return $this->redirect(['update', 'id' => $model->chapter_id]);
+            }else {
+                print $model->getErrors();
+            }
+
         } else {
             return $this->render('update', [
                 'model' => $model,
