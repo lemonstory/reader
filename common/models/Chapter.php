@@ -49,7 +49,7 @@ class Chapter extends \yii\db\ActiveRecord
     {
         return [
             'chapter_id' => Yii::t('app', '章节id'),
-            'name' => Yii::t('app', 'Name'),
+            'name' => Yii::t('app', '章节名称'),
             'story_id' => Yii::t('app', '故事id'),
             'background' => Yii::t('app', '背景图'),
             'message_count' => Yii::t('app', '消息数量'),

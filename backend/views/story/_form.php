@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -63,9 +64,36 @@ use yii\widgets\ActiveForm;
                 return $return;
             }]);
     ?>
+
+    <?php
+
+        $listBoxItems = array();
+        if(!empty($allTagArr)) {
+            foreach ($allTagArr as $tag) {
+                $tag_id = (string)$tag['tag_id'];
+                $tag_name = (string)$tag['name'];
+                $listBoxItems[$tag_id] = $tag_name;
+            }
+        }
+    ?>
+
+    <!-- TODO:下面写得有点撮, $form->field($model...)里面的$model是一个对象,但是tag关系findAll后拿到的是个数组,所以无法使用 $form->field..这种简洁的写法-->
+    <!-- $form->field($model, 'xxx')->listBox($listBoxItems,['multiple' => 'true'])-->
+    <div class="form-group field-story-tags">
+        <label class="col-sm-1 control-label" for="story-tags">标签</label>
+        <div class="row">
+            <div class="col-sm-2">
+                <?php
+                    $selection = ArrayHelper::getColumn($checkTagArr,'tag_id');
+                    echo Html::listBox('Story[tags]', $selection,$listBoxItems,['multiple' => 'true','class' => 'form-control']);
+                ?>
+            </div>
+            <div class="help-block"></div>
+        </div>
+    </div>
+
     <?= $form->field($model, 'create_time')->textInput(['disabled' => true]) ?>
     <?= $form->field($model, 'last_modify_time')->textInput(['disabled' => true]) ?>
-
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', '新建') : Yii::t('app', '修改'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>

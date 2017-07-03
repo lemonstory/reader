@@ -97,7 +97,11 @@ class Story extends \yii\db\ActiveRecord
         //hasMany relation tag表->tag_id =>  story_tag_relation表 => tag_id
         return $this->hasMany(Tag::className(), ['tag_id' => 'tag_id'])
             //viaTable relation story_tag_relation表->story_id => story表->story_id
-            ->viaTable('story_tag_relation', ['story_id' => 'story_id']);
+            ->viaTable('story_tag_relation', ['story_id' => 'story_id'],
+                function($query) {
+                    $query->onCondition(
+                        ['story_tag_relation.status' => Yii::$app->params['STATUS_ACTIVE']]);
+                });
     }
 
     /**

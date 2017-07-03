@@ -2,10 +2,14 @@
 
 namespace backend\controllers;
 
+use common\models\StoryTagRelation;
+use common\models\Tag;
 use common\models\UploadForm;
 use Yii;
 use common\models\Story;
 use common\models\StorySearch;
+use yii\base\ErrorException;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -89,33 +93,105 @@ class StoryController extends Controller
         $model = $this->findModel($id);
         $uploadFormModel = new UploadForm();
 
+        //获取所有的tag
+        $tagCondition = array(
+            'status' => Yii::$app->params['STATUS_ACTIVE']
+        );
+
+        $allTagArr = Tag::find($tagCondition)
+            ->orderBy(['number' => SORT_DESC])
+            ->asArray()
+            ->all();
+
+        //获取故事tag并转为数组
+        $checkTagArr = ArrayHelper::toArray($model->tags,[
+            'common\models\Tag'=>[
+                'tag_id',
+                'name',
+                'number',
+                'create_time',
+                'last_modify_time',
+                'status'
+            ]
+        ]);
+
         if (Yii::$app->request->isPost) {
 
-            $cover = $model->cover;
-            $model->load(Yii::$app->request->post());
-            $uploadFormModel->file = UploadedFile::getInstanceByName('Story[cover]');
+            $transaction = Yii::$app->db->beginTransaction();
+            try{
 
-            if(!empty($uploadFormModel->file)) {
-                $coverUrl = $uploadFormModel->uploadPicOss($uid);
-                if (!empty($coverUrl)) {
-                    $model->cover = $coverUrl;
+                $cover = $model->cover;
+                $model->load(Yii::$app->request->post());
+                $uploadFormModel->file = UploadedFile::getInstanceByName('Story[cover]');
+
+                if(!empty($uploadFormModel->file)) {
+                    $coverUrl = $uploadFormModel->uploadPicOss($uid);
+                    if (!empty($coverUrl)) {
+                        $model->cover = $coverUrl;
+                    }
                 }
+
+                //Yii2 会自动生成一个hidden的cover,但是value却未空
+                //导致什么都不做更改的情况下,cover会被2次设置为空
+                //原因没有找到.通过下面的方法规避一下
+                //https://stackoverflow.com/questions/34593023/yii-2-file-input-renders-hidden-file-input-tag
+                if(empty($model->cover)) {
+                    $model->cover = $cover;
+                }
+
+                //批量修改标签
+                $storyTagPair = array();
+                $storyId = $model->story_id;
+                $inputPost = Yii::$app->request->post();
+                $checkTagIdArr = ArrayHelper::getColumn($checkTagArr,'tag_id');
+                sort($checkTagIdArr);
+                if (!empty($inputPost['Story']['tags'])) {
+
+                    sort($inputPost['Story']['tags']);
+                    if($checkTagIdArr != $inputPost['Story']['tags']) {
+
+                        //新增的tag
+                        foreach ($inputPost['Story']['tags'] as $tagId) {
+                            $storyTagPair[] = array($storyId,$tagId,Yii::$app->params['STATUS_ACTIVE']);
+                        }
+
+                        //被删除的tag
+                        $unCheckTagIdArr = array_diff($checkTagIdArr,$inputPost['Story']['tags']);
+                        if(!empty($unCheckTagIdArr)) {
+
+                            foreach ($unCheckTagIdArr as $tagId) {
+                                $storyTagPair[] = array($storyId,$tagId,Yii::$app->params['STATUS_DELETED']);
+                            }
+                        }
+
+                        $command = Yii::$app->getDb()->createCommand()->batchInsert('story_tag_relation',
+                            [ 'story_id',  'tag_id','status'],
+                            $storyTagPair
+                        );
+
+                        $sql = $command->getSql()." ON DUPLICATE KEY UPDATE `status`=VALUES(`status`);";
+                        Yii::$app->getDb()->createCommand($sql)->execute();
+                    }
+                }
+
+                $isSaved = $model->save();
+                $transaction->commit();
+                if($isSaved) {
+                    return $this->redirect(['view', 'id' => $model->story_id]);
+                }
+
+            }catch (\Exception $e) {
+                $transaction->rollBack();
+                print $e->getMessage();
+                print $e->getTrace();
             }
 
-            //Yii2 会自动生成一个hidden的cover,但是value却未空
-            //导致什么都不做更改的情况下,cover会被2次设置为空
-            //原因没有找到.通过下面的方法规避一下
-            //https://stackoverflow.com/questions/34593023/yii-2-file-input-renders-hidden-file-input-tag
-            if(empty($model->cover)) {
-                $model->cover = $cover;
-            }
-
-            if($model->save()) {
-                return $this->redirect(['view', 'id' => $model->story_id]);
-            }
         } else {
+
             return $this->render('update', [
                 'model' => $model,
+                'allTagArr' => $allTagArr,
+                'checkTagArr' => $checkTagArr,
             ]);
         }
     }
