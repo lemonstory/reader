@@ -31,7 +31,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($m) {
                     $ret =  Html::a($m->story_id,
                         ['story/update', 'id' => $m->story_id,]);
-
                     return $ret;
                 },
             ],
@@ -44,34 +43,35 @@ $this->params['breadcrumbs'][] = $this->title;
                     );
                     return Html::a($cover,
                         ['story/update', 'id' => $m->story_id]);
-                    ;
                 }
             ],
             [
+
                 'attribute' => 'name',
                 'format' => 'raw',
-                'value' => function ($m) {
-
+                'value' => function ($m) use ($storyTagArr) {
                     $ret = Html::a($m->name,
                         ['story/update', 'id' => $m->story_id]);
 
-                    if(!empty($m->tags)) {
+                    if(isset($storyTagArr[$m->story_id]) && !empty($storyTagArr[$m->story_id])) {
+                        {
+                            //TODO:下面的tag_id是硬编码,需要更改
+                            //'tag_id' => 'bg color'
+                            $bg = [
+                                '1' => 'bg-yellow',
+                                '2' => 'bg-green',
+                                '3' => 'bg-red',
+                            ];
+                            $ret .= "<p >";
+                            foreach ($storyTagArr[$m->story_id] as $tag) {
 
-                        //TODO:下面的tag_id是硬编码,需要更改
-                        //'tag_id' => 'bg color'
-                        $bg = [
-                            '1' => 'bg-yellow',
-                            '2' => 'bg-green',
-                            '3' => 'bg-red',
-                        ];
+                                $tagNameUrl = Html::a($tag['tag_name'],
+                                    ['tag/view', 'id' => $tag['tag_id']], ['style' => 'color:#fff']);
+                                $ret .= " <small class=\"label {$bg[$tag['tag_id']]}\">{$tagNameUrl}</small>";
 
-                        $ret .= "<p >";
-                        foreach ($m->tags as $tag) {
-                            $tagNameUrl = Html::a($tag->name,
-                                ['tag/view', 'id' => $tag->tag_id],['style' => 'color:#fff']);
-                            $ret .= " <small class=\"label {$bg[$tag->tag_id]}\">{$tagNameUrl}</small>";
+                            }
+                            $ret .= "</p>";
                         }
-                       $ret .= "</p>";
                     }
                     return $ret;
                 },
@@ -81,8 +81,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'uid',
                 'headerOptions' => ['style' => 'width:100px'],
                 'format' => 'raw',
-                'value' => function ($m) {
-                    return Html::a($m->user->name,
+                'value' => function ($m) use ($storyUserArr){
+                    return Html::a($storyUserArr[$m->uid]['name'],
                         ['user/view', 'id' => $m->uid]);
                 },
             ],
