@@ -121,8 +121,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $ret;
                 },
             ],
-             'create_time',
-             'last_modify_time',
+            [
+                'attribute' => 'create_time',
+                'headerOptions' => ['style' => 'width:50px'],
+            ],
+            [
+                'attribute' => 'last_modify_time',
+                'headerOptions' => ['style' => 'width:50px'],
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
