@@ -70,6 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $actorId = $m->actor_id;
                     $name = '';
                     $avator = '';
+                    $ret = '';
 
                     if(!empty($storyActorArr[$storyId])) {
                         foreach ($storyActorArr[$storyId] as $actorArr) {
@@ -90,8 +91,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                     if(!empty($name)) {
                         $ret .= Html::tag('p', $name, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);
-                    } else {
-                        $ret = Html::tag('p', 无, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);
                     }
                     return $ret;
                 }
@@ -101,12 +100,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 'headerOptions' => ['style' => 'width:100px'],
                 'format' => 'raw',
                 'value' => function ($m) {
-                    $img = Html::img($m->img,
-                        ['class' => 'img-rounded', 'width' => 90]
-                    );
-                    return Html::a($img,
-                        ['chapter-message-content/update', 'id' => $m->message_id]);
-                    ;
+
+                    $ret = '';
+                    if(!empty($m->img)) {
+                        $img = Html::img($m->img,
+                            ['class' => 'img-rounded', 'width' => 90]
+                        );
+                        $ret = Html::a($img,
+                            ['chapter-message-content/update', 'id' => $m->message_id]);
+                    }
+                    return $ret;
                 }
             ],
 //            'voice_over:ntext',
