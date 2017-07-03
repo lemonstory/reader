@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use common\models\StoryActor;
 use Yii;
 use common\models\ChapterMessageContent;
 use common\models\ChapterMessageContentSearch;
@@ -38,9 +39,42 @@ class ChapterMessageContentController extends Controller
         $searchModel = new ChapterMessageContentSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $storyActorIdPairArr = array();
+        $models = $dataProvider->getModels();
+        if(!empty($models)) {
+
+            foreach ($models as $model) {
+                $storyActorIdPairArr[$model->story_id] = $model->actor_id;
+            }
+        }
+
+        //获取故事角色
+        $storyActorArr = array();
+        if(!empty($storyActorIdPairArr)) {
+
+            $storyIdArr = array_keys($storyActorIdPairArr);
+            $condition = array(
+                'is_visible' => Yii::$app->params['STATUS_ACTIVE'],
+                'status' => Yii::$app->params['STATUS_ACTIVE'],
+                'story_id' => $storyIdArr,
+            );
+            $query = $storyActorArr = StoryActor::find()->where($condition);
+            foreach ($storyActorIdPairArr as $storyId => $actorId) {
+
+                $orCondition = sprintf("`story_id`=%s AND `actor_id`=%s",$storyId,$actorId);
+                $query->orWhere($orCondition);
+            }
+
+            // get the AR raw sql in YII2
+//            $commandQuery = clone $query;
+//            echo $commandQuery->createCommand()->getRawSql();
+            $storyActorArr = $query->asArray()->all();
+        }
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'storyActorArr' => $storyActorArr,
         ]);
     }
 
