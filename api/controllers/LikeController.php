@@ -27,6 +27,18 @@ class LikeController extends ActiveController
         'class' => 'yii\rest\Serializer',
         'collectionEnvelope' => 'items',
     ];
+    public $likeCommentTargetType = '';
+
+    public function init()
+    {
+        parent::init();
+        if(empty($this->likeTargetType)) {
+            $likeTargetTypeArr = Yii::$app->params['LIKE_TARGET_TYPE'];
+            $likeTargetTypeArr = ArrayHelper::index($likeTargetTypeArr,'alias');
+            $this->likeCommentTargetType = intval($likeTargetTypeArr['comment']['value']);
+        }
+
+    }
 
     public function actions()
     {
@@ -46,7 +58,7 @@ class LikeController extends ActiveController
     {
         $response = Yii::$app->getResponse();
         $commentId = Yii::$app->getRequest()->get('comment_id',null);
-        $uid = Yii::$app->getRequest()->get('uid',null);
+        $ownerUid = Yii::$app->getRequest()->get('uid',null);
 
         $data = array();
         $transaction = Yii::$app->db->beginTransaction();
@@ -55,8 +67,8 @@ class LikeController extends ActiveController
             //记录赞
             $condition = array(
                 'like.target_id' => $commentId,
-                'like.target_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
-                'like.uid' => $uid,
+                'like.target_type' => $this->likeCommentTargetType,
+                'like.owner_uid' => $ownerUid,
             );
             $likeModel = Like::findOne($condition);
             if(is_null($likeModel)) {
@@ -69,9 +81,10 @@ class LikeController extends ActiveController
                 $commentModel = Comment::findOne(['comment_id' => $comment_id]);
                 $commentModel->updateCounters(['like_count' => 1]);
 
-                $likeModel->uid = $uid;
+                $likeModel->owner_uid = $ownerUid;
+                $likeModel->target_uid = $commentModel->owner_uid;
                 $likeModel->target_id = $commentId;
-                $likeModel->target_type = Yii::$app->params['LIKE_TYPE_COMMENT'];
+                $likeModel->target_type = $this->likeCommentTargetType;
                 $likeModel->status = Yii::$app->params['STATUS_ACTIVE'];
                 $likeModel->save();
                 if ($likeModel->hasErrors()) {
@@ -106,7 +119,7 @@ class LikeController extends ActiveController
 
         $response = Yii::$app->getResponse();
         $commentId = Yii::$app->getRequest()->get('comment_id',null);
-        $uid = Yii::$app->getRequest()->get('uid',null);
+        $ownerId = Yii::$app->getRequest()->get('uid',null);
         $data = array();
         $transaction = Yii::$app->db->beginTransaction();
         try {
@@ -115,27 +128,29 @@ class LikeController extends ActiveController
             $condition = array(
 
                 'like.target_id' => $commentId,
-                'like.target_type' => Yii::$app->params['LIKE_TYPE_COMMENT'],
-                'like.uid' => $uid,
+                'like.target_type' => $this->likeCommentTargetType,
+                'like.owner_uid' => $ownerId,
                 'like.status' => Yii::$app->params['STATUS_ACTIVE'],
             );
 
             $likeModel = Like::findOne($condition);
             if(!is_null($likeModel)) {
-                $likeModel->uid = $uid;
-                $likeModel->target_id = $commentId;
-                $likeModel->target_type = Yii::$app->params['LIKE_TYPE_COMMENT'];
-                $likeModel->status = Yii::$app->params['STATUS_DELETED'];
-                $likeModel->save();
-                if ($likeModel->hasErrors()) {
-                    Yii::error($likeModel->getErrors());
-                    throw new ServerErrorHttpException('评论点赞保存失败');
-                }
 
                 //评论赞数-1
                 $commentModel = Comment::findOne(['comment_id' => $comment_id]);
                 if($commentModel->like_count > 0) {
                     $commentModel->updateCounters(['like_count' => -1]);
+                }
+
+                $likeModel->owner_uid = $uid;
+                $likeModel->target_uid = $commentModel->owner_uid;
+                $likeModel->target_id = $commentId;
+                $likeModel->target_type = $this->likeCommentTargetType;
+                $likeModel->status = Yii::$app->params['STATUS_DELETED'];
+                $likeModel->save();
+                if ($likeModel->hasErrors()) {
+                    Yii::error($likeModel->getErrors());
+                    throw new ServerErrorHttpException('评论点赞保存失败');
                 }
 
             }else{
@@ -157,6 +172,4 @@ class LikeController extends ActiveController
         $ret['msg'] = $response->statusText;
         return $ret;
     }
-
-
 }

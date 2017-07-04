@@ -21,8 +21,10 @@ return [
     'ossPicObjectCoverSuffix' => '.jpg',
 
     //点赞对象类型
-    'LIKE_TYPE_COMMENT' => 1,
-    'LIKE_TYPE_STORY' => 2,
+    'LIKE_TARGET_TYPE' => [
+        ['label' => '故事','alias' => 'story','value' => 1],
+        ['label' => '评论','alias' => 'comment','value' => 2],
+    ],
 
     //热门评论最大数量
     'COMMENT_HOT_MAX_COUNT' => 3,
@@ -33,12 +35,6 @@ return [
         ['label' => '章节','alias' => 'chapter','value' => 2],
         ['label' => '消息内容','alias' => 'chapter-message-content','value' => 3],
     ],
-
-    'COMMENT_TARGET_TYPE_STORY' => 1,
-    //评论对象类型：章节
-    'COMMENT_TARGET_TYPE_CHAPTER' => 2,
-    //评论对象类型：消息
-    'COMMENT_TARGET_TYPE_MESSAGE' => 3,
 
     //消息评论[投票]内容项
     'COMMENT_MESSAGE_VOTE_CONTENT' => array(

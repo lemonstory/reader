@@ -28,6 +28,19 @@ class CommentController extends ActiveController
         'class' => 'yii\rest\Serializer',
         'collectionEnvelope' => 'items',
     ];
+    public $commentTargetTypeArr = '';
+
+
+    public function init()
+    {
+        parent::init();
+        if(empty($this->commentTargetType)) {
+            $commentTargetTypeArr = Yii::$app->params['COMMENT_TARGET_TYPE'];
+            $commentTargetTypeArr = ArrayHelper::index($commentTargetTypeArr,'alias');
+            $this->commentTargetTypeArr = $commentTargetTypeArr;
+        }
+
+    }
 
     public function actions()
     {
@@ -55,7 +68,7 @@ class CommentController extends ActiveController
 
        $condition = array(
             'target_id' => $message_id,
-            'target_type' => Yii::$app->params['COMMENT_TARGET_TYPE_MESSAGE'],
+            'target_type' => intval($this->commentTargetTypeArr['chapter-message-content']['value']),
             'status' => Yii::$app->params['STATUS_ACTIVE'],
         );
         $votesCount = Comment::find()
@@ -101,7 +114,7 @@ class CommentController extends ActiveController
         $storyId = $story_id;
         $condition = array(
             'chapter_message_content.story_id' => $storyId,
-            'comment.target_type' => Yii::$app->params['COMMENT_TARGET_TYPE_MESSAGE'],
+            'comment.target_type' => intval($this->commentTargetTypeArr['chapter-message-content']['value']),
             'chapter_message_content.status' => Yii::$app->params['STATUS_ACTIVE'],
             'comment.status' => Yii::$app->params['STATUS_ACTIVE'],
 
@@ -156,20 +169,20 @@ class CommentController extends ActiveController
             $commentModel = new Comment();
             $commentModel->owner_uid = $ownerUid;
             $commentModel->target_id = $messageId;
-            $commentModel->target_type = Yii::$app->params['COMMENT_TARGET_TYPE_MESSAGE'];
+            $commentModel->target_type = intval($this->commentTargetTypeArr['chapter-message-content']['value']);
             $commentModel->content = $content;
             $commentModel->save();
             if ($commentModel->hasErrors()) {
 
                 Yii::error($commentModel->getErrors());
-                throw new ServerErrorHttpException('111消息投票保存失败');
+                throw new ServerErrorHttpException('消息投票保存失败');
             }
             $data['comment_id'] = $commentModel->comment_id;
         }catch (\Exception $e){
 
             Yii::error($e->getMessage());
             $response->statusCode = 400;
-            $response->statusText = '222消息投票保存失败';
+            $response->statusText = '消息投票保存失败';
         }
 
         $ret['data'] = $data;
@@ -194,7 +207,7 @@ class CommentController extends ActiveController
 
         $commentCondition = array(
             'comment.target_id' => $story_id,
-            'comment.target_type' => Yii::$app->params['COMMENT_TARGET_TYPE_STORY'],
+            'comment.target_type' => intval($this->commentTargetTypeArr['story']['value']),
             'comment.status' => Yii::$app->params['STATUS_ACTIVE'],
         );
 
@@ -385,7 +398,7 @@ class CommentController extends ActiveController
             $commentModel = new Comment();
             $commentModel->owner_uid = $ownerUid;
             $commentModel->target_id = $storyId;
-            $commentModel->target_type = Yii::$app->params['COMMENT_TARGET_TYPE_STORY'];;
+            $commentModel->target_type = intval($this->commentTargetTypeArr['story']['value']);
             $commentModel->content = $content;
             $commentModel->parent_comment_id = $parentCommentId;
             $commentModel->target_id = $targetUid;
@@ -407,7 +420,5 @@ class CommentController extends ActiveController
         $ret['code'] = $response->statusCode;
         $ret['msg'] = $response->statusText;
         return $ret;
-
     }
-
 }
