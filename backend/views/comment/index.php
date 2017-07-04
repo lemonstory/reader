@@ -53,7 +53,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         if(!empty($name)) {
                             $ret .= Html::tag('p', $name, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);
                         }
-
                     }
                     return $ret;
                 }

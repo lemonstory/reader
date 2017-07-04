@@ -41,7 +41,6 @@ class CommentController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         //批量获取用户信息
-
         $models = $dataProvider->getModels();
         $UidArr = array();
         if(!empty($models)) {

@@ -69,11 +69,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'headerOptions' => ['style' => 'width:100px'],
                 'contentOptions' => ['style' => 'width:10px;'],
                 'value' => function ($model) {
-
+                    $ret = "";
                     if(!empty($model->name)) {
                         $ret = $model->name;
-                    }else {
-                        $ret = Html::tag('span', '无', ['class' => 'not-set']);
                     }
                     return $ret;
                 },

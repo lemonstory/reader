@@ -2,9 +2,11 @@
 
 namespace backend\controllers;
 
+use common\models\User;
 use Yii;
 use common\models\Like;
 use common\models\LikeSearch;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,9 +40,28 @@ class LikeController extends Controller
         $searchModel = new LikeSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        //批量获取用户信息
+        $models = $dataProvider->getModels();
+        $UidArr = array();
+        if(!empty($models)) {
+
+            foreach ($models as $model) {
+                $UidArr[] = $model->uid;
+            }
+        }
+
+        $userCondition = array(
+            'uid' => $UidArr,
+            'status' => Yii::$app->params['STATUS_ACTIVE'],
+        );
+
+        $userArr = User::find()->where($userCondition)->asArray()->all();
+        $userArr = ArrayHelper::index($userArr,'uid');
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'userArr' => $userArr,
         ]);
     }
 
