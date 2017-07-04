@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\db\ActiveRecord;
 
 /**
  * This is the model class for table "comment".
@@ -19,7 +20,7 @@ use Yii;
  * @property string $last_modify_time
  * @property integer $status
  */
-class Comment extends \yii\db\ActiveRecord
+class Comment extends ActiveRecord
 {
     /**
      * @inheritdoc
@@ -35,8 +36,8 @@ class Comment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['target_id', 'target_type', 'content', 'owner_uid'], 'required'],
             [['parent_comment_id', 'target_id', 'target_type', 'owner_uid', 'target_uid', 'like_count', 'status'], 'integer'],
+            [['target_id', 'target_type', 'content', 'owner_uid'], 'required'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['content'], 'string', 'max' => 1024],
         ];

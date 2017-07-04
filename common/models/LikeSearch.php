@@ -5,12 +5,12 @@ namespace common\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use common\models\Comment;
+use common\models\Like;
 
 /**
- * CommentSearch represents the model behind the search form about `common\models\Comment`.
+ * LikeSearch represents the model behind the search form about `common\models\Like`.
  */
-class CommentSearch extends Comment
+class LikeSearch extends Like
 {
     /**
      * @inheritdoc
@@ -18,8 +18,8 @@ class CommentSearch extends Comment
     public function rules()
     {
         return [
-            [['comment_id','parent_comment_id', 'target_id', 'target_type', 'owner_uid', 'target_uid', 'like_count', 'status'], 'integer'],
-            [['content','create_time', 'last_modify_time'], 'safe'],
+            [['target_id', 'target_type', 'uid', 'status'], 'integer'],
+            [['create_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -41,7 +41,7 @@ class CommentSearch extends Comment
      */
     public function search($params)
     {
-        $query = Comment::find();
+        $query = Like::find();
 
         // add conditions that should always apply here
 
@@ -59,20 +59,14 @@ class CommentSearch extends Comment
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'comment_id' => $this->comment_id,
-            'parent_comment_id' => $this->parent_comment_id,
             'target_id' => $this->target_id,
             'target_type' => $this->target_type,
-            'owner_uid' => $this->owner_uid,
-            'target_uid' => $this->target_uid,
-            'like_count' => $this->like_count,
-            'content' => $this->content,
+            'uid' => $this->uid,
+            'status' => $this->status,
             'create_time' => $this->create_time,
             'last_modify_time' => $this->last_modify_time,
-            'status' => $this->status,
         ]);
 
-        $query->andFilterWhere(['like', 'content', $this->content]);
         return $dataProvider;
     }
 }
