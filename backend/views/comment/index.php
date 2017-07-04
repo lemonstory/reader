@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'owner_uid',
                 'format' => 'raw',
-                'headerOptions' => ['style' => 'width:120px'],
+                'headerOptions' => ['style' => 'width:100px'],
                 'contentOptions' => ['class' => 'box-body box-profile'],
                 'value' => function ($m) use ($userArr) {
 
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'target_uid',
                 'format' => 'raw',
-                'headerOptions' => ['style' => 'width:120px'],
+                'headerOptions' => ['style' => 'width:100px'],
                 'contentOptions' => ['class' => 'box-body box-profile'],
                 'value' => function ($m) use ($userArr) {
 

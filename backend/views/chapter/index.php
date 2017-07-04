@@ -7,7 +7,7 @@ use yii\widgets\Pjax;
 /* @var $searchModel common\models\ChapterSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('app', 'Chapters');
+$this->title = Yii::t('app', '章节');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="chapter-index">
