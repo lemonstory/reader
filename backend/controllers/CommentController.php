@@ -2,9 +2,11 @@
 
 namespace backend\controllers;
 
+use common\models\User;
 use Yii;
 use common\models\Comment;
 use common\models\CommentSearch;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,9 +40,30 @@ class CommentController extends Controller
         $searchModel = new CommentSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        //批量获取用户信息
+
+        $models = $dataProvider->getModels();
+        $UidArr = array();
+        if(!empty($models)) {
+
+            foreach ($models as $model) {
+                $UidArr[] = $model->owner_uid;
+                $UidArr[] = $model->target_uid;
+            }
+        }
+
+        $userCondition = array(
+            'uid' => $UidArr,
+            'status' => Yii::$app->params['STATUS_ACTIVE'],
+        );
+
+        $userArr = User::find()->where($userCondition)->asArray()->all();
+        $userArr = ArrayHelper::index($userArr,'uid');
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'userArr' => $userArr,
         ]);
     }
 
