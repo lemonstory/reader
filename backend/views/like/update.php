@@ -9,7 +9,7 @@ $this->title = Yii::t('app', 'Update {modelClass}: ', [
     'modelClass' => 'Like',
 ]) . $model->target_id;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Likes'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->target_id, 'url' => ['view', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'uid' => $model->uid]];
+$this->params['breadcrumbs'][] = ['label' => $model->target_id, 'url' => ['view', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'owner_uid' => $model->owner_uid, 'target_uid' => $model->target_uid]];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Update');
 ?>
 <div class="like-update">

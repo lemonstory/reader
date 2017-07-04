@@ -46,7 +46,8 @@ class LikeController extends Controller
         if(!empty($models)) {
 
             foreach ($models as $model) {
-                $UidArr[] = $model->uid;
+                $UidArr[] = $model->owner_uid;
+                $UidArr[] = $model->target_uid;
             }
         }
 
@@ -76,13 +77,14 @@ class LikeController extends Controller
      * Displays a single Like model.
      * @param integer $target_id
      * @param integer $target_type
-     * @param integer $uid
+     * @param integer $owner_uid
+     * @param integer $target_uid
      * @return mixed
      */
-    public function actionView($target_id, $target_type, $uid)
+    public function actionView($target_id, $target_type, $owner_uid, $target_uid)
     {
         return $this->render('view', [
-            'model' => $this->findModel($target_id, $target_type, $uid),
+            'model' => $this->findModel($target_id, $target_type, $owner_uid, $target_uid),
         ]);
     }
 
@@ -96,7 +98,7 @@ class LikeController extends Controller
         $model = new Like();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'uid' => $model->uid]);
+            return $this->redirect(['view', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'owner_uid' => $model->owner_uid, 'target_uid' => $model->target_uid]);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -109,15 +111,16 @@ class LikeController extends Controller
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $target_id
      * @param integer $target_type
-     * @param integer $uid
+     * @param integer $owner_uid
+     * @param integer $target_uid
      * @return mixed
      */
-    public function actionUpdate($target_id, $target_type, $uid)
+    public function actionUpdate($target_id, $target_type, $owner_uid, $target_uid)
     {
-        $model = $this->findModel($target_id, $target_type, $uid);
+        $model = $this->findModel($target_id, $target_type, $owner_uid, $target_uid);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'uid' => $model->uid]);
+            return $this->redirect(['view', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'owner_uid' => $model->owner_uid, 'target_uid' => $model->target_uid]);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -130,12 +133,13 @@ class LikeController extends Controller
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $target_id
      * @param integer $target_type
-     * @param integer $uid
+     * @param integer $owner_uid
+     * @param integer $target_uid
      * @return mixed
      */
-    public function actionDelete($target_id, $target_type, $uid)
+    public function actionDelete($target_id, $target_type, $owner_uid, $target_uid)
     {
-        $this->findModel($target_id, $target_type, $uid)->delete();
+        $this->findModel($target_id, $target_type, $owner_uid, $target_uid)->delete();
 
         return $this->redirect(['index']);
     }
@@ -145,13 +149,14 @@ class LikeController extends Controller
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $target_id
      * @param integer $target_type
-     * @param integer $uid
+     * @param integer $owner_uid
+     * @param integer $target_uid
      * @return Like the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($target_id, $target_type, $uid)
+    protected function findModel($target_id, $target_type, $owner_uid, $target_uid)
     {
-        if (($model = Like::findOne(['target_id' => $target_id, 'target_type' => $target_type, 'uid' => $uid])) !== null) {
+        if (($model = Like::findOne(['target_id' => $target_id, 'target_type' => $target_type, 'owner_uid' => $owner_uid, 'target_uid' => $target_uid])) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

@@ -18,7 +18,7 @@ class LikeSearch extends Like
     public function rules()
     {
         return [
-            [['target_id', 'target_type', 'uid', 'status'], 'integer'],
+            [['target_id', 'target_type', 'owner_uid', 'target_uid', 'status'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
         ];
     }
@@ -61,7 +61,8 @@ class LikeSearch extends Like
         $query->andFilterWhere([
             'target_id' => $this->target_id,
             'target_type' => $this->target_type,
-            'uid' => $this->uid,
+            'owner_uid' => $this->owner_uid,
+            'target_uid' => $this->target_uid,
             'status' => $this->status,
             'create_time' => $this->create_time,
             'last_modify_time' => $this->last_modify_time,

@@ -15,8 +15,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'uid' => $model->uid], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'uid' => $model->uid], [
+        <?= Html::a(Yii::t('app', 'Update'), ['update', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'owner_uid' => $model->owner_uid, 'target_uid' => $model->target_uid], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'target_id' => $model->target_id, 'target_type' => $model->target_type, 'owner_uid' => $model->owner_uid, 'target_uid' => $model->target_uid], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
@@ -30,7 +30,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'target_id',
             'target_type',
-            'uid',
+            'owner_uid',
+            'target_uid',
             'status',
             'create_time',
             'last_modify_time',

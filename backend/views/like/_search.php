@@ -19,11 +19,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'target_type') ?>
 
-    <?= $form->field($model, 'uid') ?>
+    <?= $form->field($model, 'owner_uid') ?>
+
+    <?= $form->field($model, 'target_uid') ?>
 
     <?= $form->field($model, 'status') ?>
 
-    <?= $form->field($model, 'create_time') ?>
+    <?php // echo $form->field($model, 'create_time') ?>
 
     <?php // echo $form->field($model, 'last_modify_time') ?>
 
