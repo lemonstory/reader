@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', '新建消息内容'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('app', '新增消息内容'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?php
         $storyActorArr = ArrayHelper::index($storyActorArr, null, 'story_id');

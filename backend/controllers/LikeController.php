@@ -58,6 +58,13 @@ class LikeController extends Controller
         $userArr = User::find()->where($userCondition)->asArray()->all();
         $userArr = ArrayHelper::index($userArr,'uid');
 
+        //批量获取被赞对象内容
+        //被赞对象为故事：内容=故事标题
+        //被赞对象为评论：内容=故事标题
+
+
+
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
