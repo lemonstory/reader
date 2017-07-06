@@ -22,6 +22,7 @@ use yii\widgets\ActiveForm;
     ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'sub_name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'description', [
             'template'=> "{label}<div class=\"row\"><div class=\"col-sm-6\">{input}</div>{error}</div>",
             'labelOptions' => [ 'class' => 'col-sm-1 control-label' ]

@@ -19,11 +19,13 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name') ?>
 
+    <?= $form->field($model, 'sub_name') ?>
+
     <?= $form->field($model, 'description') ?>
 
     <?= $form->field($model, 'cover') ?>
 
-    <?= $form->field($model, 'uid') ?>
+    <?php // echo $form->field($model, 'uid') ?>
 
     <?php // echo $form->field($model, 'chapter_count') ?>
 

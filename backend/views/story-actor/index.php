@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'avator',
             'number',
+            // 'location',
             // 'is_visible',
             // 'status',
             // 'create_time',

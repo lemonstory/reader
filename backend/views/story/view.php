@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'story_id',
             'name',
+            'sub_name',
             'description',
             'cover',
             'uid',

@@ -19,7 +19,7 @@ class StorySearch extends Story
     {
         return [
             [['story_id', 'uid', 'chapter_count', 'message_count', 'taps', 'is_published', 'status'], 'integer'],
-            [['name', 'description', 'cover', 'create_time', 'last_modify_time'], 'safe'],
+            [['name', 'sub_name', 'description', 'cover', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -71,6 +71,7 @@ class StorySearch extends Story
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
+            ->andFilterWhere(['like', 'sub_name', $this->sub_name])
             ->andFilterWhere(['like', 'description', $this->description])
             ->andFilterWhere(['like', 'cover', $this->cover]);
 

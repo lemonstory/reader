@@ -76,6 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $ret;
                 },
             ],
+            'sub_name',
 //            'description',
             [
                 'attribute' => 'uid',

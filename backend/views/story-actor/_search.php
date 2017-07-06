@@ -25,6 +25,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'number') ?>
 
+    <?php // echo $form->field($model, 'location') ?>
+
     <?php // echo $form->field($model, 'is_visible') ?>
 
     <?php // echo $form->field($model, 'status') ?>

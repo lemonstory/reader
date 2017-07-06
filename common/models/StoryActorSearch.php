@@ -18,7 +18,7 @@ class StoryActorSearch extends StoryActor
     public function rules()
     {
         return [
-            [['actor_id', 'story_id', 'number', 'is_visible', 'status'], 'integer'],
+            [['actor_id', 'story_id', 'number', 'location', 'is_visible', 'status'], 'integer'],
             [['name', 'avator', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
@@ -62,6 +62,7 @@ class StoryActorSearch extends StoryActor
             'actor_id' => $this->actor_id,
             'story_id' => $this->story_id,
             'number' => $this->number,
+            'location' => $this->location,
             'is_visible' => $this->is_visible,
             'status' => $this->status,
             'create_time' => $this->create_time,

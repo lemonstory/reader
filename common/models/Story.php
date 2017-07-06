@@ -13,6 +13,7 @@ use yii\helpers\StringHelper;
  *
  * @property integer $story_id
  * @property string $name
+ * @property string $sub_name
  * @property string $description
  * @property string $cover
  * @property integer $uid
@@ -58,6 +59,7 @@ class Story extends \yii\db\ActiveRecord
         return [
             'story_id' => Yii::t('app', '故事id'),
             'name' => Yii::t('app', '标题'),
+            'sub_name' => Yii::t('app', '副标题'),
             'description' => Yii::t('app', '介绍'),
             'cover' => Yii::t('app', '封面图'),
             'uid' => Yii::t('app', '作者uid'),

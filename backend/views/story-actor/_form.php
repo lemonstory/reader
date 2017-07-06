@@ -20,6 +20,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'number')->textInput() ?>
 
+    <?= $form->field($model, 'location')->textInput() ?>
+
     <?= $form->field($model, 'is_visible')->textInput() ?>
 
     <?= $form->field($model, 'status')->textInput() ?>
