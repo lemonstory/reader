@@ -59,7 +59,7 @@ class ChapterController extends ActiveController
 
                 //TODO:目录定义需要更改
                 define ('SITE_ROOT', realpath(dirname(__FILE__)));
-                $file = SITE_ROOT.'/../uploads/' . $uploadFormModel->file->baseName . '.' . $uploadFormModel->file->extension;
+                $file = Yii::getAlias('@api/web/uploads/') . $uploadFormModel->file->baseName . '.' . $uploadFormModel->file->extension;
                 $uploadFormModel->file->saveAs($file);
                 $transaction = Yii::$app->db->beginTransaction();
                 try {

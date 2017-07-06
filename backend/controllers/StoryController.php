@@ -135,6 +135,32 @@ class StoryController extends Controller
         }
     }
 
+
+    /**
+     * 上传txt格式的故事内容
+     * @return string
+     */
+    public function actionUpload()
+    {
+        $uploadFormModel = new UploadForm();
+
+        if (Yii::$app->request->isPost) {
+            $uploadFormModel->file = UploadedFile::getInstance($uploadFormModel, 'file');
+
+            if ($uploadFormModel->validate()) {
+                $file = Yii::getAlias('@backend/web/uploads/') . $uploadFormModel->file->baseName . '.' . $uploadFormModel->file->extension;
+                if($uploadFormModel->file->saveAs($file)) {
+
+                    //解析处理故事文件
+                    $storyModel = new Story();
+                    $storyModel->parseFile($file);
+                }
+            }
+        }
+
+        return $this->render('upload', ['model' => $uploadFormModel]);
+    }
+
     /**
      * Updates an existing Story model.
      * If update is successful, the browser will be redirected to the 'view' page.

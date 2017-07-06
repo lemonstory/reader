@@ -36,6 +36,12 @@ return [
         ['label' => '消息内容','alias' => 'chapter-message-content','value' => 3],
     ],
 
+    //故事角色位置方向
+    'storyActorLocation' => [
+        ['label' => '左','alias' => 'left','value' => 0],
+        ['label' => '右','alias' => 'right','value' => 1],
+    ],
+
     //消息评论[投票]内容项
     'COMMENT_MESSAGE_VOTE_CONTENT' => array(
         1, //
