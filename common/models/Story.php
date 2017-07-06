@@ -144,9 +144,11 @@ class Story extends \yii\db\ActiveRecord
     /**
      * 将故事文件解析成数组
      * @param $file
+     * @return array $story
      */
     public function parseFile($file) {
 
+        $story = array();
         if(file_exists($file) && is_readable($file)) {
 
             $fileArr = file($file,FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -346,19 +348,9 @@ class Story extends \yii\db\ActiveRecord
             }
         }
 
-        if(!$hasError) {
-            //数据存储
-            var_dump($story);
-
-            $story = new Story();
-//            $story
-
-
-
-        }else {
-            //
+        if(hasError) {
             echo "处理上面的错误后,故事才能正常保存";
-
         }
+        return $story;
     }
 }

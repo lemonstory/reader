@@ -49,7 +49,7 @@ class StoryController extends Controller
         $models = $dataProvider->getModels();
         $storyIdArr = array();
         $storyUidArr = array();
-        if(!empty($models)) {
+        if (!empty($models)) {
 
             foreach ($models as $model) {
                 $storyIdArr[] = $model->story_id;
@@ -62,24 +62,24 @@ class StoryController extends Controller
             'status' => Yii::$app->params['STATUS_ACTIVE'],
         );
         $storyTagidArr = StoryTagRelation::find()->where($storyTagRelationCondition)->asArray()->all();
-        $storyTagidArr = ArrayHelper::index($storyTagidArr,null,'story_id');
+        $storyTagidArr = ArrayHelper::index($storyTagidArr, null, 'story_id');
 
         $tagCondition = array(
             'status' => Yii::$app->params['STATUS_ACTIVE'],
         );
         $tagArr = Tag::find($tagCondition)->asArray()->all();
-        $tagArr = ArrayHelper::index($tagArr,'tag_id');
+        $tagArr = ArrayHelper::index($tagArr, 'tag_id');
 
         $storyTagArr = array();
-        if(!empty($storyTagidArr) && !empty($tagArr)) {
+        if (!empty($storyTagidArr) && !empty($tagArr)) {
 
             foreach ($storyTagidArr as $storyId => $storyTagRelArr) {
-                if(!empty($storyTagRelArr)) {
+                if (!empty($storyTagRelArr)) {
                     foreach ($storyTagRelArr as $key => $storyTagRelItem) {
 
-                        if(isset($tagArr[$storyTagRelItem['tag_id']]['name'])) {
+                        if (isset($tagArr[$storyTagRelItem['tag_id']]['name'])) {
                             $storyTagRelItem['tag_name'] = $tagArr[$storyTagRelItem['tag_id']]['name'];
-                        }else {
+                        } else {
                             $storyTagRelItem['tag_name'] = '';
                         }
                         $storyTagArr[$storyId][$key] = $storyTagRelItem;
@@ -95,7 +95,7 @@ class StoryController extends Controller
         );
 
         $storyUserArr = User::find()->where($userCondition)->asArray()->all();
-        $storyUserArr = ArrayHelper::index($storyUserArr,'uid');
+        $storyUserArr = ArrayHelper::index($storyUserArr, 'uid');
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -135,7 +135,6 @@ class StoryController extends Controller
         }
     }
 
-
     /**
      * 上传txt格式的故事内容
      * @return string
@@ -149,11 +148,111 @@ class StoryController extends Controller
 
             if ($uploadFormModel->validate()) {
                 $file = Yii::getAlias('@backend/web/uploads/') . $uploadFormModel->file->baseName . '.' . $uploadFormModel->file->extension;
-                if($uploadFormModel->file->saveAs($file)) {
+                if ($uploadFormModel->file->saveAs($file)) {
 
                     //解析处理故事文件
                     $storyModel = new Story();
-                    $storyModel->parseFile($file);
+                    $story = $storyModel->parseFile($file);
+
+                    //数据存储
+                    if (!empty($story) && is_array($story)) {
+                        $transaction = Yii::$app->db->beginTransaction();
+                        try {
+                            //故事
+                            $storyModel = new Story();
+                            $storyModel->name = $story['name'];
+                            $storyModel->sub_name = $story['subName'];
+                            $storyModel->description = $story['description'];
+                            $storyModel->status = Yii::$app->params['STATUS_ACTIVE'];
+                            $storyModel->is_published = Yii::$app->params['STATUS_PUBLISHED'];
+                            if ($storyModel->save()) {
+                                $storyId = $storyModel->story_id;
+                            } else {
+                                print_r($storyModel->getErrors());
+                            }
+
+                            //作者
+                            $userCondition = ['name' => $story['userName']];
+                            $userInfoArr = User::find()->where($userCondition)->asArray()->one();
+                            if (!empty($userInfoArr)) {
+                                $uid = $userInfoArr['uid'];
+                            } else {
+                                $userModel = new User();
+                                $userModel->name = $story['userName'];
+                                if ($userModel->save()) {
+                                    $uid = $userModel->uid;
+                                } else {
+                                    print_r($userModel->getErrors());
+                                }
+                            }
+
+                            //角色
+                            if (!empty($story['actorArr']) && is_array($story['actorArr'])) {
+
+                                $actorRows = array();
+                                foreach ($story['actorArr'] as $actorItem) {
+                                    $actorRow['story_id'] = $storyId;
+                                    $actorRow['name'] = $actorItem['name'];
+                                    $actorRow['number'] = $actorItem['number'];
+                                    $actorRow['location'] = $actorItem['location'];
+                                    $actorRow['is_visible'] = Yii::$app->params['STATUS_ACTIVE'];
+                                    $actorRows[] = $actorRow;
+                                }
+                                $actorColumns = ['story_id', 'name', 'number', 'location', 'is_visible'];
+                                $actorAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryActor::tableName(), $actorColumns, $actorRows)->execute();
+                            } else {
+                                echo "没有角色信息";
+                            }
+
+                            //章节
+                            if (!empty($story['chapterArr']) && is_array($story['chapterArr'])) {
+
+                                $chapterRows = array();
+                                foreach ($story['chapterArr'] as $chapterItem) {
+                                    $chapterRow['story_id'] = $storyId;
+                                    $chapterRow['name'] = $chapterItem['name'];
+                                    $chapterRow['number'] = $chapterItem['number'];
+                                    $chapterRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
+                                    $chapterRow['is_published'] = Yii::$app->params['STATUS_PUBLISHED'];
+                                    $chapterRows[] = $chapterRow;
+                                }
+                                $chapterColumns = ['story_id', 'name', 'number', 'location', 'is_visible'];
+                                $chapterAffectedRows = Yii::$app->db->createCommand()->batchInsert(Chapter::tableName(), $chapterColumns, $chapterRows)->execute();
+                            } else {
+                                echo "没有章节信息";
+                            }
+
+                            //消息
+                            if (!empty($story['messageArr']) && is_array($story['messageArr'])) {
+
+                                $messageRows = array();
+                                foreach ($story['messageArr'] as $messageItem) {
+                                    $messageRow['story_id'] = $storyId;
+                                    //TODO
+                                    $chapterId = 1;
+                                    $messageRow['chapter_id'] = $chapterId;
+                                    //TODO
+                                    $actorId = 1;
+                                    $messageRow['actor_id'] = $actorId;
+                                    $messageRow['text'] = $messageItem['text'];
+                                    $messageRow['voice_over'] = $messageItem['voiceOver'];
+                                    $messageRow['number'] = $messageItem['number'];
+                                    $messageRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
+                                    $messageRows[] = $messageRow;
+                                }
+                                $messageColumns = ['story_id', 'chapter_id', 'actor_id', 'text', 'voice_over', 'number', 'status'];
+                                $messageAffectedRows = Yii::$app->db->createCommand()->batchInsert(ChapterMessageContent::tableName(), $messageColumns, $messageRows)->execute();
+                            } else {
+                                echo "没有章节信息";
+                            }
+                            $transaction->commit();
+
+                        } catch (\Exception $e) {
+
+                            $transaction->rollBack();
+                            echo $e->getMessage();
+                        }
+                    }
                 }
             }
         }
@@ -186,8 +285,8 @@ class StoryController extends Controller
             ->all();
 
         //获取故事tag并转为数组
-        $checkTagArr = ArrayHelper::toArray($model->tags,[
-            'common\models\Tag'=>[
+        $checkTagArr = ArrayHelper::toArray($model->tags, [
+            'common\models\Tag' => [
                 'tag_id',
                 'name',
                 'number',
@@ -200,14 +299,14 @@ class StoryController extends Controller
         if (Yii::$app->request->isPost) {
 
             $transaction = Yii::$app->db->beginTransaction();
-            try{
+            try {
 
                 $cover = $model->cover;
                 $model->load(Yii::$app->request->post());
                 $uploadFormModel->file = UploadedFile::getInstanceByName('Story[cover]');
 
-                if(!empty($uploadFormModel->file)) {
-                    $coverUrl = $uploadFormModel->uploadPicOss($uid,Yii::$app->params['ossPicObjectCoverPrefix']);
+                if (!empty($uploadFormModel->file)) {
+                    $coverUrl = $uploadFormModel->uploadPicOss($uid, Yii::$app->params['ossPicObjectCoverPrefix']);
                     if (!empty($coverUrl)) {
                         $model->cover = $coverUrl;
                     }
@@ -217,7 +316,7 @@ class StoryController extends Controller
                 //导致什么都不做更改的情况下,cover会被2次设置为空
                 //原因没有找到.通过下面的方法规避一下
                 //https://stackoverflow.com/questions/34593023/yii-2-file-input-renders-hidden-file-input-tag
-                if(empty($model->cover)) {
+                if (empty($model->cover)) {
                     $model->cover = $cover;
                 }
 
@@ -225,44 +324,44 @@ class StoryController extends Controller
                 $storyTagPair = array();
                 $storyId = $model->story_id;
                 $inputPost = Yii::$app->request->post();
-                $checkTagIdArr = ArrayHelper::getColumn($checkTagArr,'tag_id');
+                $checkTagIdArr = ArrayHelper::getColumn($checkTagArr, 'tag_id');
                 sort($checkTagIdArr);
                 if (!empty($inputPost['Story']['tags'])) {
 
                     sort($inputPost['Story']['tags']);
-                    if($checkTagIdArr != $inputPost['Story']['tags']) {
+                    if ($checkTagIdArr != $inputPost['Story']['tags']) {
 
                         //新增的tag
                         foreach ($inputPost['Story']['tags'] as $tagId) {
-                            $storyTagPair[] = array($storyId,$tagId,Yii::$app->params['STATUS_ACTIVE']);
+                            $storyTagPair[] = array($storyId, $tagId, Yii::$app->params['STATUS_ACTIVE']);
                         }
 
                         //被删除的tag
-                        $unCheckTagIdArr = array_diff($checkTagIdArr,$inputPost['Story']['tags']);
-                        if(!empty($unCheckTagIdArr)) {
+                        $unCheckTagIdArr = array_diff($checkTagIdArr, $inputPost['Story']['tags']);
+                        if (!empty($unCheckTagIdArr)) {
 
                             foreach ($unCheckTagIdArr as $tagId) {
-                                $storyTagPair[] = array($storyId,$tagId,Yii::$app->params['STATUS_DELETED']);
+                                $storyTagPair[] = array($storyId, $tagId, Yii::$app->params['STATUS_DELETED']);
                             }
                         }
 
                         $command = Yii::$app->getDb()->createCommand()->batchInsert('story_tag_relation',
-                            [ 'story_id',  'tag_id','status'],
+                            ['story_id', 'tag_id', 'status'],
                             $storyTagPair
                         );
 
-                        $sql = $command->getSql()." ON DUPLICATE KEY UPDATE `status`=VALUES(`status`);";
+                        $sql = $command->getSql() . " ON DUPLICATE KEY UPDATE `status`=VALUES(`status`);";
                         Yii::$app->getDb()->createCommand($sql)->execute();
                     }
                 }
 
                 $isSaved = $model->save();
                 $transaction->commit();
-                if($isSaved) {
+                if ($isSaved) {
                     return $this->redirect(['view', 'id' => $model->story_id]);
                 }
 
-            }catch (\Exception $e) {
+            } catch (\Exception $e) {
                 $transaction->rollBack();
                 print $e->getMessage();
                 print $e->getTrace();
