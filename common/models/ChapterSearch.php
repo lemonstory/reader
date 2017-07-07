@@ -41,7 +41,7 @@ class ChapterSearch extends Chapter
      */
     public function search($params)
     {
-        $query = Chapter::find();
+        $query = Chapter::find()->orderBy(['chapter_id' => SORT_DESC]);
 
         // add conditions that should always apply here
 

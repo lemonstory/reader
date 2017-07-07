@@ -274,6 +274,7 @@ class Story extends \yii\db\ActiveRecord
 
                         $chapterItem['number'] = $currentChapterNumber;
                         $story['chapterArr'][] = $chapterItem;
+                        $story['chapterCount'] = $story['chapterCount'] + 1;
                     }else {
 
                         //第六行(及后面的行)
@@ -310,6 +311,7 @@ class Story extends \yii\db\ActiveRecord
                                     $isNewChapter = false;
                                 }
                                 $story['messageArr'][$key][] = $messageItem;
+                                $story['messageCount'] = $story['messageCount'] + 1;
                                 $messageItem = array();
                             }
 
@@ -341,6 +343,7 @@ class Story extends \yii\db\ActiveRecord
                     if($index == count($fileArr) - 1) {
                         if(!empty($messageItem) && is_array($messageItem) && ArrayHelper::keyExists('text',$messageItem) && !empty($messageItem['text'])) {
                             $story['messageArr'][$currentChapterNumber][] = $messageItem;
+                            $story['messageCount'] = $story['messageCount'] + 1;
                             $messageItem = array();
                         }
                     }
@@ -348,7 +351,7 @@ class Story extends \yii\db\ActiveRecord
             }
         }
 
-        if(hasError) {
+        if($hasError) {
             echo "处理上面的错误后,故事才能正常保存";
         }
         return $story;

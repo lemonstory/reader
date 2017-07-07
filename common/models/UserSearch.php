@@ -41,7 +41,7 @@ class UserSearch extends User
      */
     public function search($params)
     {
-        $query = User::find();
+        $query = User::find()->orderBy(['uid' => SORT_DESC]);
 
         // add conditions that should always apply here
 

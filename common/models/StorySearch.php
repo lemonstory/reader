@@ -41,7 +41,7 @@ class StorySearch extends Story
      */
     public function search($params)
     {
-        $query = Story::find();
+        $query = Story::find()->orderBy(['story_id' => SORT_DESC]);
 
         // add conditions that should always apply here
 

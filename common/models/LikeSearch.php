@@ -41,7 +41,7 @@ class LikeSearch extends Like
      */
     public function search($params)
     {
-        $query = Like::find();
+        $query = Like::find()->orderBy(['create_time' => SORT_DESC]);
 
         // add conditions that should always apply here
 

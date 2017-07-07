@@ -2,6 +2,9 @@
 
 namespace backend\controllers;
 
+use common\models\Chapter;
+use common\models\ChapterMessageContent;
+use common\models\StoryActor;
 use common\models\StoryTagRelation;
 use common\models\Tag;
 use common\models\UploadForm;
@@ -14,6 +17,7 @@ use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\ServerErrorHttpException;
 use yii\web\UploadedFile;
 
 /**
@@ -158,20 +162,9 @@ class StoryController extends Controller
                     if (!empty($story) && is_array($story)) {
                         $transaction = Yii::$app->db->beginTransaction();
                         try {
-                            //故事
-                            $storyModel = new Story();
-                            $storyModel->name = $story['name'];
-                            $storyModel->sub_name = $story['subName'];
-                            $storyModel->description = $story['description'];
-                            $storyModel->status = Yii::$app->params['STATUS_ACTIVE'];
-                            $storyModel->is_published = Yii::$app->params['STATUS_PUBLISHED'];
-                            if ($storyModel->save()) {
-                                $storyId = $storyModel->story_id;
-                            } else {
-                                print_r($storyModel->getErrors());
-                            }
 
                             //作者
+                            $uid = 0;
                             $userCondition = ['name' => $story['userName']];
                             $userInfoArr = User::find()->where($userCondition)->asArray()->one();
                             if (!empty($userInfoArr)) {
@@ -182,73 +175,129 @@ class StoryController extends Controller
                                 if ($userModel->save()) {
                                     $uid = $userModel->uid;
                                 } else {
+
                                     print_r($userModel->getErrors());
+                                    throw new ServerErrorHttpException('新建作者失败');
                                 }
+                            }
+
+                            //故事
+                            $storyId = 0;
+                            $storyModel = new Story();
+                            $storyModel->uid = $uid;
+                            $storyModel->name = $story['name'];
+                            $storyModel->sub_name = $story['subName'];
+                            $storyModel->description = $story['description'];
+                            $storyModel->chapter_count = $story['chapterCount'];
+                            $storyModel->message_count = $story['messageCount'];
+                            $storyModel->status = Yii::$app->params['STATUS_ACTIVE'];
+                            $storyModel->is_published = Yii::$app->params['STATUS_PUBLISHED'];
+                            if ($storyModel->save()) {
+                                $storyId = $storyModel->story_id;
+                            } else {
+                                print_r($storyModel->getErrors());
+                                throw new ServerErrorHttpException('新建故事失败');
                             }
 
                             //角色
+                            //期望获取新增角色的Id无法做批量写入
+                            //http://www.yiiframework.com/forum/index.php/topic/72746-can-batchinsert-return-all-inserted-ids/
+                            //TODO:下面的方案可以在验证一下
+                            //https://stackoverflow.com/questions/7333524/how-can-i-insert-many-rows-into-a-mysql-table-and-return-the-new-ids
+                            $actorNameIdPair = array();
                             if (!empty($story['actorArr']) && is_array($story['actorArr'])) {
 
-                                $actorRows = array();
                                 foreach ($story['actorArr'] as $actorItem) {
-                                    $actorRow['story_id'] = $storyId;
-                                    $actorRow['name'] = $actorItem['name'];
-                                    $actorRow['number'] = $actorItem['number'];
-                                    $actorRow['location'] = $actorItem['location'];
-                                    $actorRow['is_visible'] = Yii::$app->params['STATUS_ACTIVE'];
-                                    $actorRows[] = $actorRow;
+
+                                    $storyActorModel = new StoryActor();
+                                    $storyActorModel->story_id = $storyId;
+                                    $storyActorModel->name = $actorItem['name'];
+                                    $storyActorModel->number = $actorItem['number'];
+                                    $storyActorModel->location = $actorItem['location'];
+                                    $storyActorModel->is_visible = Yii::$app->params['STATUS_ACTIVE'];
+                                    if($storyActorModel->save()) {
+                                        $actorId = $storyActorModel->actor_id;
+                                        $actorNameIdPair[$actorItem['name']] = $actorId;
+                                    }else {
+                                        print_r($storyActorModel->getErrors());
+                                        throw new ServerErrorHttpException('新建角色失败');
+                                    }
                                 }
-                                $actorColumns = ['story_id', 'name', 'number', 'location', 'is_visible'];
-                                $actorAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryActor::tableName(), $actorColumns, $actorRows)->execute();
                             } else {
-                                echo "没有角色信息";
+                                throw new ServerErrorHttpException('没有角色信息');
                             }
 
                             //章节
+                            $chapterNumberIdPair = array();
                             if (!empty($story['chapterArr']) && is_array($story['chapterArr'])) {
 
-                                $chapterRows = array();
                                 foreach ($story['chapterArr'] as $chapterItem) {
-                                    $chapterRow['story_id'] = $storyId;
-                                    $chapterRow['name'] = $chapterItem['name'];
-                                    $chapterRow['number'] = $chapterItem['number'];
-                                    $chapterRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
-                                    $chapterRow['is_published'] = Yii::$app->params['STATUS_PUBLISHED'];
-                                    $chapterRows[] = $chapterRow;
+                                    $messageCount = 0;
+                                    if(isset($story['messageArr'][$chapterItem['number']])) {
+                                        $messageCount = count($story['messageArr'][$chapterItem['number']]);
+                                    }
+                                    $chapterModel = new Chapter();
+                                    $chapterModel->story_id = $storyId;
+                                    $chapterModel->name = $chapterItem['name'];
+                                    $chapterModel->number = $chapterItem['number'];
+                                    $chapterModel->message_count = $messageCount;
+                                    $chapterModel->status = Yii::$app->params['STATUS_ACTIVE'];
+                                    $chapterModel->is_published = Yii::$app->params['STATUS_PUBLISHED'];
+                                    if($chapterModel->save()) {
+                                        $chapterId = $chapterModel->chapter_id;
+                                        $chapterNumberIdPair[$chapterItem['number']] = $chapterId;
+                                    }else {
+                                        print_r($chapterModel->getErrors());
+                                        throw new ServerErrorHttpException('新建章节失败');
+                                    }
                                 }
-                                $chapterColumns = ['story_id', 'name', 'number', 'location', 'is_visible'];
-                                $chapterAffectedRows = Yii::$app->db->createCommand()->batchInsert(Chapter::tableName(), $chapterColumns, $chapterRows)->execute();
                             } else {
-                                echo "没有章节信息";
+                                throw new ServerErrorHttpException('没有章节信息');
                             }
 
                             //消息
-                            if (!empty($story['messageArr']) && is_array($story['messageArr'])) {
+                            if (!empty($story['messageArr'])
+                                && is_array($story['messageArr'])
+                                && !empty($actorNameIdPair)
+                                && is_array($actorNameIdPair)
+                                && !empty($chapterNumberIdPair)
+                                && is_array($chapterNumberIdPair)) {
 
                                 $messageRows = array();
-                                foreach ($story['messageArr'] as $messageItem) {
-                                    $messageRow['story_id'] = $storyId;
-                                    //TODO
-                                    $chapterId = 1;
-                                    $messageRow['chapter_id'] = $chapterId;
-                                    //TODO
-                                    $actorId = 1;
-                                    $messageRow['actor_id'] = $actorId;
-                                    $messageRow['text'] = $messageItem['text'];
-                                    $messageRow['voice_over'] = $messageItem['voiceOver'];
-                                    $messageRow['number'] = $messageItem['number'];
-                                    $messageRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
-                                    $messageRows[] = $messageRow;
+                                foreach ($story['messageArr'] as $chapterNumber => $chapterMessageArr) {
+
+                                    $chapterId = $chapterNumberIdPair[$chapterNumber];
+                                    if(!empty($chapterId)) {
+                                        foreach ($chapterMessageArr as $index => $messageItem) {
+
+                                            $messageRow['story_id'] = $storyId;
+                                            $messageRow['chapter_id'] = $chapterId;
+                                            $actorId = 0;
+                                            if(isset($actorNameIdPair[$messageItem['actorName']]) && !empty($actorNameIdPair[$messageItem['actorName']])) {
+                                                $actorId = $actorNameIdPair[$messageItem['actorName']];
+                                            }
+                                            $messageRow['actor_id'] = $actorId;
+                                            $messageRow['text'] = $messageItem['text'];
+                                            $messageRow['voice_over'] = $messageItem['voiceOver'];
+                                            $number = $index + 1;
+                                            $messageRow['number'] = $number;
+                                            $messageRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
+                                            $messageRows[] = $messageRow;
+                                        }
+
+                                    }else {
+                                        throw new ServerErrorHttpException('消息内容没有章节Id');
+                                    }
                                 }
+
                                 $messageColumns = ['story_id', 'chapter_id', 'actor_id', 'text', 'voice_over', 'number', 'status'];
-                                $messageAffectedRows = Yii::$app->db->createCommand()->batchInsert(ChapterMessageContent::tableName(), $messageColumns, $messageRows)->execute();
+                                $sql = Yii::$app->db->createCommand()->batchInsert(ChapterMessageContent::tableName(), $messageColumns, $messageRows);
+                                $messageAffectedRows = $sql->execute();
                             } else {
-                                echo "没有章节信息";
+                                throw new ServerErrorHttpException('没有消息内容(或)角色名称-角色id对为空(或)章节序号-章节id对为空');
                             }
                             $transaction->commit();
-
                         } catch (\Exception $e) {
-
                             $transaction->rollBack();
                             echo $e->getMessage();
                         }
