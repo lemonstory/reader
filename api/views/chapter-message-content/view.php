@@ -13,14 +13,12 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
                 <message>
                     <message_id>{$messageItem['message_id']}</message_id>
                     <number>{$messageItem['number']}</number>
-                    <content>
-                        <voice_over><![CDATA[{$messageItem['voice_over']}]]></voice_over>
-                        <actor>
-                            <actor_id>{$messageItem['actor_id']}</actor_id>
-                        </actor>
-                        <text><![CDATA[{$messageItem['text']}]]></text>
-                        <img><![CDATA[{$messageItem['img']}]]></img>
-                    </content>
+                    <voice_over><![CDATA[{$messageItem['voice_over']}]]></voice_over>
+                    <actor>
+                        <actor_id>{$messageItem['actor_id']}</actor_id>
+                    </actor>
+                    <text><![CDATA[{$messageItem['text']}]]></text>
+                    <img><![CDATA[{$messageItem['img']}]]></img>
                     <status>{$messageItem['status']}</status>
                 </message>
 EOT;

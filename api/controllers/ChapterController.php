@@ -121,10 +121,10 @@ class ChapterController extends ActiveController
                                 $chapterMessageContentModel->story_id = $chapterModel->story_id;
                                 $chapterMessageContentModel->message_id = $messageId;
                                 $chapterMessageContentModel->number = (string)$messageItem->number;
-                                $chapterMessageContentModel->voice_over = (string)$messageItem->content->voice_over;
-                                $chapterMessageContentModel->actor_id = (string)$messageItem->content->actor->actor_id;
-                                $chapterMessageContentModel->text = (string)$messageItem->content->text;
-                                $chapterMessageContentModel->img = (string)$messageItem->content->img;
+                                $chapterMessageContentModel->voice_over = (string)$messageItem->voice_over;
+                                $chapterMessageContentModel->actor_id = (string)$messageItem->actor->actor_id;
+                                $chapterMessageContentModel->text = (string)$messageItem->text;
+                                $chapterMessageContentModel->img = (string)$messageItem->img;
                                 $chapterMessageContentModel->status = (string)$messageItem->status;
 
                                 $chapterMessageContentModel->save();
