@@ -320,14 +320,12 @@
                               <message_id>消息id</message_id>
                               <!-- 新建上传时：为空 -->
                               <number>消息序号</number>
-                              <content> 
-                                <voice_over>旁白</voice_over>
-                                <actor>
-                                    <actor_id>角色Id</actor_id>
-                                </actor>
-                                <text>消息文字</text>
-                                <img>图片网址</img>
-                              </content> 
+                              <voice_over>旁白</voice_over>
+                              <actor>
+                                  <actor_id>角色Id</actor_id>
+                              </actor>
+                              <text>消息文字</text>
+                              <img>图片网址</img>
                               <status>消息状态</status>
                             </message>
                             <message>
