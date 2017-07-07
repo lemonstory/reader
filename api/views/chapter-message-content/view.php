@@ -23,5 +23,5 @@
 EOT;
         }
         ?>
-    <chapter_message_content>
+    </chapter_message_content>
 </chapter>
