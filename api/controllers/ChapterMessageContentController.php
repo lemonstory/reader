@@ -58,7 +58,7 @@ class ChapterMessageContentController extends ActiveController
         $data['storyId'] = $storyId;
         $data['chapterId'] = $chapterId;
         $data['chapterMessageContent'] = $chapterMessageContentArr;
-        return $this->renderPartial('view',$data);
+        echo $this->renderPartial('view',$data);
     }
 
 }
