@@ -45,7 +45,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' => ['style' => 'width:10px;'],
                 'format' => 'raw',
                 'value' => function ($m) {
-                    $ret =  Html::a($m->story_id,
+                    $ret =  Html::a($m->chapter_id,
                         ['chapter/update', 'id' => $m->chapter_id,]);
                     return $ret;
                 },

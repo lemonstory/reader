@@ -191,7 +191,7 @@ class StoryController extends Controller
                             $storyModel->chapter_count = $story['chapterCount'];
                             $storyModel->message_count = $story['messageCount'];
                             $storyModel->status = Yii::$app->params['STATUS_ACTIVE'];
-                            $storyModel->is_published = Yii::$app->params['STATUS_PUBLISHED'];
+                            $storyModel->is_published = Yii::$app->params['STATUS_UNPUBLISHED'];
                             if ($storyModel->save()) {
                                 $storyId = $storyModel->story_id;
                             } else {
@@ -297,9 +297,11 @@ class StoryController extends Controller
                                 throw new ServerErrorHttpException('没有消息内容(或)角色名称-角色id对为空(或)章节序号-章节id对为空');
                             }
                             $transaction->commit();
+                            echo "成功";
                         } catch (\Exception $e) {
                             $transaction->rollBack();
                             echo $e->getMessage();
+                            echo "失败";
                         }
                     }
                 }
