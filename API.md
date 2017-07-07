@@ -327,6 +327,7 @@
                               <text>消息文字</text>
                               <img>图片网址</img>
                               <status>消息状态</status>
+                              <is_loading>是否有加载条</is_loading>
                             </message>
                             <message>
                               <message_id>消息id</message_id>
@@ -337,6 +338,7 @@
                               </actor>
                               <text>消息文字</text>
                               <img>图片网址</img>
+                              <is_loading>是否有加载条</is_loading>
                               <status>消息状态</status>
                             </message>
                         </chapter_message_content>

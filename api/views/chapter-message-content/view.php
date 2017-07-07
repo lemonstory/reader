@@ -18,6 +18,7 @@
                     </actor>
                     <text><![CDATA[{$messageItem['text']}]]></text>
                     <img><![CDATA[{$messageItem['img']}]]></img>
+                    <is_loading>{$messageItem['is_loading']}</is_loading>
                     <status>{$messageItem['status']}</status>
                 </message>
 EOT;
