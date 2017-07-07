@@ -17,9 +17,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'message_id') ?>
 
-    <?= $form->field($model, 'chapter_id') ?>
-
     <?= $form->field($model, 'story_id') ?>
+
+    <?= $form->field($model, 'chapter_id') ?>
 
     <?= $form->field($model, 'number') ?>
 
@@ -30,6 +30,8 @@ use yii\widgets\ActiveForm;
     <?php // echo $form->field($model, 'text') ?>
 
     <?php // echo $form->field($model, 'img') ?>
+
+    <?php // echo $form->field($model, 'is_loading') ?>
 
     <?php // echo $form->field($model, 'create_time') ?>
 

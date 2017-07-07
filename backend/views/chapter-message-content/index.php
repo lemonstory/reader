@@ -117,11 +117,35 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'voice_over',
                 'contentOptions' => ['style' => 'width:150px; white-space: normal;font-style:italic;font-size: 80%;color: #777;'],
+                'value' => function ($model) {
+                    $ret = "";
+                    if(!empty($model->voice_over)) {
+                        $ret = $model->voice_over;
+                    }
+                    return $ret;
+                },
             ],
 
             [
                 'attribute' => 'text',
                 'contentOptions' => ['style' => 'width:300px; white-space: normal;font-size: 90%;'],
+            ],
+            [
+                'attribute' => 'is_loading',
+                'format' => 'raw',
+                'headerOptions' => ['style' => 'width:10px'],
+                'value' => function ($model) {
+                    $state = [
+                        '0' => '无',
+                        '1' => '有',
+                    ];
+                    if(!isset($state[$model->is_loading])) {
+                        $ret = Html::tag('span', '未知', ['class' => 'not-set']);
+                    }else{
+                        $ret = Html::tag('span', $state[$model->is_loading]);
+                    }
+                    return $ret;
+                },
             ],
             [
                 'attribute' => 'status',

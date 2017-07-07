@@ -8,13 +8,14 @@ use Yii;
  * This is the model class for table "chapter_message_content".
  *
  * @property string $message_id
- * @property integer $chapter_id
  * @property integer $story_id
+ * @property integer $chapter_id
  * @property integer $number
  * @property string $voice_over
  * @property integer $actor_id
  * @property string $text
  * @property string $img
+ * @property integer $is_loading
  * @property string $create_time
  * @property string $last_modify_time
  * @property integer $status
@@ -35,12 +36,12 @@ class ChapterMessageContent extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['chapter_id', 'story_id', 'number'], 'required'],
-            [['chapter_id', 'story_id', 'number', 'actor_id', 'status'], 'integer'],
+            [['story_id', 'chapter_id', 'number'], 'required'],
+            [['story_id', 'chapter_id', 'number', 'actor_id', 'is_loading', 'status'], 'integer'],
             [['voice_over', 'text'], 'string'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['img'], 'string', 'max' => 2083],
-            [['chapter_id', 'story_id', 'number'], 'unique', 'targetAttribute' => ['chapter_id', 'story_id', 'number'], 'message' => 'The combination of 章节id, 故事id and 消息序号 has already been taken.'],
+            [['story_id', 'chapter_id', 'number'], 'unique', 'targetAttribute' => ['story_id', 'chapter_id', 'number'], 'message' => 'The combination of 故事id, 章节id and 消息序号 has already been taken.'],
         ];
     }
 
@@ -51,13 +52,14 @@ class ChapterMessageContent extends \yii\db\ActiveRecord
     {
         return [
             'message_id' => Yii::t('app', '消息id'),
-            'chapter_id' => Yii::t('app', '章节id'),
             'story_id' => Yii::t('app', '故事id'),
-            'number' => Yii::t('app', '序号'),
+            'chapter_id' => Yii::t('app', '章节id'),
+            'number' => Yii::t('app', '消息序号'),
             'voice_over' => Yii::t('app', '旁白'),
             'actor_id' => Yii::t('app', '角色id'),
             'text' => Yii::t('app', '消息文字'),
             'img' => Yii::t('app', '配图'),
+            'is_loading' => Yii::t('app', '是否有加载条'),
             'create_time' => Yii::t('app', '创建时间'),
             'last_modify_time' => Yii::t('app', '最后修改时间'),
             'status' => Yii::t('app', '状态'),

@@ -83,8 +83,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'headerOptions' => ['style' => 'width:100px'],
                 'format' => 'raw',
                 'value' => function ($m) use ($storyUserArr){
-                    return Html::a($storyUserArr[$m->uid]['name'],
-                        ['user/view', 'id' => $m->uid]);
+                    $ret = '';
+                    if(!empty($m->uid)) {
+                        $ret = Html::a($storyUserArr[$m->uid]['name'],
+                            ['user/view', 'id' => $m->uid]);
+                    }
+                    return $ret;
                 },
             ],
 

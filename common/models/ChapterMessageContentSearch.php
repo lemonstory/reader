@@ -18,7 +18,7 @@ class ChapterMessageContentSearch extends ChapterMessageContent
     public function rules()
     {
         return [
-            [['message_id', 'chapter_id', 'story_id', 'number', 'actor_id', 'status'], 'integer'],
+            [['message_id', 'story_id', 'chapter_id', 'number', 'actor_id', 'is_loading', 'status'], 'integer'],
             [['voice_over', 'text', 'img', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
@@ -60,10 +60,11 @@ class ChapterMessageContentSearch extends ChapterMessageContent
         // grid filtering conditions
         $query->andFilterWhere([
             'message_id' => $this->message_id,
-            'chapter_id' => $this->chapter_id,
             'story_id' => $this->story_id,
+            'chapter_id' => $this->chapter_id,
             'number' => $this->number,
             'actor_id' => $this->actor_id,
+            'is_loading' => $this->is_loading,
             'create_time' => $this->create_time,
             'last_modify_time' => $this->last_modify_time,
             'status' => $this->status,

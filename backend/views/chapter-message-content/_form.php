@@ -12,9 +12,9 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'chapter_id')->textInput() ?>
-
     <?= $form->field($model, 'story_id')->textInput() ?>
+
+    <?= $form->field($model, 'chapter_id')->textInput() ?>
 
     <?= $form->field($model, 'number')->textInput() ?>
 
@@ -25,6 +25,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'text')->textarea(['rows' => 6]) ?>
 
     <?= $form->field($model, 'img')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'is_loading')->textInput() ?>
 
     <?= $form->field($model, 'create_time')->textInput() ?>
 
