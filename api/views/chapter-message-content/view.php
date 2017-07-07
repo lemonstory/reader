@@ -1,8 +1,7 @@
 <?php
-header("Content-type: text/xml");
-echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+    header("Content-type: text/xml");
+    echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 ?>
-
 <chapter>
     <story_id><?= $storyId; ?></story_id>
     <chapter_id><?= $chapterId; ?></chapter_id>
@@ -24,4 +23,5 @@ echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 EOT;
         }
         ?>
+    <chapter_message_content>
 </chapter>
