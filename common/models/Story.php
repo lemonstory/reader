@@ -103,7 +103,7 @@ class Story extends \yii\db\ActiveRecord
         return $this->hasMany(Tag::className(), ['tag_id' => 'tag_id'])
             //viaTable relation story_tag_relation表->story_id => story表->story_id
             ->viaTable('story_tag_relation', ['story_id' => 'story_id'],
-                function($query) {
+                function ($query) {
                     $query->onCondition(
                         ['story_tag_relation.status' => Yii::$app->params['STATUS_ACTIVE']]);
                 });
@@ -136,7 +136,7 @@ class Story extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['uid' => 'uid']);
     }
 
-    function arrValueEncoding(&$value,$key)
+    function arrValueEncoding(&$value, $key)
     {
         $value = mb_convert_encoding($value, "UTF-8", "Unicode,ASCII,GB2312,GBK");
     }
@@ -146,13 +146,14 @@ class Story extends \yii\db\ActiveRecord
      * @param $file
      * @return array $story
      */
-    public function parseFile($file) {
+    public function parseFile($file)
+    {
 
         $story = array();
-        if(file_exists($file) && is_readable($file)) {
+        if (file_exists($file) && is_readable($file)) {
 
-            $fileArr = file($file,FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            array_walk($fileArr,array($this,"arrValueEncoding"));
+            $fileArr = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            array_walk($fileArr, array($this, "arrValueEncoding"));
             //故事
             $story = array();
             //故事标题
@@ -171,8 +172,10 @@ class Story extends \yii\db\ActiveRecord
             $story['chapterArr'] = array();
             $chapterItem = array();
             $chapterName = "";
-            //上一个章节序号
-            $lastChapterNumber = 0;
+            //故事章节数量
+            $story['chapterCount'] = 0;
+            //故事消息数量
+            $story['messageCount'] = 0;
             //当前章节序号
             $currentChapterNumber = 0;
             //消息内容
@@ -181,42 +184,42 @@ class Story extends \yii\db\ActiveRecord
             $messageItem = array();
             //在解析过程中是否有错误
             $hasError = false;
-            $isNewChapter = false;
 
             foreach ($fileArr as $index => $value) {
 
                 //第一行
                 //故事标题-故事短标题(躲灵—农夫与蛇的故事)
-                if(0 == $index) {
+                if (0 == $index) {
                     $titleArr = preg_split("/[—-]+/", $value);
-                    if(!empty($titleArr) && is_array($titleArr) && 2 == count($titleArr)) {
-
+                    if (!empty($titleArr) && is_array($titleArr) && count($titleArr) <= 2) {
                         $story['name'] = trim($titleArr[0]);
-                        $story['subName'] = trim($titleArr[1]);
-                    }else {
+                        $story['subName'] = isset($titleArr[1]) ? trim($titleArr[1]) : "";
+                    } else {
                         $hasError = true;
-                        print "故事标题解析错误：" + $value;
+                        echo "故事标题解析错误：" . $value . "\r\n";
                     }
                 }
 
                 //第二行
                 //故事简介(老伯去世前的种种离奇，有因有果，他是否可以平安躲过？)
-                if(1 == $index) {
+                if (1 == $index) {
                     $story['description'] = $value;
                 }
 
                 //第三行
                 //作者姓名(凌晨小雨)
-                if(2 == $index) {
+                if (2 == $index) {
                     $story['userName'] = $value;
                 }
 
                 //第四行
                 //角色信息(右=陈园，左=陈毅)
-                if(3 == $index) {
-                    $storyActorLocation = ArrayHelper::index(Yii::$app->params['storyActorLocation'],'label');
-                    $actorPairStrArr = preg_split("/[，,]+/", $value);
-                    if(!empty($actorPairStrArr) && is_array($actorPairStrArr) && count($actorPairStrArr) > 0) {
+                if (3 == $index) {
+
+                    $value = str_replace("，",",",$value);
+                    $storyActorLocation = ArrayHelper::index(Yii::$app->params['storyActorLocation'], 'label');
+                    $actorPairStrArr = explode(',',$value);
+                    if (!empty($actorPairStrArr) && is_array($actorPairStrArr) && count($actorPairStrArr) > 0) {
 
                         foreach ($actorPairStrArr as $index => $actorPairStr) {
 
@@ -225,134 +228,135 @@ class Story extends \yii\db\ActiveRecord
                             $name = '';
                             $number = $index + 1;
                             $actorPairArr = preg_split("/[=]+/", $actorPairStr);
-                            $locationLabel = trim($actorPairArr[0]);
-                            $name= trim($actorPairArr[1]);
+                            if(isset($actorPairArr[0]) && isset($actorPairArr[1])) {
 
-                            if(ArrayHelper::keyExists($locationLabel,$storyActorLocation)) {
-                                $location = $storyActorLocation[$locationLabel]['value'];
+                                $locationLabel = trim($actorPairArr[0]);
+                                $name = trim($actorPairArr[1]);
+
+                                if (ArrayHelper::keyExists($locationLabel, $storyActorLocation)) {
+                                    $location = $storyActorLocation[$locationLabel]['value'];
+                                } else {
+                                    $hasError = true;
+                                    print "故事角色位置方向解析错误：" . $locationLabel;
+                                }
+                                $actorItem = ['location' => $location, 'name' => $name, 'number' => $number];
+                                $story['actorArr'][] = $actorItem;
+
                             }else {
-                                print "故事角色位置方向解析错误：" + $locationLabel;
+                                $hasError = true;
+                                print "故事角色信息解析错误：" . $value;
                             }
-                            $actorItem = ['location' => $location,'name'=>$name,'number'=>$number];
-                            $story['actorArr'][] = $actorItem;
                         }
                     }
                 }
-                if($index >= 4) {
+                if ($index >= 4) {
 
                     //第五行
                     //章节(#1这一天)
-                    if(StringHelper::startsWith($value,"#",false)) {
-                        $isNewChapter = true;
-                        $lastChapterNumber = $currentChapterNumber;
-                        $chapterNameArr = preg_split("/#\d/", $value,-1,PREG_SPLIT_NO_EMPTY);
-                        if(!empty($chapterNameArr) && is_array($chapterNameArr)) {
+                    if (StringHelper::startsWith($value, "#", false)) {
+                        $chapterNameArr = preg_split("/#\d/", $value, -1, PREG_SPLIT_NO_EMPTY);
+                        if (!empty($chapterNameArr) && is_array($chapterNameArr)) {
 
-                            if(count($chapterNameArr) > 1) {
+                            if (count($chapterNameArr) > 1) {
                                 $hasError = true;
-                                print "章节名称解析错误：" + $value;
-                            }else {
+                                echo "章节名称解析错误：" . $value . "\r\n";
+                            } else {
                                 $chapterName = $chapterNameArr[0];
                                 $chapterItem['name'] = $chapterName;
                             }
-                        }else {
+                        } else {
                             $chapterItem['name'] = '';
                         }
 
-                        $currentChapterNumber = str_replace("#","",$value);
-                        $currentChapterNumber = str_replace($chapterName,"",$currentChapterNumber);
+                        $currentChapterNumber = str_replace("#", "", $value);
+                        $currentChapterNumber = str_replace($chapterName, "", $currentChapterNumber);
                         $currentChapterNumber = intval($currentChapterNumber);
-                        if(!empty($story['chapterArr']) && is_array($story['chapterArr'])) {
+                        if (!empty($story['chapterArr']) && is_array($story['chapterArr'])) {
 
-                            $chapterNumberArr = ArrayHelper::getColumn($story['chapterArr'],'number');
-                            $lastChapterNumber = end($chapterNumberArr);
-                            if(ArrayHelper::isIn($currentChapterNumber,$chapterNumberArr)) {
+                            $chapterNumberArr = ArrayHelper::getColumn($story['chapterArr'], 'number');
+                            if (ArrayHelper::isIn($currentChapterNumber, $chapterNumberArr)) {
                                 $hasError = true;
-                                print  "章节序号重复：" . $value;
+                                echo "章节序号重复：" . $value . "\r\n";
                             }
                         }
-
                         $chapterItem['number'] = $currentChapterNumber;
                         $story['chapterArr'][] = $chapterItem;
                         $story['chapterCount'] = $story['chapterCount'] + 1;
-                    }else {
+                    } else {
 
                         //第六行(及后面的行)
                         //消息
-                        if(!isset($messageItem['voiceOver'])) {
+//                        echo "行内容：【【【" . $value . "】】】\r\n";
+                        if (!isset($messageItem['voiceOver'])) {
                             $messageItem['voiceOver'] = '';
                         }
-                        if(!isset($messageItem['actorName'])) {
+                        if (!isset($messageItem['actorName'])) {
                             $messageItem['actorName'] = '';
                         }
-                        if(!isset($messageItem['text'])) {
+                        if (!isset($messageItem['text'])) {
                             $messageItem['text'] = '';
                         }
-                        $actorNameArr = array_keys(ArrayHelper::index($story['actorArr'],'name'));
+                        $actorNameArr = array_keys(ArrayHelper::index($story['actorArr'], 'name'));
                         $actorIsExist = false;
                         $actorName = '';
                         foreach ($actorNameArr as $actorNameItem) {
-                            $actorIsExist = StringHelper::startsWith($value,$actorNameItem,false);
-                            if($actorIsExist) {
+                            $actorIsExist = StringHelper::startsWith($value, $actorNameItem . "：", false) || StringHelper::startsWith($value, $actorNameItem . ":", false);
+                            if ($actorIsExist) {
                                 $actorName = $actorNameItem;
                                 break;
                             }
                         }
-                        if($actorIsExist) {
+                        if ($actorIsExist) {
 
-                            //将上一条消息添加到消息数组中
-                            if(!empty($messageItem) && is_array($messageItem) && ArrayHelper::keyExists('text',$messageItem) && !empty($messageItem['text'])) {
+//                            echo "判断有作者：\r\n";
+//                            echo "【作者处理开始】打印消息结构\r\n";
+//                            var_dump($messageItem);
 
-                                $key = $currentChapterNumber;
-                                if($isNewChapter) {
-                                    if(!empty($lastChapterNumber)) {
-                                        $key = $lastChapterNumber;
-                                    }
-                                    $isNewChapter = false;
-                                }
-                                $story['messageArr'][$key][] = $messageItem;
-                                $story['messageCount'] = $story['messageCount'] + 1;
-                                $messageItem = array();
+                            //去掉作者姓名
+                            $text = str_replace($actorName . "：", "", $value, $count);
+                            if (empty($count)) {
+                                $text = str_replace($actorName . ":", "", $value, $count);
                             }
 
-                            $text = str_replace($actorName."：","",$value,$count);
-                            if(empty($count)) {
-                                $text = str_replace($actorName.":","",$value,$count);
-                            }
-
-                            if(empty($count)) {
+                            if (empty($count)) {
                                 $hasError = true;
-                                print "消息内容解析错误：" + $value;
-                            }else{
+                                echo "消息内容解析错误：" . $value . "\r\n";
+                            } else {
                                 $messageItem['actorName'] = $actorName;
-                                //消息文字-支持换行
-                                $messageItem['text'] .= $text;
+                                $messageItem['text'] = $text;
                             }
-                        }else if(!empty($messageItem['text'])){
+//                            echo "【作者处理结束】打印消息结构\r\n";
+//                            var_dump($messageItem);
+                        } else {
 
-                            //消息文字-支持换行
-                            $messageItem['text'] .= $value;
-                        }else {
+//                            echo "【留白==RUN】\r\n";
+//                            echo "【留白处理开始】打印消息结构\r\n";
+//                            var_dump($messageItem);
 
-                            //旁白-支持换行
-                            $messageItem['voiceOver'] .= $value;
+                            //旁白
+                            $messageItem['voiceOver'] = $value;
+//                            echo "【留白处理结束】打印消息结构\r\n";
+//                            var_dump($messageItem);
                         }
-                    }
 
-                    //将最后一条消息添加到消息数组中
-                    if($index == count($fileArr) - 1) {
-                        if(!empty($messageItem) && is_array($messageItem) && ArrayHelper::keyExists('text',$messageItem) && !empty($messageItem['text'])) {
+//                        echo "{开始}保存信息\r\n";
+                        if (!empty($messageItem) && is_array($messageItem)) {
                             $story['messageArr'][$currentChapterNumber][] = $messageItem;
                             $story['messageCount'] = $story['messageCount'] + 1;
-                            $messageItem = array();
+                            $messageItem['voiceOver'] = '';
+                            $messageItem['actorName'] = '';
+                            $messageItem['text'] = '';
                         }
+//                        echo "{结束}保存信息\r\n";
                     }
                 }
             }
         }
 
-        if($hasError) {
-            echo "处理上面的错误后,故事才能正常保存";
+        if ($hasError) {
+            echo "处理上面的错误后,故事才能正常保存\r\n";
+            //将$story置为空
+            $story = array();
         }
         return $story;
     }

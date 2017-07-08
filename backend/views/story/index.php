@@ -94,16 +94,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'attribute' => 'chapter_count',
+                'format' => 'raw',
                 'headerOptions' => ['style' => 'width:100px'],
                 'value' => function ($model) {
-                    return $model->chapter_count."章";
+                    $ret = Html::a($model->chapter_count."章",
+                        ['chapter/index', 'ChapterSearch[story_id]' => $model->story_id]);
+                    return $ret;
                 },
             ],
             [
                 'attribute' => 'message_count',
+                'format' => 'raw',
                 'headerOptions' => ['style' => 'width:100px'],
                 'value' => function ($model) {
-                    return $model->message_count."条";
+                    $ret = Html::a($model->message_count."条",
+                        ['chapter-message-content/index', 'ChapterMessageContentSearch[story_id]' => $model->story_id]);
+                    return $ret;
                 },
             ],
             [

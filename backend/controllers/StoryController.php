@@ -157,7 +157,6 @@ class StoryController extends Controller
                     //解析处理故事文件
                     $storyModel = new Story();
                     $story = $storyModel->parseFile($file);
-
                     //数据存储
                     if (!empty($story) && is_array($story)) {
                         $transaction = Yii::$app->db->beginTransaction();
@@ -233,7 +232,7 @@ class StoryController extends Controller
 
                                 foreach ($story['chapterArr'] as $chapterItem) {
                                     $messageCount = 0;
-                                    if(isset($story['messageArr'][$chapterItem['number']])) {
+                                    if(isset($story['messageArr'][$chapterItem['number']]) && is_array($story['messageArr'][$chapterItem['number']])) {
                                         $messageCount = count($story['messageArr'][$chapterItem['number']]);
                                     }
                                     $chapterModel = new Chapter();
