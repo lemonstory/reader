@@ -149,10 +149,8 @@ class ChapterController extends Controller
     public function actionUpload()
     {
 
-
+        $uploadFormModel = new UploadForm();
         if (Yii::$app->request->isPost) {
-
-            $uploadFormModel = new UploadForm();
             $storyId = intval(Yii::$app->request->post('story_id', 0));
             if ($storyId > 0) {
 
