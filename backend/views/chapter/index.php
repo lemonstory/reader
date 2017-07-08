@@ -29,9 +29,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'story_id',
                 'contentOptions' => ['style' => 'width:10px;'],
                 'format' => 'raw',
-                'value' => function ($m) {
-                    $ret =  Html::a($m->story_id,
-                        ['story/update', 'id' => $m->story_id,]);
+                'value' => function ($model) {
+                    $ret =  Html::a($model->story_id,
+                        ['story/update', 'id' => $model->story_id,]);
 
                     return $ret;
                 },
@@ -39,14 +39,18 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'number',
                 'headerOptions' => ['style' => 'width:50px'],
+                'value' => function ($model) {
+                    $ret =  '#'.$model->number;
+                    return $ret;
+                },
             ],
             [
                 'attribute' => 'chapter_id',
                 'contentOptions' => ['style' => 'width:10px;'],
                 'format' => 'raw',
-                'value' => function ($m) {
-                    $ret =  Html::a($m->chapter_id,
-                        ['chapter/update', 'id' => $m->chapter_id,]);
+                'value' => function ($model) {
+                    $ret =  Html::a($model->chapter_id,
+                        ['chapter/update', 'id' => $model->chapter_id,]);
                     return $ret;
                 },
             ],
@@ -54,12 +58,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'background',
                 'headerOptions' => ['style' => 'width:100px'],
                 'format' => 'raw',
-                'value' => function ($m) {
-                    $cover = Html::img($m->background,
+                'value' => function ($model) {
+                    $cover = Html::img($model->background,
                         ['class' => 'img-rounded', 'width' => 90]
                     );
                     return Html::a($cover,
-                        ['chapter/update', 'id' => $m->chapter_id]);
+                        ['chapter/update', 'id' => $model->chapter_id]);
                     ;
                 }
             ],
@@ -78,9 +82,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'message_count',
+                'format' => 'raw',
                 'headerOptions' => ['style' => 'width:100px'],
                 'value' => function ($model) {
-                    return $model->message_count."条";
+                    $ret = Html::a($model->message_count."条",
+                        ['chapter-message-content/index',
+                                'ChapterMessageContentSearch[story_id]' => $model->story_id,
+                                'ChapterMessageContentSearch[chapter_id]' => $model->chapter_id
+                        ]);
+                    return $ret;
                 },
             ],
             [
