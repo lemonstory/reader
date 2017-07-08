@@ -273,17 +273,20 @@ class StoryController extends Controller
                                             $messageRow['story_id'] = $storyId;
                                             $messageRow['chapter_id'] = $chapterId;
                                             $actorId = 0;
-                                            if(!empty($actorId)) {
-                                                $messageRow['actor_id'] = $actorId;
-                                                $messageRow['text'] = $messageItem['text'];
-                                                $messageRow['voice_over'] = $messageItem['voiceOver'];
-                                                $number = $index + 1;
-                                                $messageRow['number'] = $number;
-                                                $messageRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
-                                                $messageRows[] = $messageRow;
-                                            }else {
-                                                throw new ServerErrorHttpException($messageItem['actorName'] . ': 角色不存在');
+                                            if (!empty($messageItem['actorName'])) {
+                                                if (isset($actorNameIdPair[$messageItem['actorName']]) && !empty($actorNameIdPair[$messageItem['actorName']])) {
+                                                    $actorId = $actorNameIdPair[$messageItem['actorName']];
+                                                } else {
+                                                    throw new ServerErrorHttpException($messageItem['actorName'] . ': 角色不存在');
+                                                }
                                             }
+                                            $messageRow['actor_id'] = $actorId;
+                                            $messageRow['text'] = $messageItem['text'];
+                                            $messageRow['voice_over'] = $messageItem['voiceOver'];
+                                            $number = $index + 1;
+                                            $messageRow['number'] = $number;
+                                            $messageRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
+                                            $messageRows[] = $messageRow;
                                         }
                                     }else {
                                         throw new ServerErrorHttpException('消息内容没有章节Id');

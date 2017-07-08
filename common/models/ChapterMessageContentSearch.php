@@ -41,7 +41,7 @@ class ChapterMessageContentSearch extends ChapterMessageContent
      */
     public function search($params)
     {
-        $query = ChapterMessageContent::find()->orderBy(['story_id' => SORT_DESC,'chapter_id' => SORT_DESC,'number' => SORT_ASC]);
+        $query = ChapterMessageContent::find()->orderBy(['story_id' => SORT_DESC,'chapter_id' => SORT_ASC,'number' => SORT_ASC]);
 
         // add conditions that should always apply here
 
