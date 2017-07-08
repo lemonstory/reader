@@ -156,7 +156,8 @@ class StoryController extends Controller
 
                     //解析处理故事文件
                     $storyModel = new Story();
-                    $story = $storyModel->parseFile($file);
+                    $story = $storyModel->parseFile($file,Story::FILE_PARSE_TYPE_STORY,null);
+
                     //数据存储
                     if (!empty($story) && is_array($story)) {
                         $transaction = Yii::$app->db->beginTransaction();
@@ -164,13 +165,13 @@ class StoryController extends Controller
 
                             //作者
                             $uid = 0;
-                            $userCondition = ['name' => $story['userName']];
+                            $userCondition = ['name' => $story['user_name']];
                             $userInfoArr = User::find()->where($userCondition)->asArray()->one();
                             if (!empty($userInfoArr)) {
                                 $uid = $userInfoArr['uid'];
                             } else {
                                 $userModel = new User();
-                                $userModel->name = $story['userName'];
+                                $userModel->name = $story['user_name'];
                                 if ($userModel->save()) {
                                     $uid = $userModel->uid;
                                 } else {
@@ -185,10 +186,10 @@ class StoryController extends Controller
                             $storyModel = new Story();
                             $storyModel->uid = $uid;
                             $storyModel->name = $story['name'];
-                            $storyModel->sub_name = $story['subName'];
+                            $storyModel->sub_name = $story['sub_name'];
                             $storyModel->description = $story['description'];
-                            $storyModel->chapter_count = $story['chapterCount'];
-                            $storyModel->message_count = $story['messageCount'];
+                            $storyModel->chapter_count = $storyModel->chapter_count + $story['add_chapter_count'];
+                            $storyModel->message_count = $storyModel->message_count + $story['add_message_count'];
                             $storyModel->status = Yii::$app->params['STATUS_ACTIVE'];
                             $storyModel->is_published = Yii::$app->params['STATUS_UNPUBLISHED'];
                             if ($storyModel->save()) {
@@ -228,12 +229,12 @@ class StoryController extends Controller
 
                             //章节
                             $chapterNumberIdPair = array();
-                            if (!empty($story['chapterArr']) && is_array($story['chapterArr'])) {
+                            if (!empty($story['addChapterArr']) && is_array($story['addChapterArr'])) {
 
-                                foreach ($story['chapterArr'] as $chapterItem) {
+                                foreach ($story['addChapterArr'] as $chapterItem) {
                                     $messageCount = 0;
-                                    if(isset($story['messageArr'][$chapterItem['number']]) && is_array($story['messageArr'][$chapterItem['number']])) {
-                                        $messageCount = count($story['messageArr'][$chapterItem['number']]);
+                                    if(isset($story['addMessageArr'][$chapterItem['number']]) && is_array($story['addMessageArr'][$chapterItem['number']])) {
+                                        $messageCount = count($story['addMessageArr'][$chapterItem['number']]);
                                     }
                                     $chapterModel = new Chapter();
                                     $chapterModel->story_id = $storyId;
@@ -241,7 +242,7 @@ class StoryController extends Controller
                                     $chapterModel->number = $chapterItem['number'];
                                     $chapterModel->message_count = $messageCount;
                                     $chapterModel->status = Yii::$app->params['STATUS_ACTIVE'];
-                                    $chapterModel->is_published = Yii::$app->params['STATUS_PUBLISHED'];
+                                    $chapterModel->is_published = Yii::$app->params['STATUS_UNPUBLISHED'];
                                     if($chapterModel->save()) {
                                         $chapterId = $chapterModel->chapter_id;
                                         $chapterNumberIdPair[$chapterItem['number']] = $chapterId;
@@ -255,15 +256,15 @@ class StoryController extends Controller
                             }
 
                             //消息
-                            if (!empty($story['messageArr'])
-                                && is_array($story['messageArr'])
+                            if (!empty($story['addMessageArr'])
+                                && is_array($story['addMessageArr'])
                                 && !empty($actorNameIdPair)
                                 && is_array($actorNameIdPair)
                                 && !empty($chapterNumberIdPair)
                                 && is_array($chapterNumberIdPair)) {
 
                                 $messageRows = array();
-                                foreach ($story['messageArr'] as $chapterNumber => $chapterMessageArr) {
+                                foreach ($story['addMessageArr'] as $chapterNumber => $chapterMessageArr) {
 
                                     $chapterId = $chapterNumberIdPair[$chapterNumber];
                                     if(!empty($chapterId)) {
@@ -272,18 +273,18 @@ class StoryController extends Controller
                                             $messageRow['story_id'] = $storyId;
                                             $messageRow['chapter_id'] = $chapterId;
                                             $actorId = 0;
-                                            if(isset($actorNameIdPair[$messageItem['actorName']]) && !empty($actorNameIdPair[$messageItem['actorName']])) {
-                                                $actorId = $actorNameIdPair[$messageItem['actorName']];
+                                            if(!empty($actorId)) {
+                                                $messageRow['actor_id'] = $actorId;
+                                                $messageRow['text'] = $messageItem['text'];
+                                                $messageRow['voice_over'] = $messageItem['voiceOver'];
+                                                $number = $index + 1;
+                                                $messageRow['number'] = $number;
+                                                $messageRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
+                                                $messageRows[] = $messageRow;
+                                            }else {
+                                                throw new ServerErrorHttpException($messageItem['actorName'] . ': 角色不存在');
                                             }
-                                            $messageRow['actor_id'] = $actorId;
-                                            $messageRow['text'] = $messageItem['text'];
-                                            $messageRow['voice_over'] = $messageItem['voiceOver'];
-                                            $number = $index + 1;
-                                            $messageRow['number'] = $number;
-                                            $messageRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
-                                            $messageRows[] = $messageRow;
                                         }
-
                                     }else {
                                         throw new ServerErrorHttpException('消息内容没有章节Id');
                                     }

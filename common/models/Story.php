@@ -27,6 +27,9 @@ use yii\helpers\StringHelper;
  */
 class Story extends \yii\db\ActiveRecord
 {
+    const FILE_PARSE_TYPE_STORY = 'story';
+    const FILE_PARSE_TYPE_CHAPTER = 'chapter';
+
     /**
      * @inheritdoc
      */
@@ -143,10 +146,11 @@ class Story extends \yii\db\ActiveRecord
 
     /**
      * 将故事文件解析成数组
-     * @param $file
+     * @param $file txt文件
+     * @param $type txt文件类似(story:故事文件 chapter:章节文件)
      * @return array $story
      */
-    public function parseFile($file)
+    public function parseFile($file,$type)
     {
 
         $story = array();
@@ -159,28 +163,28 @@ class Story extends \yii\db\ActiveRecord
             //故事标题
             $story['name'] = "";
             //故事副标题
-            $story['subName'] = "";
+            $story['sub_name'] = "";
             //故事简介
             $story['description'] = "";
             //作者姓名
-            $story['userName'] = "";
+            $story['user_name'] = "";
             //角色信息
             //$actorArr = [['location' => 0,'name'=>'姓名','number'=>'序号'],...]
             $story['actorArr'] = array();
-            //章节信息
-            //$chapterArr = [['name'=>'章节名称','number'=>'序号']]
-            $story['chapterArr'] = array();
+            //添加的章节信息
+            //$addChapterArr = [['name'=>'章节名称','number'=>'序号']]
+            $story['addChapterArr'] = array();
             $chapterItem = array();
             $chapterName = "";
             //故事章节数量
-            $story['chapterCount'] = 0;
-            //故事消息数量
-            $story['messageCount'] = 0;
+            $story['add_chapter_count'] = 0;
+            //增加的故事消息数量
+            $story['add_message_count'] = 0;
             //当前章节序号
             $currentChapterNumber = 0;
             //消息内容
-            //$messageArr = ['章节序号'=>['actorName'=>'作者姓名','text'=>'消息文字','voice_over'=>'旁白'],...]
-            $story['messageArr'] = array();
+            //$addMessageArr = ['章节序号'=>['actorName'=>'作者姓名','text'=>'消息文字','voice_over'=>'旁白'],...]
+            $story['addMessageArr'] = array();
             $messageItem = array();
             //在解析过程中是否有错误
             $hasError = false;
@@ -189,11 +193,11 @@ class Story extends \yii\db\ActiveRecord
 
                 //第一行
                 //故事标题-故事短标题(躲灵—农夫与蛇的故事)
-                if (0 == $index) {
+                if (0 == strcmp($type,Story::FILE_PARSE_TYPE_STORY) && 0 == $index) {
                     $titleArr = preg_split("/[—-]+/", $value);
                     if (!empty($titleArr) && is_array($titleArr) && count($titleArr) <= 2) {
                         $story['name'] = trim($titleArr[0]);
-                        $story['subName'] = isset($titleArr[1]) ? trim($titleArr[1]) : "";
+                        $story['sub_name'] = isset($titleArr[1]) ? trim($titleArr[1]) : "";
                     } else {
                         $hasError = true;
                         echo "故事标题解析错误：" . $value . "\r\n";
@@ -202,19 +206,19 @@ class Story extends \yii\db\ActiveRecord
 
                 //第二行
                 //故事简介(老伯去世前的种种离奇，有因有果，他是否可以平安躲过？)
-                if (1 == $index) {
+                if (0 == strcmp($type,Story::FILE_PARSE_TYPE_STORY) && 1 == $index) {
                     $story['description'] = $value;
                 }
 
                 //第三行
                 //作者姓名(凌晨小雨)
-                if (2 == $index) {
-                    $story['userName'] = $value;
+                if (0 == strcmp($type,Story::FILE_PARSE_TYPE_STORY) &&  2 == $index) {
+                    $story['user_name'] = $value;
                 }
 
                 //第四行
                 //角色信息(右=陈园，左=陈毅)
-                if (3 == $index) {
+                if (0 == strcmp($type,Story::FILE_PARSE_TYPE_STORY) &&  3 == $index) {
 
                     $value = str_replace("，",",",$value);
                     $storyActorLocation = ArrayHelper::index(Yii::$app->params['storyActorLocation'], 'label');
@@ -249,7 +253,7 @@ class Story extends \yii\db\ActiveRecord
                         }
                     }
                 }
-                if ($index >= 4) {
+                if ($index >= 4 || 0 == strcmp($type,Story::FILE_PARSE_TYPE_CHAPTER)) {
 
                     //第五行
                     //章节(#1这一天)
@@ -271,17 +275,17 @@ class Story extends \yii\db\ActiveRecord
                         $currentChapterNumber = str_replace("#", "", $value);
                         $currentChapterNumber = str_replace($chapterName, "", $currentChapterNumber);
                         $currentChapterNumber = intval($currentChapterNumber);
-                        if (!empty($story['chapterArr']) && is_array($story['chapterArr'])) {
+                        if (!empty($story['addChapterArr']) && is_array($story['addChapterArr'])) {
 
-                            $chapterNumberArr = ArrayHelper::getColumn($story['chapterArr'], 'number');
+                            $chapterNumberArr = ArrayHelper::getColumn($story['addChapterArr'], 'number');
                             if (ArrayHelper::isIn($currentChapterNumber, $chapterNumberArr)) {
                                 $hasError = true;
                                 echo "章节序号重复：" . $value . "\r\n";
                             }
                         }
                         $chapterItem['number'] = $currentChapterNumber;
-                        $story['chapterArr'][] = $chapterItem;
-                        $story['chapterCount'] = $story['chapterCount'] + 1;
+                        $story['addChapterArr'][] = $chapterItem;
+                        $story['add_chapter_count'] = $story['add_chapter_count'] + 1;
                     } else {
 
                         //第六行(及后面的行)
@@ -296,27 +300,14 @@ class Story extends \yii\db\ActiveRecord
                         if (!isset($messageItem['text'])) {
                             $messageItem['text'] = '';
                         }
-                        $actorNameArr = array_keys(ArrayHelper::index($story['actorArr'], 'name'));
-                        $actorIsExist = false;
-                        $actorName = '';
-                        foreach ($actorNameArr as $actorNameItem) {
-                            $actorIsExist = StringHelper::startsWith($value, $actorNameItem . "：", false) || StringHelper::startsWith($value, $actorNameItem . ":", false);
-                            if ($actorIsExist) {
-                                $actorName = $actorNameItem;
-                                break;
-                            }
-                        }
+                        //中文或英文字母或_
+                        $pattern = '/^[\x{4e00}-\x{9fa5}_a-zA-Z0-9]+[：:]{1}/u';
+                        $ret = preg_match($pattern,$value,$matches);
+                        $actorIsExist = (1 == $ret) ? true : false;
                         if ($actorIsExist) {
-
-//                            echo "判断有作者：\r\n";
-//                            echo "【作者处理开始】打印消息结构\r\n";
-//                            var_dump($messageItem);
-
-                            //去掉作者姓名
-                            $text = str_replace($actorName . "：", "", $value, $count);
-                            if (empty($count)) {
-                                $text = str_replace($actorName . ":", "", $value, $count);
-                            }
+                            $actorNameColon = str_replace("：",":",$matches[0],$count);
+                            $actorName = str_replace(":","",$actorNameColon,$count);
+                            $text = str_replace($matches[0], "", $value, $count);
 
                             if (empty($count)) {
                                 $hasError = true;
@@ -341,8 +332,8 @@ class Story extends \yii\db\ActiveRecord
 
 //                        echo "{开始}保存信息\r\n";
                         if (!empty($messageItem) && is_array($messageItem)) {
-                            $story['messageArr'][$currentChapterNumber][] = $messageItem;
-                            $story['messageCount'] = $story['messageCount'] + 1;
+                            $story['addMessageArr'][$currentChapterNumber][] = $messageItem;
+                            $story['add_message_count'] = $story['add_message_count'] + 1;
                             $messageItem['voiceOver'] = '';
                             $messageItem['actorName'] = '';
                             $messageItem['text'] = '';
