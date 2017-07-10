@@ -3,6 +3,7 @@
 namespace common\models;
 
 use Yii;
+use yii\base\ErrorException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
@@ -139,9 +140,12 @@ class Story extends \yii\db\ActiveRecord
         return $this->hasOne(User::className(), ['uid' => 'uid']);
     }
 
-    function arrValueEncoding(&$value, $key)
+    function arrValueEncoding(&$value)
     {
-        $value = mb_convert_encoding($value, "UTF-8", "Unicode,ASCII,GB2312,GBK,UTF-16");
+        $isUtf8Encode = mb_check_encoding($value,'UTF-8');
+        if(!$isUtf8Encode) {
+            $value = mb_convert_encoding($value, "UTF-8", "Unicode,ASCII,GB2312,GBK");
+        }
     }
 
     /**
@@ -153,11 +157,20 @@ class Story extends \yii\db\ActiveRecord
     public function parseFile($file,$type)
     {
 
+        //在解析过程中是否有错误
+        $hasError = false;
         $story = array();
         if (file_exists($file) && is_readable($file)) {
 
             $fileArr = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-            array_walk($fileArr, array($this, "arrValueEncoding"));
+            try{
+                array_walk($fileArr, array($this, "arrValueEncoding"));
+            }catch (ErrorException $e) {
+                $hasError = true;
+                echo "文件编码错误，正确的文件编码类型utf-8" ;
+                echo $e->getMessage();
+            }
+
             //故事
             $story = array();
             //故事标题
@@ -186,8 +199,6 @@ class Story extends \yii\db\ActiveRecord
             //$addMessageArr = ['章节序号'=>['actorName'=>'作者姓名','text'=>'消息文字','voice_over'=>'旁白'],...]
             $story['addMessageArr'] = array();
             $messageItem = array();
-            //在解析过程中是否有错误
-            $hasError = false;
 
             foreach ($fileArr as $index => $value) {
 
