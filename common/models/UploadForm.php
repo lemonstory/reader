@@ -78,7 +78,7 @@ class UploadForm extends Model
         //object = cover/2017/06/26/0_1498457928781.jpg
         $object = $type;
         $object .= date("Y/m/d/",time());
-        $object .= $uid._.time();
+        $object .= $uid."_".time();
         $object .= Yii::$app->params['ossPicObjectCoverSuffix'];
         return $object;
     }

@@ -32,12 +32,18 @@ use yii\widgets\ActiveForm;
         $coverImg =  Html::img($model->cover, ['class' => 'img-rounded', 'width' => 90]);
     ?>
 
-    <?= $form->field($model, 'cover', [
-        'template'=> "{label}<div class=\"row\"><div class=\"col-sm-6\"><p>{$coverImg}</p>{input}</div>{error}</div>",
-        'labelOptions' => [ 'class' => 'col-sm-1 control-label' ],
-//        'inputOptions' => [ 'bbb' =>  $model->cover]
-    ])->fileInput(['required'=>true]) ?>
+    <?php
 
+        $fileInputOptions = [];
+        if(empty($model->cover)) {
+            $fileInputOptions = ['required'=>true];
+        }
+
+        echo $form->field($model, 'cover', [
+            'template'=> "{label}<div class=\"row\"><div class=\"col-sm-6\"><p>{$coverImg}</p>{input}</div>{error}</div>",
+            'labelOptions' => [ 'class' => 'col-sm-1 control-label' ],
+        ])->fileInput($fileInputOptions)
+    ?>
 
     <?= $form->field($model, 'uid')->textInput() ?>
     <?= $form->field($model, 'chapter_count')->textInput(['disabled' => true]) ?>

@@ -419,7 +419,7 @@ class StoryController extends Controller
             } catch (\Exception $e) {
                 $transaction->rollBack();
                 print $e->getMessage();
-                print $e->getTrace();
+                //print_r($e->getTrace());
             }
 
         } else {
