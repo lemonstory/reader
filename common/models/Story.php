@@ -141,7 +141,7 @@ class Story extends \yii\db\ActiveRecord
 
     function arrValueEncoding(&$value, $key)
     {
-        $value = mb_convert_encoding($value, "UTF-8", "Unicode,ASCII,GB2312,GBK");
+        $value = mb_convert_encoding($value, "UTF-8", "Unicode,ASCII,GB2312,GBK,UTF-16");
     }
 
     /**
@@ -224,6 +224,7 @@ class Story extends \yii\db\ActiveRecord
                     $value = str_replace("，",",",$value);
                     $storyActorLocation = ArrayHelper::index(Yii::$app->params['storyActorLocation'], 'label');
                     $actorPairStrArr = explode(',',$value);
+//                    var_dump($actorPairStrArr);
                     if (!empty($actorPairStrArr) && is_array($actorPairStrArr) && count($actorPairStrArr) > 0) {
 
                         foreach ($actorPairStrArr as $actorIndex => $actorPairStr) {
@@ -232,7 +233,7 @@ class Story extends \yii\db\ActiveRecord
                             $location = '-1';
                             $name = '';
                             $number = $actorIndex + 1;
-                            $actorPairArr = preg_split("/[=]+/", $actorPairStr);
+                            $actorPairArr = preg_split("/[=＝]+/", $actorPairStr);
                             if(isset($actorPairArr[0]) && isset($actorPairArr[1])) {
 
                                 $locationLabel = trim($actorPairArr[0]);
