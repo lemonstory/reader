@@ -301,6 +301,7 @@ class StoryController extends Controller
                                 throw new ServerErrorHttpException('没有消息内容(或)角色名称-角色id对为空(或)章节序号-章节id对为空');
                             }
                             $transaction->commit();
+                            unlink($file);
                             echo "成功";
                         } catch (\Exception $e) {
                             $transaction->rollBack();
