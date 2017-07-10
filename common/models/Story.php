@@ -194,7 +194,8 @@ class Story extends \yii\db\ActiveRecord
                 //第一行
                 //故事标题-故事短标题(躲灵—农夫与蛇的故事)
                 if (0 == strcmp($type,Story::FILE_PARSE_TYPE_STORY) && 0 == $index) {
-                    $titleArr = preg_split("/[—-]+/", $value);
+                    $value = str_replace("—","-",$value);
+                    $titleArr = explode("-", $value);
                     if (!empty($titleArr) && is_array($titleArr) && count($titleArr) <= 2) {
                         $story['name'] = trim($titleArr[0]);
                         $story['sub_name'] = isset($titleArr[1]) ? trim($titleArr[1]) : "";
@@ -225,12 +226,12 @@ class Story extends \yii\db\ActiveRecord
                     $actorPairStrArr = explode(',',$value);
                     if (!empty($actorPairStrArr) && is_array($actorPairStrArr) && count($actorPairStrArr) > 0) {
 
-                        foreach ($actorPairStrArr as $index => $actorPairStr) {
+                        foreach ($actorPairStrArr as $actorIndex => $actorPairStr) {
 
                             //-1表示不存在
                             $location = '-1';
                             $name = '';
-                            $number = $index + 1;
+                            $number = $actorIndex + 1;
                             $actorPairArr = preg_split("/[=]+/", $actorPairStr);
                             if(isset($actorPairArr[0]) && isset($actorPairArr[1])) {
 

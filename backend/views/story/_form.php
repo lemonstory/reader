@@ -21,12 +21,12 @@ use yii\widgets\ActiveForm;
         ]);
     ?>
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'name')->textInput(['maxlength' => true,'required'=>true]) ?>
     <?= $form->field($model, 'sub_name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'description', [
             'template'=> "{label}<div class=\"row\"><div class=\"col-sm-6\">{input}</div>{error}</div>",
             'labelOptions' => [ 'class' => 'col-sm-1 control-label' ]
-        ])->textarea(['maxlength' => true]) ?>
+        ])->textarea(['maxlength' => true,'required'=>true]) ?>
 
     <?php
         $coverImg =  Html::img($model->cover, ['class' => 'img-rounded', 'width' => 90]);
@@ -36,7 +36,7 @@ use yii\widgets\ActiveForm;
         'template'=> "{label}<div class=\"row\"><div class=\"col-sm-6\"><p>{$coverImg}</p>{input}</div>{error}</div>",
         'labelOptions' => [ 'class' => 'col-sm-1 control-label' ],
 //        'inputOptions' => [ 'bbb' =>  $model->cover]
-    ])->fileInput() ?>
+    ])->fileInput(['required'=>true]) ?>
 
 
     <?= $form->field($model, 'uid')->textInput() ?>

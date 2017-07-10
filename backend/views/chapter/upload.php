@@ -22,7 +22,7 @@ $form = ActiveForm::begin([
     </div>
 </div>
 
-<?= $form->field($model, 'file')->fileInput()->label('章节txt文件') ?>
+<?= $form->field($model, 'file')->fileInput(['required'=>true])->label('章节txt文件') ?>
 
 <button class="btn btn-success btn-sm">上传文件</button>
 

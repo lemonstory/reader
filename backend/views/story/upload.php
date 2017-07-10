@@ -8,7 +8,7 @@ $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); 
 $this->title = Yii::t('app', '上传故事');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<?= $form->field($model, 'file')->fileInput()->label('故事txt文件') ?>
+<?= $form->field($model, 'file')->fileInput(['required'=>true])->label('故事txt文件') ?>
 
     <button class="btn btn-success btn-sm">上传文件</button>
 
