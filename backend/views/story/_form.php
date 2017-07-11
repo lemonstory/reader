@@ -95,6 +95,8 @@ use yii\widgets\ActiveForm;
                     if(!empty($checkTagArr)) {
                         $selection = ArrayHelper::getColumn($checkTagArr, 'tag_id');
                         echo Html::listBox('Story[tags]', $selection, $listBoxItems, ['multiple' => 'true', 'class' => 'form-control']);
+                    }else {
+                        echo Html::listBox('Story[tags]', $selection, $listBoxItems, ['multiple' => 'true', 'class' => 'form-control']);
                     }
                 ?>
             </div>
