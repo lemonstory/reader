@@ -59,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $ret = '';
                     if(!empty($avatar)) {
                         $img = Html::img($avatar,
-                            ['class' => 'img-circle img-bordered-sm', 'style' => 'width: 40px;height: 40px;margin: 0 auto;display: block;','alt' => "评论者"]
+                            ['class' => 'img-circle img-bordered-sm', 'style' => 'width: 40px;height: 40px;margin: 0 auto;display: block;','alt' => "角色"]
                         );
                         $ret = Html::a($img,
                             ['story-actor/update', 'id' => $actor_id]);
@@ -142,8 +142,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $ret;
                 },
             ],
-             'create_time',
-             'last_modify_time',
+            [
+                'attribute' => 'create_time',
+                'headerOptions' => ['style' => 'width:50px'],
+            ],
+            [
+                'attribute' => 'last_modify_time',
+                'headerOptions' => ['style' => 'width:50px'],
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

@@ -228,13 +228,15 @@
                                 "actor_id": "2",
                                 "name": "昭昭",
                                 "avatar": "http://p5.gexing.com/GSF/touxiang/20170612/17/17y0gn7l1s62rca89urd0o3bx.jpg@!200x200_3?recache=20131108",
-                                "number": "2"
+                                "number": "2",
+                                "location": "1",
                             },
                             {
                                 "actor_id": "3",
                                 "name": "乐乐",
                                 "avatar": "http://p5.gexing.com/GSF/touxiang/20170610/02/gmykod8dfr9xm2f99wdcefdg.jpg@!200x200_3?recache=20131108",
-                                "number": "3"
+                                "number": "3",
+                                "location": "0",
                             }
                         ],
                         "tag": [
@@ -264,6 +266,7 @@
                     "code": 200,
                     "message": "OK"
                 }
+                备注：location表示角色位置：0：左，1：右
             
          6)查看故事章节[已完成]
                api:    /story/chapters/{故事Id}

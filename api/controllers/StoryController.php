@@ -360,7 +360,7 @@ class StoryController extends ActiveController
                 'status' => Yii::$app->params['STATUS_ACTIVE'],
                 'is_visible' => Yii::$app->params['STATUS_ACTIVE']
             );
-            $actorNames = array('actor_id','name','avatar','number');
+            $actorNames = array('actor_id','name','avatar','number','location');
             $data['actor'] = $storyModel->getActors()->select($actorNames)->andWhere($actorCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
 
             //标签信息
