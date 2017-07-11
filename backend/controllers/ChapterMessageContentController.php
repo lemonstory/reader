@@ -6,6 +6,8 @@ use common\models\StoryActor;
 use Yii;
 use common\models\ChapterMessageContent;
 use common\models\ChapterMessageContentSearch;
+use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -25,6 +27,25 @@ class ChapterMessageContentController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'ips' => Yii::$app->params['adminIps'],
+                        'matchCallback' => function ($rule, $action) {
+                            $uid = Yii::$app->getUser()->getId();
+                            if(!empty($uid) && ArrayHelper::isIn($uid,Yii::$app->params['adminUidWhiteList'])) {
+                                return true;
+                            }else {
+                                return false;
+                            }
+                        }
+                    ],
                 ],
             ],
         ];

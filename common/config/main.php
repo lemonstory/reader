@@ -1,5 +1,7 @@
 <?php
-return [
+use yii\helpers\ArrayHelper;
+
+$config = [
     'timeZone' => 'Asia/Shanghai',
     'vendorPath' => dirname(dirname(__DIR__)) . '/vendor',
     'components' => [
@@ -8,3 +10,12 @@ return [
         ],
     ],
 ];
+
+$config = ArrayHelper::merge(
+    require(__DIR__ . '/db.php'),
+    $config);
+
+return $config;
+
+
+

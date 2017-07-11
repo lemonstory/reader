@@ -12,7 +12,7 @@ use common\models\User;
 use Yii;
 use common\models\Story;
 use common\models\StorySearch;
-use yii\base\ErrorException;
+use yii\filters\AccessControl;
 use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -35,6 +35,25 @@ class StoryController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'ips' => Yii::$app->params['adminIps'],
+                        'matchCallback' => function ($rule, $action) {
+                            $uid = Yii::$app->getUser()->getId();
+                            if(!empty($uid) && ArrayHelper::isIn($uid,Yii::$app->params['adminUidWhiteList'])) {
+                                return true;
+                            }else {
+                                return false;
+                            }
+                        }
+                    ],
                 ],
             ],
         ];

@@ -5,6 +5,7 @@ namespace backend\controllers;
 use Yii;
 use common\models\StoryActor;
 use common\models\StoryActorSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -24,6 +25,25 @@ class StoryActorController extends Controller
                 'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
+                ],
+            ],
+
+            'access' => [
+                'class' => AccessControl::className(),
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'roles' => ['@'],
+                        'ips' => Yii::$app->params['adminIps'],
+                        'matchCallback' => function ($rule, $action) {
+                            $uid = Yii::$app->getUser()->getId();
+                            if(!empty($uid) && ArrayHelper::isIn($uid,Yii::$app->params['adminUidWhiteList'])) {
+                                return true;
+                            }else {
+                                return false;
+                            }
+                        }
+                    ],
                 ],
             ],
         ];
