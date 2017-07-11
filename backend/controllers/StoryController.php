@@ -185,13 +185,13 @@ class StoryController extends Controller
 
                             //作者
                             $uid = 0;
-                            $userCondition = ['name' => $story['user_name']];
+                            $userCondition = ['username' => $story['user_name']];
                             $userInfoArr = User::find()->where($userCondition)->asArray()->one();
                             if (!empty($userInfoArr)) {
                                 $uid = $userInfoArr['uid'];
                             } else {
                                 $userModel = new User();
-                                $userModel->name = $story['user_name'];
+                                $userModel->username = $story['user_name'];
                                 if ($userModel->save()) {
                                     $uid = $userModel->uid;
                                 } else {
@@ -325,6 +325,7 @@ class StoryController extends Controller
                         } catch (\Exception $e) {
                             $transaction->rollBack();
                             echo $e->getMessage();
+//                            print_r($e->getTrace());
                             echo "失败";
                         }
                     }

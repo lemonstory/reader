@@ -227,13 +227,13 @@
                             {
                                 "actor_id": "2",
                                 "name": "昭昭",
-                                "avator": "http://p5.gexing.com/GSF/touxiang/20170612/17/17y0gn7l1s62rca89urd0o3bx.jpg@!200x200_3?recache=20131108",
+                                "avatar": "http://p5.gexing.com/GSF/touxiang/20170612/17/17y0gn7l1s62rca89urd0o3bx.jpg@!200x200_3?recache=20131108",
                                 "number": "2"
                             },
                             {
                                 "actor_id": "3",
                                 "name": "乐乐",
-                                "avator": "http://p5.gexing.com/GSF/touxiang/20170610/02/gmykod8dfr9xm2f99wdcefdg.jpg@!200x200_3?recache=20131108",
+                                "avatar": "http://p5.gexing.com/GSF/touxiang/20170610/02/gmykod8dfr9xm2f99wdcefdg.jpg@!200x200_3?recache=20131108",
                                 "number": "3"
                             }
                         ],
@@ -373,14 +373,14 @@
                                     {
                                         "actor_id": 56,
                                         "name": "角色姓名-1",
-                                        "avator": "",
+                                        "avatar": "",
                                         "number": 1,
                                         "is_visible": 1
                                     },
                                     {
                                         "actor_id": 57,
                                         "name": "角色姓名-2",
-                                        "avator": "",
+                                        "avatar": "",
                                         "number": 2,
                                         "is_visible": 1
                                     }
@@ -689,13 +689,13 @@
                                             {
                                                 "actor_id": "56",
                                                 "name": "角色姓名-1",
-                                                "avator": "",
+                                                "avatar": "",
                                                 "number": "1"
                                             },
                                             {
                                                 "actor_id": "57",
                                                 "name": "角色姓名-2",
-                                                "avator": "",
+                                                "avatar": "",
                                                 "number": "2"
                                             }
                                         ]

@@ -21,7 +21,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name') ?>
 
-    <?= $form->field($model, 'avator') ?>
+    <?= $form->field($model, 'avatar') ?>
 
     <?= $form->field($model, 'number') ?>
 

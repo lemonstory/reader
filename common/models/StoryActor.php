@@ -10,7 +10,7 @@ use Yii;
  * @property integer $actor_id
  * @property integer $story_id
  * @property string $name
- * @property string $avator
+ * @property string $avatar
  * @property integer $number
  * @property integer $location
  * @property integer $is_visible
@@ -38,7 +38,7 @@ class StoryActor extends \yii\db\ActiveRecord
             [['story_id', 'number', 'location', 'is_visible', 'status'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['name'], 'string', 'max' => 16],
-            [['avator'], 'string', 'max' => 2083],
+            [['avatar'], 'string', 'max' => 2083],
             [['story_id', 'number'], 'unique', 'targetAttribute' => ['story_id', 'number'], 'message' => 'The combination of 故事id and 序号 has already been taken.'],
         ];
     }
@@ -52,7 +52,7 @@ class StoryActor extends \yii\db\ActiveRecord
             'actor_id' => Yii::t('app', '角色id'),
             'story_id' => Yii::t('app', '故事id'),
             'name' => Yii::t('app', '姓名'),
-            'avator' => Yii::t('app', '头像'),
+            'avatar' => Yii::t('app', '头像'),
             'number' => Yii::t('app', '序号'),
             'location' => Yii::t('app', '位置'),
             'is_visible' => Yii::t('app', '是否可见'),

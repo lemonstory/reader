@@ -85,7 +85,7 @@ class StoryController extends ActiveController
                         $actorJson = $storyItem['actor'];
                         $actorRows = $this->parseActorJson($actorJson,$storyId);
                         //TODO:角色信息格式输入检查
-                        $actorColumns = ['actor_id','story_id', 'name', 'avator', 'number','is_visible'];
+                        $actorColumns = ['actor_id','story_id', 'name', 'avatar', 'number','is_visible'];
                         $actorAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryActor::tableName(), $actorColumns, $actorRows)->execute();
                     }
 
@@ -360,7 +360,7 @@ class StoryController extends ActiveController
                 'status' => Yii::$app->params['STATUS_ACTIVE'],
                 'is_visible' => Yii::$app->params['STATUS_ACTIVE']
             );
-            $actorNames = array('actor_id','name','avator','number');
+            $actorNames = array('actor_id','name','avatar','number');
             $data['actor'] = $storyModel->getActors()->select($actorNames)->andWhere($actorCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
 
             //标签信息

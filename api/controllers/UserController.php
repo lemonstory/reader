@@ -100,7 +100,7 @@ class UserController extends ActiveController
                 $actor = array();
                 $actor['actor_id'] = $actorModelItem->actor_id;
                 $actor['name'] = $actorModelItem->name;
-                $actor['avator'] = $actorModelItem->avator;
+                $actor['avatar'] = $actorModelItem->avatar;
                 $actor['number'] = $actorModelItem->number;
                 $actor['is_visible'] = $actorModelItem->is_visible;
                 $actorList[] = $actor;

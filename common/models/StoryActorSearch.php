@@ -9,6 +9,7 @@ use common\models\StoryActor;
 
 /**
  * StoryActorSearch represents the model behind the search form about `common\models\StoryActor`.
+ * @property mixed avatar
  */
 class StoryActorSearch extends StoryActor
 {
@@ -19,7 +20,7 @@ class StoryActorSearch extends StoryActor
     {
         return [
             [['actor_id', 'story_id', 'number', 'location', 'is_visible', 'status'], 'integer'],
-            [['name', 'avator', 'create_time', 'last_modify_time'], 'safe'],
+            [['name', 'avatar', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -70,7 +71,7 @@ class StoryActorSearch extends StoryActor
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'avator', $this->avator]);
+            ->andFilterWhere(['like', 'avatar', $this->avatar]);
 
         return $dataProvider;
     }

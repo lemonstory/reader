@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'actor_id',
             'story_id',
             'name',
-            'avator',
+            'avatar',
             'number',
             'location',
             'is_visible',

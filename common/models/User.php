@@ -42,7 +42,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function behaviors()
     {
         return [
-            TimestampBehavior::className(),
+//            TimestampBehavior::className(),
         ];
     }
 
@@ -57,7 +57,7 @@ class User extends ActiveRecord implements IdentityInterface
             [['username', 'auth_key'], 'string', 'max' => 32],
             [['password_hash', 'password_reset_token', 'email'], 'string', 'max' => 256],
             [['status'], 'integer'],
-            [['register_time', 'created_at', 'created_at'], 'safe'],
+            [['register_time', 'create_time', 'last_modify_time'], 'safe'],
             [['cellphone'], 'string', 'max' => 11],
             [['avatar'], 'string', 'max' => 2083],
             [['signature'], 'string', 'max' => 100],

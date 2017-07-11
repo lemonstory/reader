@@ -124,7 +124,7 @@ class TagController extends ActiveController
         $columns = array(
             'actor_id',
             'name',
-            'avator',
+            'avatar',
             'number',
             'story_id',
         );

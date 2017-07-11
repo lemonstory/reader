@@ -244,7 +244,9 @@ class Story extends \yii\db\ActiveRecord
                             $location = '-1';
                             $name = '';
                             $number = $actorIndex + 1;
-                            $actorPairArr = preg_split("/[=＝]+/", $actorPairStr);
+                            $actorPairStr = str_replace("＝","=",$actorPairStr);
+                            $actorPairArr = explode("=",$actorPairStr);
+//                            $actorPairArr = preg_split("/[=＝]+/", $actorPairStr);
                             if(isset($actorPairArr[0]) && isset($actorPairArr[1])) {
 
                                 $locationLabel = trim($actorPairArr[0]);

@@ -69,20 +69,20 @@ $this->params['breadcrumbs'][] = $this->title;
                     $storyId = $m->story_id;
                     $actorId = $m->actor_id;
                     $name = '';
-                    $avator = '';
+                    $avatar = '';
                     $ret = '';
 
                     if(!empty($storyActorArr[$storyId])) {
                         foreach ($storyActorArr[$storyId] as $actorArr) {
                             if($actorArr['actor_id'] == $actorId) {
                                 $name = $actorArr['name'];
-                                $avator = $actorArr['avator'];
+                                $avatar = $actorArr['avatar'];
                             }
                         }
                     }
 
-                    if(!empty($avator)) {
-                        $img = Html::img($avator,
+                    if(!empty($avatar)) {
+                        $img = Html::img($avatar,
                             ['class' => 'img-circle img-bordered-sm', 'style' => 'width: 40px;height: 40px;margin: 0 auto;display: block;','alt' => "角色"]
                         );
                         $ret = Html::a($img,
