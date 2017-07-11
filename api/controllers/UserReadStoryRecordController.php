@@ -116,7 +116,7 @@ class UserReadStoryRecordController extends ActiveController
 
             $userNames = array(
                 'uid',
-                'name',
+                'username',
                 'avatar',
                 'signature'
             );

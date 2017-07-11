@@ -9,6 +9,7 @@ use common\models\User;
 
 /**
  * UserSearch represents the model behind the search form about `common\models\User`.
+ * @property mixed username
  */
 class UserSearch extends User
 {
@@ -19,7 +20,7 @@ class UserSearch extends User
     {
         return [
             [['uid', 'status'], 'integer'],
-            [['name', 'cellphone', 'password', 'avatar', 'signature', 'register_ip', 'register_time', 'last_login_ip', 'last_login_time', 'last_modify_time'], 'safe'],
+            [['username', 'cellphone', 'password_hash', 'avatar', 'signature', 'register_ip', 'register_time', 'last_login_ip', 'last_login_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -66,9 +67,8 @@ class UserSearch extends User
             'last_modify_time' => $this->last_modify_time,
         ]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
+        $query->andFilterWhere(['like', 'username', $this->username])
             ->andFilterWhere(['like', 'cellphone', $this->cellphone])
-            ->andFilterWhere(['like', 'password', $this->password])
             ->andFilterWhere(['like', 'avatar', $this->avatar])
             ->andFilterWhere(['like', 'signature', $this->signature])
             ->andFilterWhere(['like', 'register_ip', $this->register_ip])

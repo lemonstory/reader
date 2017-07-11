@@ -50,12 +50,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
 
             [
-                'attribute' => 'name',
+                'attribute' => 'username',
                 'format' => 'raw',
                 'headerOptions' => ['style' => 'width:50px'],
                 'value' => function ($m) {
                     $uid = $m->uid;
-                    $ret = Html::a($m->name,
+                    $ret = Html::a($m->username,
                         ['user/update', 'id' => $uid]);
                     return $ret;
                 }

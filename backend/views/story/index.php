@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($m) use ($storyUserArr){
                     $ret = '';
                     if(!empty($m->uid)) {
-                        $ret = Html::a($storyUserArr[$m->uid]['name'],
+                        $ret = Html::a($storyUserArr[$m->uid]['username'],
                             ['user/view', 'id' => $m->uid]);
                     }
                     return $ret;

@@ -135,7 +135,7 @@ class SearchController extends ActiveController
                 foreach ($searchRet['result']['items'] as $item) {
 
                     $story['uid'] = $item['fields']['story_uid'];
-                    $story['name'] = $item['fields']['user_name'];
+                    $story['username'] = $item['fields']['user_name'];
                     $story['avatar'] = $item['fields']['user_avatar'];
                     $story['signature'] = $item['fields']['user_signature'];
                     $story['status'] = $item['fields']['user_status'];

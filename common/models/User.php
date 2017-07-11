@@ -12,7 +12,7 @@ use yii\web\IdentityInterface;
  * This is the model class for table "user".
  *
  * @property integer $uid
- * @property string $name
+ * @property string $username
  * @property string $cellphone
  * @property string $password
  * @property string $avatar

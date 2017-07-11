@@ -376,7 +376,7 @@ class StoryController extends ActiveController
                 unset($data['uid']);
                 $data['user'] = array();
                 $data['user']['uid'] = $storyModel->user->uid;
-                $data['user']['name'] = $storyModel->user->name;
+                $data['user']['username'] = $storyModel->user->username;
                 $data['user']['avatar'] = $storyModel->user->avatar;
                 $data['user']['signature'] = $storyModel->user->signature;
             }

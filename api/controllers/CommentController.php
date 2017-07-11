@@ -329,7 +329,7 @@ class CommentController extends ActiveController
 
                     //user
                     $comment['owner_uid'] = $commentContentArr[$commentId]['owner_uid'];
-                    $comment['owner_name'] = $commentContentArr[$commentId]['user']['name'];
+                    $comment['owner_username'] = $commentContentArr[$commentId]['user']['username'];
                     $comment['owner_avatar'] = $commentContentArr[$commentId]['user']['avatar'];
                     $comment['owner_signature'] = $commentContentArr[$commentId]['user']['signature'];
 
@@ -349,7 +349,7 @@ class CommentController extends ActiveController
 
                             //user
                             $comment['parent']['owner_uid'] = $commentContentArr[$parentCommentId]['owner_uid'];
-                            $comment['parent']['owner_name'] = $commentContentArr[$parentCommentId]['user']['name'];
+                            $comment['parent']['owner_username'] = $commentContentArr[$parentCommentId]['user']['username'];
                             $comment['parent']['owner_avatar'] = $commentContentArr[$parentCommentId]['user']['avatar'];
                             $comment['parent']['owner_signature'] = $commentContentArr[$parentCommentId]['user']['signature'];
 

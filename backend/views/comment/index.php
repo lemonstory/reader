@@ -36,11 +36,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($m) use ($userArr) {
 
                     $uid = $m->owner_uid;
-                    $name = '';
+                    $username = '';
                     $avatar = '';
                     $ret = '';
                     if(!empty($userArr[$uid])) {
-                        $name = $userArr[$uid]['name'];
+                        $username = $userArr[$uid]['username'];
                         $avatar = $userArr[$uid]['avatar'];
                         if(!empty($avatar)) {
                             $img = Html::img($avatar,
@@ -50,8 +50,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ['user/update', 'id' => $uid]);
 
                         }
-                        if(!empty($name)) {
-                            $ret .= Html::tag('p', $name, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);
+                        if(!empty($username)) {
+                            $ret .= Html::tag('p', $username, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);
                         }
                     }
                     return $ret;
@@ -65,11 +65,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($m) use ($userArr) {
 
                     $uid = $m->target_uid;
-                    $name = '';
+                    $username = '';
                     $avatar = '';
                     $ret = '';
                     if(!empty($userArr[$uid])) {
-                        $name = $userArr[$uid]['name'];
+                        $username = $userArr[$uid]['username'];
                         $avatar = $userArr[$uid]['avatar'];
                         if(!empty($avatar)) {
                             $img = Html::img($avatar,
@@ -79,8 +79,8 @@ $this->params['breadcrumbs'][] = $this->title;
                                 ['user/update', 'id' => $uid]);
 
                         }
-                        if(!empty($name)) {
-                            $ret .= Html::tag('p', $name, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);
+                        if(!empty($username)) {
+                            $ret .= Html::tag('p', $username, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);
                         }
 
                     }

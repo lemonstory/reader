@@ -256,7 +256,7 @@
                         ],
                         "user": {
                             "uid": 1,
-                            "name": "小逗",
+                            "username": "小逗",
                             "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                             "signature": "这是签名"
                         }
@@ -441,7 +441,7 @@
                                         "last_modify_time": "2017-06-16 16:16:35",
                                         "user": {
                                             "uid": "1",
-                                            "name": "小逗",
+                                            "username": "小逗",
                                             "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "signature": "这是签名"
                                         }
@@ -610,7 +610,7 @@
                                 "userList": [
                                     {
                                         "uid": "2",
-                                        "name": "小爱",
+                                        "username": "小爱",
                                         "avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                         "signature": "也是签名",
                                         "status": "1",
@@ -837,7 +837,7 @@
                                             "create_time": "2017-06-30 15:31:32",
                                             "last_modify_time": "2017-06-30 15:31:32",
                                             "owner_uid": "1",
-                                            "owner_name": "小逗",
+                                            "owner_username": "小逗",
                                             "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "owner_signature": "这是签名"
                                         },
@@ -852,7 +852,7 @@
                                             "create_time": "2017-06-30 15:31:59",
                                             "last_modify_time": "2017-06-30 15:31:59",
                                             "owner_uid": "2",
-                                            "owner_name": "小爱",
+                                            "owner_username": "小爱",
                                             "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "owner_signature": "也是签名"
                                         },
@@ -867,7 +867,7 @@
                                             "create_time": "2017-06-30 15:32:23",
                                             "last_modify_time": "2017-06-30 15:32:23",
                                             "owner_uid": "3",
-                                            "owner_name": "小的",
+                                            "owner_username": "小的",
                                             "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "owner_signature": "也是签名",
                                             "parent": {
@@ -882,7 +882,7 @@
                                                 "last_modify_time": "2017-06-30 15:31:32",
                                                 "status": "1",
                                                 "owner_uid": "1",
-                                                "owner_name": "小逗",
+                                                "owner_username": "小逗",
                                                 "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                                 "owner_signature": "这是签名"
                                             }
@@ -898,7 +898,7 @@
                                             "create_time": "2017-06-30 16:34:36",
                                             "last_modify_time": "2017-06-30 16:34:36",
                                             "owner_uid": "4",
-                                            "owner_name": "小都",
+                                            "owner_username": "小都",
                                             "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "owner_signature": "也是签名"
                                         },
@@ -913,7 +913,7 @@
                                             "create_time": "2017-07-01 10:33:44",
                                             "last_modify_time": "2017-07-01 10:33:44",
                                             "owner_uid": "2",
-                                            "owner_name": "小爱",
+                                            "owner_username": "小爱",
                                             "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "owner_signature": "也是签名"
                                         },
@@ -928,7 +928,7 @@
                                             "create_time": "2017-07-01 10:44:29",
                                             "last_modify_time": "2017-07-01 10:53:14",
                                             "owner_uid": "2",
-                                            "owner_name": "小爱",
+                                            "owner_username": "小爱",
                                             "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "owner_signature": "也是签名",
                                             "parent": {
@@ -948,7 +948,7 @@
                                             "create_time": "2017-06-30 15:32:23",
                                             "last_modify_time": "2017-06-30 15:32:23",
                                             "owner_uid": "3",
-                                            "owner_name": "小的",
+                                            "owner_username": "小的",
                                             "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "owner_signature": "也是签名",
                                             "parent": {
@@ -963,7 +963,7 @@
                                                 "last_modify_time": "2017-06-30 15:31:32",
                                                 "status": "1",
                                                 "owner_uid": "1",
-                                                "owner_name": "小逗",
+                                                "owner_username": "小逗",
                                                 "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                                 "owner_signature": "这是签名"
                                             }
@@ -979,7 +979,7 @@
                                             "create_time": "2017-06-30 15:31:59",
                                             "last_modify_time": "2017-06-30 15:31:59",
                                             "owner_uid": "2",
-                                            "owner_name": "小爱",
+                                            "owner_username": "小爱",
                                             "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "owner_signature": "也是签名"
                                         },
@@ -994,7 +994,7 @@
                                             "create_time": "2017-06-30 15:31:32",
                                             "last_modify_time": "2017-06-30 15:31:32",
                                             "owner_uid": "1",
-                                            "owner_name": "小逗",
+                                            "owner_username": "小逗",
                                             "owner_avatar": "http://p5.gexing.com/GSF/touxiang/20170615/17/4jcoh44l7zlt5e0vszuj1aawv.jpg@!200x200_3?recache=20131108",
                                             "owner_signature": "这是签名"
                                         }
