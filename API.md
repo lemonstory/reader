@@ -313,39 +313,43 @@
               example:http://api.youwei.xiaoningmeng.net/chapter-message-content/view?story_id=1&chapter_id=503
               ret:    xml
                       <?xml version="1.0" encoding="utf-8"?>
-                      <chapter>
-                      	<story_id>故事Id</story_id>
-                      	<!-- 新建上传时: 为空-->
-                        <chapter_id>章节Id</chapter_id>
-                        <chapter_message_content>
-                            <message>
-                              <!-- 新建上传时: 为空-->
-                              <message_id>消息id</message_id>
-                              <!-- 新建上传时：为空 -->
-                              <number>消息序号</number>
-                              <voice_over>旁白</voice_over>
-                              <actor>
-                                  <actor_id>角色Id</actor_id>
-                              </actor>
-                              <text>消息文字</text>
-                              <img>图片网址</img>
-                              <status>消息状态</status>
-                              <is_loading>是否有加载条</is_loading>
-                            </message>
-                            <message>
-                              <message_id>消息id</message_id>
-                              <number>消息序号</number>
-                              <voice_over>旁白</voice_over>
-                              <actor>
-                                  <actor_id>角色Id</actor_id>
-                              </actor>
-                              <text>消息文字</text>
-                              <img>图片网址</img>
-                              <is_loading>是否有加载条</is_loading>
-                              <status>消息状态</status>
-                            </message>
-                        </chapter_message_content>
-                      </chapter>
+                      <data>
+                          <code>200</code>
+                          <message>OK</message>
+                          <chapter>
+                            <story_id>故事Id</story_id>
+                            <!-- 新建上传时: 为空-->
+                            <chapter_id>章节Id</chapter_id>
+                            <chapter_message_content>
+                                <message>
+                                  <!-- 新建上传时: 为空-->
+                                  <message_id>消息id</message_id>
+                                  <!-- 新建上传时：为空 -->
+                                  <number>消息序号</number>
+                                  <voice_over>旁白</voice_over>
+                                  <actor>
+                                      <actor_id>角色Id</actor_id>
+                                  </actor>
+                                  <text>消息文字</text>
+                                  <img>图片网址</img>
+                                  <status>消息状态</status>
+                                  <is_loading>是否有加载条</is_loading>
+                                </message>
+                                <message>
+                                  <message_id>消息id</message_id>
+                                  <number>消息序号</number>
+                                  <voice_over>旁白</voice_over>
+                                  <actor>
+                                      <actor_id>角色Id</actor_id>
+                                  </actor>
+                                  <text>消息文字</text>
+                                  <img>图片网址</img>
+                                  <is_loading>是否有加载条</is_loading>
+                                  <status>消息状态</status>
+                                </message>
+                            </chapter_message_content>
+                          </chapter>
+                      </data>
  首页                     
          8)首页故事精选[已完成]
          
