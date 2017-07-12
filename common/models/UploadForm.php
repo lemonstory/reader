@@ -78,7 +78,7 @@ class UploadForm extends Model
 
         $object = $type;
         $object .= $id;
-//        $object .= Yii::$app->params['ossPicObjectCoverSuffix'];
+        $object .= Yii::$app->params['ossPicObjectCoverSuffix'];
         return $object;
     }
 
