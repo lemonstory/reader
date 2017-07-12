@@ -11,6 +11,7 @@ use common\models\StoryTagRelation;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
+use yii\db\Expression;
 use yii\helpers\BaseJson;
 use yii\rest\ActiveController;
 use yii\web\ServerErrorHttpException;
@@ -49,14 +50,14 @@ class StoryController extends ActiveController
     public function actionBatchCreate()
     {
         $response = Yii::$app->getResponse();
-        $inputStorys = Yii::$app->getRequest()->post();
+        $inputStories = Yii::$app->getRequest()->post();
         $uid = Yii::$app->getRequest()->post('uid');
         $ret = array();
         $data = array();
         $hasError = false;
-        if(!empty($inputStorys['storys'])) {
+        if(!empty($inputStories['storys'])) {
             
-            foreach ($inputStorys['storys'] as $storyItem) {
+            foreach ($inputStories['storys'] as $storyItem) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
 
@@ -143,25 +144,30 @@ class StoryController extends ActiveController
     public function actionBatchUpdate()
     {
         $response = Yii::$app->getResponse();
-        $inputStorys = Yii::$app->getRequest()->post();
+        $inputStories = Yii::$app->getRequest()->post();
         $ret = array();
         $data = array();
         $hasError = false;
-        if(!empty($inputStorys['storys'])) {
-
-            foreach ($inputStorys['storys'] as $storyItem) {
-
+        if(!empty($inputStories['storys'])) {
+            foreach ($inputStories['storys'] as $storyItem) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
                     //保存故事
                     $storyModel = Story::findOne($storyItem['story_id']);
+                    $currentTaps = $storyModel->taps;
                     $storyModel->setAttributes($storyItem);
+                    //点击数递增
+                    if(!empty($storyItem['taps'])) {
+                        $storyModel->taps = $currentTaps + $storyItem['taps'];
+                    }
                     $storyModel->create_time = DateTimeHelper::convert($storyModel->create_time, 'datetime');
                     $storyModel->last_modify_time = DateTimeHelper::convert($storyModel->last_modify_time, 'datetime');
                     $storyModel->save();
                     if($storyModel->hasErrors()) {
 
+                        var_dump($storyModel);
                         Yii::error($storyModel->getErrors());
+                        print_r($storyModel->getErrors());
                         throw new ServerErrorHttpException('编辑故事输入错误');
                     }
                     $storyId = $storyModel->story_id;
@@ -228,6 +234,8 @@ class StoryController extends ActiveController
                     $hasError = true;
                     $transaction->rollBack();
                     Yii::error($e->getMessage());
+                    print_r($e->getMessage());
+//                    print_r($e->getTrace());
                     $response->statusCode = 400;
                     $response->statusText = '编辑故事失败';
                 }
