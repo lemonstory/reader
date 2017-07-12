@@ -16,8 +16,11 @@ return [
     //TODO:线上endpoint可以走内网
     'ossEndPoint' => 'oss-cn-shanghai.aliyuncs.com',
     'ossPicObjectBucket' => 'youwei-pic',
+    'ossAvatarObjectBucket' => 'youwei-avatar',
     'ossPicObjectCoverPrefix' => 'cover/',
     'ossPicObjectBackgroundPrefix' => 'background/',
+    'ossAvatarObjectActorPrefix' => 'actor/',
+    'ossAvatarObjectUserPrefix' => 'user/',
     'ossPicObjectCoverSuffix' => '.jpg',
 
     //点赞对象类型

@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use common\models\UploadForm;
 use Yii;
 use common\models\StoryActor;
 use common\models\StoryActorSearch;
@@ -10,6 +11,7 @@ use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\UploadedFile;
 
 /**
  * StoryActorController implements the CRUD actions for StoryActor model.
@@ -38,9 +40,9 @@ class StoryActorController extends Controller
                         'ips' => Yii::$app->params['adminIps'],
                         'matchCallback' => function ($rule, $action) {
                             $uid = Yii::$app->getUser()->getId();
-                            if(!empty($uid) && ArrayHelper::isIn($uid,Yii::$app->params['adminUidWhiteList'])) {
+                            if (!empty($uid) && ArrayHelper::isIn($uid, Yii::$app->params['adminUidWhiteList'])) {
                                 return true;
-                            }else {
+                            } else {
                                 return false;
                             }
                         }
@@ -104,10 +106,44 @@ class StoryActorController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $uploadFormModel = new UploadForm();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->actor_id]);
+        if (Yii::$app->request->isPost) {
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+
+                $avatar = $model->avatar;
+                $model->load(Yii::$app->request->post());
+                $uploadFormModel->file = UploadedFile::getInstanceByName('StoryActor[avatar]');
+
+                if (!empty($uploadFormModel->file)) {
+                    $avatarUrl = $uploadFormModel->uploadAvatarOss($model->actor_id, Yii::$app->params['ossAvatarObjectActorPrefix']);
+                    if (!empty($avatarUrl)) {
+                        $model->avatar = $avatarUrl;
+                    }
+                }
+
+                //Yii2 会自动生成一个hidden的cover,但是value却未空
+                //导致什么都不做更改的情况下,cover会被2次设置为空
+                //原因没有找到.通过下面的方法规避一下
+                //https://stackoverflow.com/questions/34593023/yii-2-file-input-renders-hidden-file-input-tag
+                if (empty($model->avatar)) {
+                    $model->avatar = $avatar;
+                }
+
+                $isSaved = $model->save();
+                $transaction->commit();
+                if ($isSaved) {
+                    return $this->redirect(['view', 'id' => $model->actor_id]);
+                }
+
+            } catch (\Exception $e) {
+                $transaction->rollBack();
+                print $e->getMessage();
+                //print_r($e->getTrace());
+            }
         } else {
+
             return $this->render('update', [
                 'model' => $model,
             ]);
