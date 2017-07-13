@@ -4378,7 +4378,7 @@ body {
     left: 12px;
     right: 12px;
     overflow: hidden;
-    background: -webkit-image-set(url("http://youwei-pic.oss-cn-shanghai.aliyuncs.com/site/imagess/creenshot1.jpg") 1x, url("http://youwei-pic.oss-cn-shanghai.aliyuncs.com/site/images/screenshot1@2x.jpg") 2x) no-repeat 50% 50%;
+    background: -webkit-image-set(url("http://youwei-pic.oss-cn-shanghai.aliyuncs.com/site/images/screenshot1.jpg") 1x, url("http://youwei-pic.oss-cn-shanghai.aliyuncs.com/site/images/screenshot1@2x.jpg") 2x) no-repeat 50% 50%;
     background-size: auto 100%;
 }
 
