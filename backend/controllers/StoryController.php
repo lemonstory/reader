@@ -177,6 +177,7 @@ class StoryController extends Controller
                     $storyModel = new Story();
                     $story = $storyModel->parseFile($file,Story::FILE_PARSE_TYPE_STORY,null);
 //                    var_dump($story);
+//                    exit();
 
                     //数据存储
                     if (!empty($story) && is_array($story)) {

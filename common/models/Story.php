@@ -316,7 +316,7 @@ class Story extends \yii\db\ActiveRecord
                             $messageItem['text'] = '';
                         }
                         //中文或英文字母或_
-                        $pattern = '/^[\x{4e00}-\x{9fa5}_a-zA-Z0-9]+[：:]{1}/u';
+                        $pattern = '/^[\x{4e00}-\x{9fa5}_.a-zA-Z0-9]+[：:]{1}/u';
                         $ret = preg_match($pattern,$value,$matches);
                         $actorIsExist = (1 == $ret) ? true : false;
                         if ($actorIsExist) {
