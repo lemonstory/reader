@@ -36,6 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'uid',
             'chapter_count',
             'message_count',
+            'comment_count',
             'taps',
             'is_published',
             'status',

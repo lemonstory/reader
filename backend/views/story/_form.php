@@ -48,6 +48,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'uid')->textInput() ?>
     <?= $form->field($model, 'chapter_count')->textInput(['disabled' => true]) ?>
     <?= $form->field($model, 'message_count')->textInput(['disabled' => true]) ?>
+    <?= $form->field($model, 'comment_count')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'taps')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'is_published')->radioList([1=>'已发布','0'=>'未发布']); ?>
     <?= $form->field($model, 'status')->radioList(

@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
@@ -76,11 +77,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $ret;
                 },
             ],
-            'sub_name',
+//            'sub_name',
 //            'description',
             [
                 'attribute' => 'uid',
-                'headerOptions' => ['style' => 'width:100px'],
                 'format' => 'raw',
                 'value' => function ($m) use ($storyUserArr){
                     $ret = '';
@@ -107,8 +107,22 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'headerOptions' => ['style' => 'width:100px'],
                 'value' => function ($model) {
+
                     $ret = Html::a($model->message_count."条",
                         ['chapter-message-content/index', 'ChapterMessageContentSearch[story_id]' => $model->story_id]);
+                    return $ret;
+                },
+            ],
+
+            [
+                'attribute' => 'comment_count',
+                'format' => 'raw',
+                'headerOptions' => ['style' => 'width:100px'],
+                'value' => function ($model) {
+
+                    $commentTargetType =  ArrayHelper::index(Yii::$app->params['COMMENT_TARGET_TYPE'],'alias');
+                    $ret = Html::a($model->comment_count."条",
+                        ['comment/index', 'CommentSearch[target_type]' =>$commentTargetType['story']['value'], 'CommentSearch[target_id]' => $model->story_id]);
                     return $ret;
                 },
             ],

@@ -31,6 +31,8 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'message_count') ?>
 
+    <?php // echo $form->field($model, 'comment_count') ?>
+
     <?php // echo $form->field($model, 'taps') ?>
 
     <?php // echo $form->field($model, 'is_published') ?>

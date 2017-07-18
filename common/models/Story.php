@@ -20,6 +20,7 @@ use yii\helpers\StringHelper;
  * @property integer $uid
  * @property integer $chapter_count
  * @property integer $message_count
+ * @property integer $comment_count
  * @property string $taps
  * @property integer $is_published
  * @property integer $status
@@ -46,7 +47,7 @@ class Story extends \yii\db\ActiveRecord
     {
         return [
             [['uid'], 'required'],
-            [['uid', 'chapter_count', 'message_count', 'taps', 'is_published', 'status'], 'integer'],
+            [['uid', 'chapter_count', 'message_count', 'taps', 'comment_count', 'is_published', 'status'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['name'], 'string', 'max' => 150],
             [['sub_name'], 'string', 'max' => 300],
@@ -69,6 +70,7 @@ class Story extends \yii\db\ActiveRecord
             'uid' => Yii::t('app', '作者uid'),
             'chapter_count' => Yii::t('app', '章节数量'),
             'message_count' => Yii::t('app', '消息数量'),
+            'comment_count' => Yii::t('app', '评论数量'),
             'taps' => Yii::t('app', '点击数'),
             'is_published' => Yii::t('app', '是否发布'),
             'status' => Yii::t('app', '状态'),
@@ -365,5 +367,30 @@ class Story extends \yii\db\ActiveRecord
             $story = array();
         }
         return $story;
+    }
+
+    /**
+     *
+     * https://pastebin.com/FWJRbf1N
+     * http://www.ruanyifeng.com/blog/2012/03/ranking_algorithm_stack_overflow.html
+     * @param $Qviews 问题的浏览次数
+     * @param $Qanswers 回答的数量
+     * @param $Qscore 问题得分 = 赞成票-反对票
+     * @param $Ascores 回答得分
+     * @param $date_ask $Qage:距离问题发表的时间
+     * @param $date_active $Qupdated:距离最后一个回答的时间
+     */
+    function hot($Qviews, $Qanswers, $Qscore, $Ascores, $date_ask, $date_active)
+    {
+        $Qage = (time() - strtotime(gmdate("Y-m-d H:i:s",strtotime($date_ask)))) / 3600;
+        $Qage = round($Qage, 1);
+
+        $Qupdated = (time() - strtotime(gmdate("Y-m-d H:i:s",strtotime($date_active)))) / 3600;
+        $Qupdated = round($Qupdated, 1);
+
+        $dividend = (log10($Qviews)*4) + (($Qanswers * $Qscore)/5) + $Ascores;
+        $divisor = pow((($Qage + 1) - ($Qage - $Qupdated)/2), 1.5);
+
+        echo $dividend/$divisor . "\n";
     }
 }

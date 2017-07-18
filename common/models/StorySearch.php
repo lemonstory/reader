@@ -18,7 +18,7 @@ class StorySearch extends Story
     public function rules()
     {
         return [
-            [['story_id', 'uid', 'chapter_count', 'message_count', 'taps', 'is_published', 'status'], 'integer'],
+            [['story_id', 'uid', 'chapter_count', 'message_count', 'comment_count', 'taps', 'is_published', 'status'], 'integer'],
             [['name', 'sub_name', 'description', 'cover', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
@@ -63,6 +63,7 @@ class StorySearch extends Story
             'uid' => $this->uid,
             'chapter_count' => $this->chapter_count,
             'message_count' => $this->message_count,
+            'comment_count' => $this->comment_count,
             'taps' => $this->taps,
             'is_published' => $this->is_published,
             'status' => $this->status,

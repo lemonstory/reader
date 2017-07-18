@@ -356,7 +356,6 @@ class CommentController extends ActiveController
                         }else{
                             $comment['parent']['status'] = $commentContentArr[$parentCommentId]['status'];
                         }
-
                     }
                     $commentHierarchyList[] = $comment;
                 }
@@ -366,7 +365,7 @@ class CommentController extends ActiveController
 
 
     /**
-     * 提交评论
+     * 提交故事评论
      * @return mixed
      */
     public function actionCommit() {
@@ -398,10 +397,10 @@ class CommentController extends ActiveController
             $commentModel = new Comment();
             $commentModel->owner_uid = $ownerUid;
             $commentModel->target_id = $storyId;
+            $commentModel->target_uid = $targetUid;
             $commentModel->target_type = intval($this->commentTargetTypeArr['story']['value']);
             $commentModel->content = $content;
             $commentModel->parent_comment_id = $parentCommentId;
-            $commentModel->target_id = $targetUid;
             $commentModel->save();
             if ($commentModel->hasErrors()) {
 
@@ -409,6 +408,19 @@ class CommentController extends ActiveController
                 throw new ServerErrorHttpException('评论保存失败');
             }
             $data['comment_id'] = $commentModel->comment_id;
+
+            //更新故事评论数量
+            $storyModel = Story::findOne(['story_id' => $storyId, 'status' => Yii::$app->params['STATUS_ACTIVE']]);
+            if(!is_null($storyModel)) {
+                $storyModel->comment_count = $storyModel->comment_count + 1;
+                $storyModel->save();
+                if ($storyModel->hasErrors()) {
+
+                    Yii::error($commentModel->getErrors());
+                    throw new ServerErrorHttpException('故事评论数量保存失败');
+                }
+            }
+
         }catch (\Exception $e){
 
             Yii::error($e->getMessage());
