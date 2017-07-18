@@ -203,7 +203,7 @@
                     "msg": "OK"
                 }
                 
-     5)查看故事基本信息[已完成]
+     5)查看故事详情[已完成]
          api:    /story/{故事Id}
          method: GET
          params:
