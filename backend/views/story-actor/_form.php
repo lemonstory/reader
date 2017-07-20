@@ -27,6 +27,7 @@ use yii\widgets\ActiveForm;
 <!--    --><?//= $form->field($model, 'avatar')->textInput(['maxlength' => true]) ?>
 
     <?php
+        $avatar = "";
         if(!empty($model->avatar)) {
             $avatar =  Html::img($model->avatar, ['class' => 'profile-user-img img-circle', 'width' => 90]);
         }
