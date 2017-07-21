@@ -82,8 +82,10 @@ class ChapterMessageContentController extends Controller
             $query = $storyActorArr = StoryActor::find()->where($condition);
             foreach ($storyActorIdPairArr as $storyId => $actorId) {
 
-                $orCondition = sprintf("`story_id`=%s AND `actor_id`=%s",$storyId,$actorId);
-                $query->orWhere($orCondition);
+                if(!empty($actorId)) {
+                    $orCondition = sprintf("`story_id`=%s AND `actor_id`=%s",$storyId,$actorId);
+                    $query->orWhere($orCondition);
+                }
             }
 
             // get the AR raw sql in YII2
