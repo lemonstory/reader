@@ -278,7 +278,7 @@ class Story extends \yii\db\ActiveRecord
                     $value = trim($value," 　\t\n\r\0\x0B");
                     if (!empty($value)) {
                         if (StringHelper::startsWith($value, "#", false)) {
-                            $chapterNameArr = preg_split("/#\d/", $value, -1, PREG_SPLIT_NO_EMPTY);
+                            $chapterNameArr = preg_split("/#\d+/", $value, -1, PREG_SPLIT_NO_EMPTY);
                             if (!empty($chapterNameArr) && is_array($chapterNameArr)) {
 
                                 if (count($chapterNameArr) > 1) {
