@@ -20,11 +20,9 @@ use yii\widgets\ActiveForm;
         ]);
     ?>
 
-    <?= $form->field($model, 'story_id')->textInput()->textInput(['disabled' => true]) ?>
+    <?= $form->field($model, 'story_id')->textInput() ?>
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-
-<!--    --><?//= $form->field($model, 'avatar')->textInput(['maxlength' => true]) ?>
 
     <?php
         $avatar = "";
@@ -46,7 +44,7 @@ use yii\widgets\ActiveForm;
     ?>
 
 
-    <?= $form->field($model, 'number')->textInput()->textInput(['disabled' => true]) ?>
+    <?= $form->field($model, 'number')->textInput() ?>
 
     <?= $form->field($model, 'location')->radioList(
         ['0'=>'左','1'=>'右'],
@@ -70,7 +68,30 @@ use yii\widgets\ActiveForm;
         }]);
     ?>
 
-    <?= $form->field($model, 'is_visible')->textInput()->textInput(['disabled' => true]) ?>
+<!--    --><?//= $form->field($model, 'is_visible')->textInput()->textInput(['disabled' => true]) ?>
+
+<!--    --><?//= $form->field($model, 'is_visible')->radioList([1=>'可见','0'=>'不可见']); ?>
+    <?= $form->field($model, 'is_visible')->radioList(
+        ['1'=>'可见','0'=>'不可见'],
+        ['item' => function($index, $label, $name, $checked, $value) {
+
+            $return = '<label class="modal-radio">';
+            $return .= '<input type="radio" name="' . $name . '" value="' . $value . '" tabindex="3"';
+            if($checked) {
+                $return .= 'checked';
+            }
+            $return .= '>';
+            $return .= '<i></i>';
+            if($value == '0') {
+                $return .= '<span class="not-set">' . $label . '</span>';
+            }else {
+                $return .= '<span>' . $label . '</span>';
+            }
+            $return .= '</label>';
+
+            return $return;
+        }]);
+    ?>
 
     <?= $form->field($model, 'status')->radioList(
         ['1'=>'正常','0'=>'删除'],
