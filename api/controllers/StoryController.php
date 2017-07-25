@@ -9,9 +9,7 @@ use common\models\StoryActor;
 use common\models\StoryTag;
 use common\models\StoryTagRelation;
 use Yii;
-use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
-use yii\db\Expression;
 use yii\helpers\BaseJson;
 use yii\rest\ActiveController;
 use yii\web\ServerErrorHttpException;
@@ -135,7 +133,6 @@ class StoryController extends ActiveController
     }
 
 
-
     /**
      * 批量更新故事
      * @return mixed
@@ -165,7 +162,6 @@ class StoryController extends ActiveController
                     $storyModel->save();
                     if($storyModel->hasErrors()) {
 
-                        var_dump($storyModel);
                         Yii::error($storyModel->getErrors());
                         print_r($storyModel->getErrors());
                         throw new ServerErrorHttpException('编辑故事输入错误');
@@ -391,6 +387,5 @@ class StoryController extends ActiveController
         }
         return $data;
     }
-
 }
 ?>
