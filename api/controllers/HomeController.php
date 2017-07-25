@@ -39,92 +39,96 @@ class HomeController extends ActiveController
 
     }
 
-    //TODO:这里的数据需要管理
     /**
-     * 首页-按照更新时间偏序的故事
+     * 首页-按照评论数量,最后评论时间,点击量升序,按照最后修改时间降序
      * @param $page
      * @param $pre_page
      * @return array
      */
     public function actionIndex($page,$pre_page) {
 
-        $response = Yii::$app->getResponse();
-        $offset = ($page - 1) * $pre_page;
-        $story = Story::find()
-            ->with([
-                'actors' => function (ActiveQuery $query) {
-                    $query->andWhere(['is_visible' => Yii::$app->params['STATUS_ACTIVE'],'status' => Yii::$app->params['STATUS_ACTIVE']]);
-                },
-                'tags'=> function (ActiveQuery $query) {
-                    $query->andWhere(['status' => Yii::$app->params['STATUS_ACTIVE']]);
-                },
-            ])
-
-            ->where(['status' => Yii::$app->params['STATUS_ACTIVE']])
-            ->offset($offset)
-            ->limit($pre_page)
-            ->orderBy(['last_modify_time' => SORT_DESC]);
-
-        $provider =  new ActiveDataProvider([
-            'query' =>$story,
-            'pagination' => [
-                'pageSize' => $pre_page,
-            ],
-        ]);
-
-        $storyModels = $provider->getModels();
         $ret = array();
-        foreach ($storyModels as $storyModelItem) {
+        $redis = Yii::$app->redis;
+        $response = Yii::$app->getResponse();
+//        $storyIdAll = $redis->zrevrange(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], 0, -1);
+//        var_dump($storyIdAll);
 
-            $story = array();
-            $story['story_id'] = $storyModelItem->story_id;
-            $story['name'] = $storyModelItem->name;
-            $story['description'] = $storyModelItem->description;
-            $story['cover'] = $storyModelItem->cover;
-            $story['uid'] = $storyModelItem->uid;
-            $story['chapter_count'] = $storyModelItem->chapter_count;
-            $story['message_count'] = $storyModelItem->message_count;
-            $story['taps'] = $storyModelItem->taps;
-            $story['is_published'] = $storyModelItem->is_published;
-            $story['create_time'] = $storyModelItem->create_time;
-            $story['last_modify_time'] = $storyModelItem->last_modify_time;
+        $start = ($page - 1) * $pre_page;
+        $stop = ($page - 1) * $pre_page + ($pre_page -1);
 
-            //actor
-            $actorModels = $storyModelItem->actors;
-            $actorList = array();
-            foreach ($actorModels as $actorModelItem) {
-                $actor = array();
-                $actor['actor_id'] = $actorModelItem->actor_id;
-                $actor['name'] = $actorModelItem->name;
-                $actor['avatar'] = $actorModelItem->avatar;
-                $actor['number'] = $actorModelItem->number;
-                $actor['is_visible'] = $actorModelItem->is_visible;
-                $actorList[] = $actor;
-            }
-            $story['actor'] = $actorList;
+        $currentPage = $page;
+        $perPage = $pre_page;
+        $totalCount = $redis->zcount(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], '-inf', '+inf');
+        $pageCount = ceil($totalCount / $perPage);
 
-            //tag
-            $tagModels = $storyModelItem->tags;
-            $tagList = array();
-            foreach ($tagModels as $tagModelItem) {
-                $tag = array();
-                $tag['tag_id'] = $tagModelItem->tag_id;
-                $tag['name'] = $tagModelItem->name;
-                $tag['number'] = $tagModelItem->number;
-                $tagList[] = $tag;
-            }
-            $story['tag'] = $tagList;
-            $ret['data']['storyList'][] = $story;
-        }
-
-        $pagination = $provider->getPagination();
-        $ret['data']['totalCount'] = $pagination->totalCount;
-        $ret['data']['pageCount'] = $pagination->getPageCount();
-        $ret['data']['currentPage'] = $pagination->getPage() + 1;
-        $ret['data']['perPage'] = $pagination->getPageSize();
+        $ret['data']['totalCount'] = $totalCount;
+        $ret['data']['pageCount'] = $pageCount;
+        $ret['data']['currentPage'] = $currentPage;
+        $ret['data']['perPage'] = $perPage;
+        $ret['data']['storyList'] = array();
         $ret['code'] = $response->statusCode;
         $ret['msg'] = $response->statusText;
+
+        $storyIdArr = $redis->zrevrange(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], $start, $stop);
+        if(!empty($storyIdArr) && is_array($storyIdArr)) {
+
+            $storyArr = Story::find()
+                ->with([
+                    'actors' => function (ActiveQuery $query) {
+                        $query->andWhere(['is_visible' => Yii::$app->params['STATUS_ACTIVE'],'status' => Yii::$app->params['STATUS_ACTIVE']]);
+                    },
+                    'tags'=> function (ActiveQuery $query) {
+                        $query->andWhere(['status' => Yii::$app->params['STATUS_ACTIVE']]);
+                    },
+                ])
+                ->where(['status' => Yii::$app->params['STATUS_ACTIVE'],'is_published' => Yii::$app->params['STATUS_PUBLISHED'],'story_id' => $storyIdArr])
+                ->asArray()
+                ->all();
+
+            if(!empty($storyArr) && is_array($storyArr)) {
+                foreach ($storyArr as $storyItem) {
+                    $story = array();
+                    $story['story_id'] = $storyItem['story_id'];
+                    $story['name'] = $storyItem['name'];
+                    $story['description'] = $storyItem['description'];
+                    $story['cover'] = $storyItem['cover'];
+                    $story['uid'] = $storyItem['uid'];
+                    $story['chapter_count'] = $storyItem['chapter_count'];
+                    $story['message_count'] = $storyItem['message_count'];
+                    $story['taps'] = $storyItem['taps'];
+                    $story['is_published'] = $storyItem['is_published'];
+                    $story['create_time'] = $storyItem['create_time'];
+                    $story['last_modify_time'] = $storyItem['last_modify_time'];
+
+                    //actor
+                    $actorArr = $storyItem['actors'];
+                    $actorList = array();
+                    foreach ($actorArr as $actorItem) {
+                        $actor = array();
+                        $actor['actor_id'] = $actorItem['actor_id'];
+                        $actor['name'] = $actorItem['name'];
+                        $actor['avatar'] = $actorItem['avatar'];
+                        $actor['number'] = $actorItem['number'];
+                        $actor['is_visible'] = $actorItem['is_visible'];
+                        $actorList[] = $actor;
+                    }
+                    $story['actor'] = $actorList;
+
+                    //tag
+                    $tagArr = $storyItem['tags'];
+                    $tagList = array();
+                    foreach ($tagArr as $tagItem) {
+                        $tag = array();
+                        $tag['tag_id'] = $tagItem['tag_id'];
+                        $tag['name'] = $tagItem['name'];
+                        $tag['number'] = $tagItem['number'];
+                        $tagList[] = $tag;
+                    }
+                    $story['tag'] = $tagList;
+                    $ret['data']['storyList'][] = $story;
+                }
+            }
+        }
         return $ret;
     }
-
 }
