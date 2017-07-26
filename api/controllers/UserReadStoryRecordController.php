@@ -176,9 +176,16 @@ class UserReadStoryRecordController extends ActiveController
         $uidArr = array();
         $messageIdArr = array();
         $storyList = array();
+        $storyReadPositionData = array();
         foreach ($userReadStoryRecords as $item) {
             $uidArr[] = $item['story']['uid'];
             $messageIdArr[] = $item['last_message_id'];
+            $storyIdArr[] = $item['story_id'];
+
+            //按照story_id为索引记录用户阅读位置数据
+            $storyReadPositionData[$item['story_id']]['message_count'] = $item['story']['message_count'];
+            $storyReadPositionData[$item['story_id']]['last_chapter_id'] = $item['last_chapter_id'];
+            $storyReadPositionData[$item['story_id']]['last_message_id'] = $item['last_message_id'];
         }
 
         //作者信息
@@ -200,6 +207,55 @@ class UserReadStoryRecordController extends ActiveController
         $messageNumberArr = ChapterMessageContent::find()->select(['message_id','number'])->where(['message_id' => $messageIdArr])->asArray()->all();
         $messageNumberArr = ArrayHelper::map($messageNumberArr,'message_id','number');
 
+        //章节信息
+        $chapterCondition = array(
+            'story_id' => $storyIdArr,
+            'status' => Yii::$app->params['STATUS_ACTIVE'],
+            'is_published' => Yii::$app->params['STATUS_PUBLISHED'],
+        );
+
+        $chapterNames = array(
+            'story_id',
+            'chapter_id',
+            'number',
+            'message_count',
+        );
+
+        $chapterArr = Chapter::find()->select($chapterNames)->where($chapterCondition)->asArray()->all();
+        //阅读进度计算
+        $userReadProgressArr = array();
+        foreach ($storyIdArr as $storyId) {
+
+            $readMessageCount = 0;
+            //故事消息总数量
+            $totalMessageCount = $storyReadPositionData[$storyId]['message_count'];
+            $lastChapterId = $storyReadPositionData[$storyId]['last_chapter_id'];
+            $lastMessageId = $storyReadPositionData[$storyId]['last_message_id'];
+            $lastMessageNumber = 0;
+            if(isset($messageNumberArr[$lastMessageId]) && !empty($messageNumberArr[$lastMessageId])) {
+                $lastMessageNumber = $messageNumberArr[$lastMessageId];
+            }
+
+            if($totalMessageCount > 0) {
+                foreach ($chapterArr as $chapterItem) {
+
+                    //章节id是自增
+                    if($chapterItem['story_id'] == $storyId && $chapterItem['chapter_id'] <= $lastChapterId) {
+                        if($chapterItem['chapter_id'] != $lastChapterId) {
+                            $readMessageCount = $readMessageCount + $chapterItem['message_count'];
+                        }else if($chapterItem['chapter_id'] == $lastChapterId) {
+                            $readMessageCount = $readMessageCount + $lastMessageNumber;
+                        }
+                    }
+                }
+
+                $val = $readMessageCount / $totalMessageCount;
+                $userReadProgressArr[$storyId] = round($val,2);
+            }else {
+                $userReadProgressArr[$storyId] = 0;
+            }
+        }
+
         //组装故事数据
         $dataItem = array();
         foreach ($userReadStoryRecords as $item) {
@@ -213,6 +269,7 @@ class UserReadStoryRecordController extends ActiveController
             $dataItem['taps'] = $item['story']['taps'];
             $dataItem['is_published'] = $item['story']['is_published'];
             $dataItem['story_update_time'] = $item['story']['last_modify_time'];
+            $dataItem['user_read_progress'] = $userReadProgressArr[$item['story']['story_id']];
             $dataItem['last_chapter_id'] = $item['last_chapter_id'];
             $dataItem['last_message_id'] = $item['last_message_id'];
 
@@ -225,7 +282,7 @@ class UserReadStoryRecordController extends ActiveController
             $dataItem['last_modify_time'] = $item['last_modify_time'];
 
             //合并故事和作者数据
-            if(!empty($userInfoList[$item->uid])) {
+            if(!empty($userInfoList[$item['uid']])) {
                 $dataItem['user'] = $userInfoList[$item['uid']];
             }else {
                 $dataItem['user'] = array();
