@@ -416,14 +416,15 @@
                     "msg": "OK"
                 }
  阅读记录                           
-         9)阅读记录列表[已完成]
+         9)获取阅读记录[已完成]
               api:    /user-read-story-record/index
               method: GET
               params:
                       uid:用户uid
                       page:页码
+                      time:阅读记录最后更新时间
                       per_page:每页显示内容数
-              example:http://api.youwei.xiaoningmeng.net/user-read-story-record/index?uid=1&page=1&per_page=1
+              example:http://api.youwei.xiaoningmeng.net/user-read-story-record/index?uid=1&time=0&page=1&per_page=20
               ret:    Json数组
                         {
                             "data": {
@@ -503,8 +504,59 @@
                                  },
                                  "msg": "OK"
                              }
+                             
+         11)获取阅读记录中的图书更新信息[已完成]   
+               api:    user-read-story-record/stories-update
+               method: GET
+               params:
+                       uid:用户uid
+                       story_ids:以逗号(半角)分隔的故事id列表
+               example:http://api.youwei.xiaoningmeng.net/user-read-story-record/stories-update?uid=1&story_ids=1,2,3,4,5,6,13
+               ret:    Json数组
+                         {
+                             "code": 200,
+                             "message": "OK",
+                             "data": {
+                                 "storyList": [
+                                     {
+                                         "story_id": "13",
+                                         "name": "标题1",
+                                         "description": "简介1",
+                                         "cover": "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1498623858198&di=e426cc2579548eb715f4ec73f7eb47b2&imgtype=0&src=http%3A%2F%2Fimg.newyx.net%2Fphoto%2F201603%2F10%2F88e994f6a8.jpg",
+                                         "chapter_count": "0",
+                                         "message_count": "0",
+                                         "taps": "0",
+                                         "is_published": "1",
+                                         "story_update_time": "2017-07-26 11:42:15",
+                                         "last_chapter_id": "1",
+                                         "last_message_id": "1",
+                                         "last_message_number": "1",
+                                         "create_time": "2017-06-16 08:28:33",
+                                         "last_modify_time": "2017-06-16 08:26:30",
+                                         "user": []
+                                     },
+                                     {
+                                         "story_id": "2",
+                                         "name": "大盗贼",
+                                         "description": "没炒过股，没买过彩票，官道商场一窍不通，陆离发现自己唯一能做的就是玩游戏。",
+                                         "cover": "http://youwei-pic.oss-cn-shanghai.aliyuncs.com/cover/2017/07/02/0_1498987493.jpg",
+                                         "chapter_count": "10",
+                                         "message_count": "222",
+                                         "taps": "14",
+                                         "is_published": "1",
+                                         "story_update_time": "2017-07-11 19:11:24",
+                                         "last_chapter_id": "1",
+                                         "last_message_id": "1",
+                                         "last_message_number": "1",
+                                         "create_time": "2017-06-16 14:05:16",
+                                         "last_modify_time": "2017-06-16 14:05:16",
+                                         "user": []
+                                     }
+                                 ]
+                             }
+                         }
  搜索
-         11)搜索故事[已完成]
+         12)搜索故事[已完成]
                api:    search/stories
                method: GET
                params:
@@ -599,7 +651,7 @@
                        
                备注：<em>关键字</em>:em是飘红的字的标签
                              
-         12)搜索用户[已完成]
+         13)搜索用户[已完成]
                api:    search/users
                method: GET
                params:
@@ -632,7 +684,7 @@
                         }
                         
  标签
-         13)标签列表[已完成]
+         14)标签列表[已完成]
                api:    /tag/index
                method: GET
                params:
@@ -661,7 +713,7 @@
                             "msg": "OK"
                         }
                
-         14)标签下的故事列表[已完成]
+         15)标签下的故事列表[已完成]
                api:    /tag/storys
                method: GET
                params:
@@ -718,7 +770,7 @@
                             "msg": "OK"
                         }
                         
-         15)获取oss Token[已完成]
+         16)获取oss Token[已完成]
                 api:    /sts/token
                 method: GET
                 params:
@@ -742,7 +794,7 @@
                     Expiration: 表示该Token失效的时间。主要在Android SDK会自动判断是否失效，自动获取Token。注意上述这四个变量将构成了一个Token。
                 参考文档：https://help.aliyun.com/document_detail/31920.html?spm=5176.product31815.6.623.KYJRp1
                 
-         16)获取消息的评论(投票)数据[已完成]
+         17)获取消息的评论(投票)数据[已完成]
                 api:    /comment/message-votes
                 method: GET
                 params:
@@ -772,7 +824,7 @@
                             "code": 200,
                             "msg": "OK"
                         }
-         17)获取故事的评论(投票)汇总数据[已完成]
+         18)获取故事的评论(投票)汇总数据[已完成]
                 api:    /comment/story-votes
                 method: GET
                 params:
@@ -803,7 +855,7 @@
                         "msg": "OK"
                     }
 
-         18)提交消息的评论(投票)数据[已完成]
+         19)提交消息的评论(投票)数据[已完成]
                 api:    /comment/vote-commit
                 method: POST
                 params:
@@ -820,7 +872,7 @@
                         "msg": "OK"
                     }
          
-         19)获取故事的评论内容[已完成]
+         20)获取故事的评论内容[已完成]
                 api:    /comment/index
                 method: GET
                 params:
@@ -1018,7 +1070,7 @@
                         }
                 备注：hot:热门评论,new:最新评论,parent:父级评论,status:parent节点下面的status=0,表示父级评论被删除
                 
-         20)提交故事的评论数据[已完成]
+         21)提交故事的评论数据[已完成]
                 api:    /comment/commit
                 method: POST
                 params:
@@ -1036,7 +1088,7 @@
                         "msg": "OK"
                     }
          
-         21)评论点赞[已完成]
+         22)评论点赞[已完成]
                  api:    /like/comment-like
                  method: get
                  params:
@@ -1050,7 +1102,7 @@
                          "msg": "OK"
                      }      
                 
-         22)取消评论点赞[已完成]
+         23)取消评论点赞[已完成]
              api:    /like/comment-dislike
              method: get
              params:
