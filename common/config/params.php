@@ -23,6 +23,16 @@ return [
     'ossAvatarObjectUserPrefix' => 'user/',
     'ossPicObjectCoverSuffix' => '.jpg',
 
+    //aliyun mns 消息服务
+    'mnsAccessKeyId' => "QHzux6QVXjQgfBNM",
+    'mnsAccessKeySecret'=> "diWfijmBbiGlwle1s9KyAL8BQhB3Qc",
+    'mnsAccessOwnerId' => "1120189427353178",
+    'mnsEndpoint' => 'http://1120189427353178.mns.cn-hangzhou-internal.aliyuncs.com/',
+
+    //队列-用户通知-名称
+    'mnsQueueNotifyName' => "youwei-queue-notify",
+
+
     //点赞对象类型
     'LIKE_TARGET_TYPE' => [
         ['label' => '故事','alias' => 'story','value' => 1],
