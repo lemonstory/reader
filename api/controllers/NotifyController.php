@@ -55,7 +55,7 @@ class NotifyController extends ActiveController
         $notifyList = array();
         $notifyModels = $provider->getModels();
         $notifyIdsArr = array();
-        if(!empty($notifyIdsArr)) {
+        if(!empty($notifyModels)) {
 
             foreach ($notifyModels as $notifyModelItem) {
 
@@ -187,7 +187,7 @@ class NotifyController extends ActiveController
             //设置通知消息为已读
             //TODO:测试期间暂时关闭
             $notifyIds = implode(",",$notifyIdsArr);
-            $updatedRows = UserNotify::updateAll(['is_read' => 1], 'uid=:uid AND id IN(' . $notifyIds . ")", ['uid' => $uid]);
+//            $updatedRows = UserNotify::updateAll(['is_read' => 1], 'uid=:uid AND id IN(' . $notifyIds . ")", ['uid' => $uid]);
         }
 
         $ret['data']['notifyList'][] = $notifyList;
