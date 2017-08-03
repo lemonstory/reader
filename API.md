@@ -1116,7 +1116,97 @@
                      "msg": "OK"
                  }
          
-         
+         24）获取用户通知列表
+             api:    /notify/index
+             method: get
+             params:
+                    uid:用户uid
+                    page:页码
+                    pre_page:每页显示内容数
+             example:
+                    http://api.youwei.xiaoningmeng.net/notify/index?uid=4&page=1&pre_page=20
+                    http://api.youwei.xiaoningmeng.net/notify/index?uid=2&page=1&pre_page=20
+             ret:   Json
+                    {
+                        "code": 200,
+                        "msg": "OK",
+                        "data": {
+                            "notifyList": [
+                                [
+                                    {
+                                        "id": "130",
+                                        "category": "like_reply",
+                                        "senders": [
+                                            {
+                                                "uid": "10",
+                                                "username": "巴巴",
+                                                "avatar": "http://tvax4.sinaimg.cn/crop.0.0.996.996.50/e9b22e9ely8fgkkj3oiojj20ro0rptbl.jpg"
+                                            },
+                                            {
+                                                "uid": "11",
+                                                "username": "亮亮",
+                                                "avatar": "http://tvax4.sinaimg.cn/crop.0.0.996.996.50/e9b22e9ely8fgkkj3oiojj20ro0rptbl.jpg"
+                                            },
+                                            {
+                                                "uid": "8",
+                                                "username": "三少",
+                                                "avatar": "http://tvax4.sinaimg.cn/crop.0.0.996.996.50/e9b22e9ely8fgkkj3oiojj20ro0rptbl.jpg"
+                                            },
+                                            {
+                                                "uid": "9",
+                                                "username": "大大兵",
+                                                "avatar": "http://youwei-avatar.oss-cn-shanghai.aliyuncs.com/user/9"
+                                            }
+                                        ],
+                                        "count": 5,
+                                        "comment_id": "18",
+                                        "comment_content": "回复评论内容blabla",
+                                        "create_time": "2017-08-02 18:17:02"
+                                    },
+                                    {
+                                        "id": "60",
+                                        "category": "post_story",
+                                        "senders": [
+                                            {
+                                                "uid": "2",
+                                                "username": "小爱",
+                                                "avatar": "http://tvax1.sinaimg.cn/crop.74.0.302.302.50/6a2dec21ly8ff6ujky4rrj20c808et9j.jpg"
+                                            }
+                                        ],
+                                        "count": 1,
+                                        "story_id": "2",
+                                        "story_name": "大盗贼",
+                                        "story_cover": "http://youwei-pic.oss-cn-shanghai.aliyuncs.com/cover/2017/07/02/0_1498987493.jpg",
+                                        "create_time": "2017-08-02 15:22:19"
+                                    },
+                                    {
+                                        "id": "4",
+                                        "category": "post_chapter",
+                                        "senders": [
+                                            {
+                                                "uid": "4",
+                                                "username": "小爱",
+                                                "avatar": "http://tvax1.sinaimg.cn/crop.74.0.302.302.50/6a2dec21ly8ff6ujky4rrj20c808et9j.jpg"
+                                            }
+                                        ],
+                                        "count": 1,
+                                        "story_id": "2",
+                                        "story_name": "大盗贼",
+                                        "story_cover": "http://youwei-pic.oss-cn-shanghai.aliyuncs.com/cover/2017/07/02/0_1498987493.jpg",
+                                        "chapter_id": "1",
+                                        "chapter_name": "第1章",
+                                        "create_time": "2017-08-02 15:17:56"
+                                    }
+                                ]
+                            ],
+                            "totalCount": 3,
+                            "pageCount": 1,
+                            "currentPage": 1,
+                            "perPage": 20
+                        }
+                    }
+            
+            
 
          
  ```
