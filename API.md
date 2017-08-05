@@ -1080,13 +1080,43 @@
                        parent_comment_id:父级评论id
                 example:http://api.youwei.xiaoningmeng.net/comment/commit
                 ret:    Json
-                    {
-                        "data": {
-                            "comment_id": 11
-                        },
-                        "code": 200,
-                        "msg": "OK"
-                    }
+                        {
+                            "data": [
+                                {
+                                    "comment_id": "21",
+                                    "parent_comment_id": "2",
+                                    "target_id": "2",
+                                    "target_type": "1",
+                                    "content": "回复评论内容blabla",
+                                    "target_uid": "2",
+                                    "like_count": "0",
+                                    "create_time": "2017-08-05 14:43:25",
+                                    "last_modify_time": "2017-08-05 14:43:25",
+                                    "owner_uid": "5",
+                                    "owner_username": "小就",
+                                    "owner_avatar": "http://tvax1.sinaimg.cn/crop.0.25.1242.1242.50/7024b5f6gy8fh4atn4dpej20yi0zxdib.jpg",
+                                    "owner_signature": "也是签名",
+                                    "parent": {
+                                        "comment_id": "2",
+                                        "parent_comment_id": "0",
+                                        "target_id": "2",
+                                        "target_type": "1",
+                                        "content": "哦哦范德萨发",
+                                        "target_uid": "0",
+                                        "like_count": "3",
+                                        "create_time": "2017-06-30 15:31:59",
+                                        "last_modify_time": "2017-08-02 15:15:17",
+                                        "status": "1",
+                                        "owner_uid": "2",
+                                        "owner_username": "小爱",
+                                        "owner_avatar": "http://tvax1.sinaimg.cn/crop.74.0.302.302.50/6a2dec21ly8ff6ujky4rrj20c808et9j.jpg",
+                                        "owner_signature": "也是签名"
+                                    }
+                                }
+                            ],
+                            "code": 200,
+                            "msg": "OK"
+                        }
          
          22)评论点赞[已完成]
                  api:    /like/comment-like
