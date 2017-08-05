@@ -376,9 +376,9 @@ class CommentController extends ActiveController
         $storyId = Yii::$app->getRequest()->post('story_id',null);
         $content = Yii::$app->getRequest()->post('content',null);
         $targetUid = 0;
+        $commentId = 0;
 
         //TODO:输入检查
-        $data = array();
         try {
             if(!empty($parentCommentId)) {
 
@@ -405,9 +405,15 @@ class CommentController extends ActiveController
             if ($commentModel->hasErrors()) {
 
                 Yii::error($commentModel->getErrors());
-                throw new ServerErrorHttpException('评论保存失败');
+                $errorStr = "";
+                foreach ($commentModel->getErrors() as $errors) {
+                    foreach ($errors as $error) {
+                        $errorStr = $errorStr . $error;
+                    }
+                }
+                throw new ServerErrorHttpException($errorStr);
             }
-            $data['comment_id'] = $commentModel->comment_id;
+            $commentId = $commentModel->comment_id;
 
             //更新故事评论数量
             $storyModel = Story::findOne(['story_id' => $storyId, 'status' => Yii::$app->params['STATUS_ACTIVE']]);
@@ -428,7 +434,30 @@ class CommentController extends ActiveController
             $response->statusText = $e->getMessage();
         }
 
-        $ret['data'] = $data;
+
+        //获取评论内容
+        $commentIdArr = array();
+        $commentIdArr[] = $commentId;
+        if(!empty($parentCommentId)) {
+            $commentIdArr[] = $parentCommentId;
+        }
+
+        $commentContentArr = Comment::find()
+            ->where(['comment_id' => $commentIdArr])
+            ->joinWith([
+                'user'=> function (ActiveQuery $query)  {
+                    $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
+                },
+            ])
+            ->asArray()
+            ->all();
+        $commentContentArr = ArrayHelper::index($commentContentArr,'comment_id');
+
+        //组织评论数据
+        $commentPairIdArr = array($commentId => $parentCommentId);
+        $commentContent = $this->processCommentHierarchy($commentPairIdArr,$commentContentArr);
+
+        $ret['data'] = $commentContent;
         $ret['code'] = $response->statusCode;
         $ret['msg'] = $response->statusText;
         return $ret;

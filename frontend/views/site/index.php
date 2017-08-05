@@ -27,7 +27,7 @@
                     </div>
                 </a>
                 <div class="brand-slogan hidden-xs">
-                    就想看点好东西
+                    点击世界的有趣
                 </div>
             </div>
         </div>
@@ -44,8 +44,8 @@
                 <div class="feature-item is-flex middle-xs col-xs-8 col-sm-6">
 
                     <div class="content-wrap is-flex direction-vert start-xs between-sm intro">
-                        <span class="header-home-1 direction-vert start-xs is-flex">全球 5亿用户的选择</span>
-                        <span class="header-home-2 is-flex">快手，记录世界 记录你</span>
+                        <span class="header-home-1 direction-vert start-xs is-flex">有味读书</span>
+                        <span class="header-home-2 is-flex">度过 每一种可能的生活</span>
                         <div class="header-home-qr is-flex"></div>
                         <p class="qrcode">扫描二维码下载</p>
                     </div>
@@ -56,7 +56,7 @@
             <div class="container-fluid is-limited">
                 <div class="row center-xs between-sm middle-xs" style="max-width: 510px !important;">
                     <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"
-                       href="https://app.jike.ruguoapp.com/1.0/configs/redirect/jike-site-download-web-ios"
+                       href=""
                        target="_blank"><span
                                 class="icon icon-apple"></span>
                         <div class="content-wrap is-flex direction-vert start-xs">
@@ -69,7 +69,7 @@
                         </div>
                     </a>
                     <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"
-                       href="https://app.jike.ruguoapp.com/1.0/configs/redirect/jike-site-download-web-android"
+                       href=""
                        target="_blank"><span
                                 class="icon icon-android"></span>
                         <div class="content-wrap is-flex direction-vert start-xs">
@@ -89,26 +89,27 @@
                 <div class="row center-xs">
                     <div class="feature-item is-flex middle-xs col-xs-8 col-sm-6">
                         <div class="img-icon icon-news"></div>
+
                         <div class="feature-desc">
-                            有趣的资讯集合
+                            各种题材类型百花齐放
                         </div>
                     </div>
                     <div class="feature-item is-flex middle-xs col-xs-8 col-sm-6">
                         <div class="img-icon icon-notification"></div>
                         <div class="feature-desc">
-                            准确的信息推送
+                            超酷炫的点屏阅读体验
                         </div>
                     </div>
                     <div class="feature-item is-flex middle-xs col-xs-8 col-sm-6">
                         <div class="img-icon icon-customize"></div>
                         <div class="feature-desc">
-                            定制化的追踪
+                            任意一条消息都可点评
                         </div>
                     </div>
                     <div class="feature-item is-flex middle-xs col-xs-8 col-sm-6">
                         <div class="img-icon icon-filter"></div>
                         <div class="feature-desc">
-                            智能过滤信息噪音
+                            用聊天记录讲有味故事
                         </div>
                     </div>
                 </div>
@@ -118,9 +119,9 @@
     <div class="site-footer base-footer">
         <div class="container-fluid is-limited">
             <div class="row between-xs middle-xs">
-                <a class="icp-cert hidden-xs" href="http://www.miitbeian.gov.cn/" target="_blank">沪ICP备15000478号-1</a>
+                <a class="icp-cert hidden-xs" href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备xxx号-1</a>
                 <div class="company-name hidden-xs">
-                    上海若友网络科技有限公司
+                    北京凯尔山石科技有限公司
                 </div>
                 <div class="nav-group is-flex space-fill between-xs end-sm">
                     <div class="info-nav is-flex middle-xs">

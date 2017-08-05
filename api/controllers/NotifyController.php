@@ -190,7 +190,7 @@ class NotifyController extends ActiveController
 //            $updatedRows = UserNotify::updateAll(['is_read' => 1], 'uid=:uid AND id IN(' . $notifyIds . ")", ['uid' => $uid]);
         }
 
-        $ret['data']['notifyList'][] = $notifyList;
+        $ret['data']['notifyList'] = $notifyList;
         $pagination = $provider->getPagination();
         $ret['data']['totalCount'] = $pagination->totalCount;
         $ret['data']['pageCount'] = $pagination->getPageCount();

@@ -22,7 +22,7 @@ class SiteController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['login', 'error'],
+                        'actions' => ['login', 'auth', 'error', 'info','callback'],
                         'allow' => true,
                     ],
                     [
@@ -54,10 +54,28 @@ class SiteController extends Controller
     public function actions()
     {
         return [
+            'auth' => [
+                'class' => 'yii\authclient\AuthAction',
+                'successCallback' => [$this, 'successCallback'],
+            ],
+
             'error' => [
                 'class' => 'yii\web\ErrorAction',
             ],
         ];
+    }
+
+    public function successCallback($client)
+    {
+        $attributes = $client->getUserAttributes();
+        // user login or signup comes here
+        // 用户的信息在$attributes中，以下是您根据您的实际情况增加的代码
+        // 如果您同时有QQ互联登录，新浪微博等，可以通过 $client->id 来区别。
+
+    }
+
+    public function actionInfo() {
+        echo phpinfo();
     }
 
     /**

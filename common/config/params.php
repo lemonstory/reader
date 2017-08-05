@@ -65,4 +65,5 @@ return [
 
     //Redis键名称
     'cacheKeyYouweiStoriesHotRank' => 'youwei_stories_hot_rank',
+
 ];

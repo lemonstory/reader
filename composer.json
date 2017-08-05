@@ -21,7 +21,10 @@
         "dmstr/yii2-adminlte-asset": "2.*",
         "monolog/monolog": "1.22.*",
         "erusev/parsedown": "~1.4",
-        "aliyuncs/oss-sdk-php": "^2.2"
+        "aliyuncs/oss-sdk-php": "^2.2",
+        "yiisoft/yii2-redis": "^2.0",
+        "guzzlehttp/guzzle": "^6.3",
+        "yiisoft/yii2-authclient": "~2.1.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

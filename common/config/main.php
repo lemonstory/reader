@@ -14,6 +14,7 @@ $config = [
 $config = ArrayHelper::merge(
     require(__DIR__ . '/db.php'),
     require(__DIR__ . '/redis.php'),
+    require(__DIR__ . '/oauth.php'),
     $config);
 
 return $config;

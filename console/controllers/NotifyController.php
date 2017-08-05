@@ -153,13 +153,13 @@ class NotifyController extends Controller
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        //4)回复评论
-//        $storyId = 2;
-//        $commentUid = 2;
-//        $commentId = 2;
-//        $replyUid = 4;
-//        $replyId = 18;
-//        $messageBody = NotifyMessageHelper::replyComment($storyId, $commentUid, $commentId, $replyUid, $replyId);
-//        $mnsQueue->sendMessage($messageBody, $queueName);
+        $storyId = 2;
+        $commentUid = 2;
+        $commentId = 2;
+        $replyUid = 4;
+        $replyId = 18;
+        $messageBody = NotifyMessageHelper::replyComment($storyId, $commentUid, $commentId, $replyUid, $replyId);
+        $mnsQueue->sendMessage($messageBody, $queueName);
 //        //聚合
 //        $storyId = 2;
 //        $commentUid = 2;
@@ -571,6 +571,11 @@ class NotifyController extends Controller
                 $content['comment_id'] = $replyId;
                 //回复内容
                 $content['comment_content'] = $replyCommentContent;
+            }else {
+                //回复id
+                $content['comment_id'] = "";
+                //回复内容
+                $content['comment_content'] = "";
             }
             $content = \GuzzleHttp\json_encode($content);
 
