@@ -12,7 +12,6 @@ namespace api\controllers;
 use common\models\Auth;
 use common\models\Oauth;
 use common\models\User;
-use phpDocumentor\Reflection\Types\String_;
 use QC;
 use Yii;
 use yii\rest\ActiveController;
@@ -124,6 +123,9 @@ class SsoController extends ActiveController
      */
     public function getQqUserInfo($accessToken,$openId)
     {
+        require_once (Yii::$app->vendorPath.'/qqconnect-server-sdk-php/API/comm/config.php');
+        require_once(CLASS_PATH."QC.class.php");
+        
         $qc = new QC($accessToken, $openId);
         $getInfo = $qc->get_user_info();
         if (empty($getInfo)) {
