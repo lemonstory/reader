@@ -61,4 +61,26 @@ class Like extends \yii\db\ActiveRecord
     {
         return new LikeQuery(get_called_class());
     }
+
+    /**
+     * 获取故事赞的key
+     * @param $storyId
+     * @return int
+     */
+    public function genStoryLikeKey($storyId) {
+
+        return sprintf('like_story:%s',$storyId);
+    }
+
+
+    /**
+     * 获取评论赞的key
+     * @param $commentId
+     * @return int
+     */
+    public function genCommentLikeKey($commentId) {
+
+
+        return sprintf('like_comment:%s',$commentId);
+    }
 }

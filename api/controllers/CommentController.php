@@ -198,7 +198,7 @@ class CommentController extends ActiveController
      * @param $pre_page
      * @return array
      */
-    public function actionIndex($story_id,$page,$pre_page) {
+    public function actionIndex($uid,$story_id,$page,$pre_page) {
 
         $response = Yii::$app->getResponse();
         $ret = array();
@@ -219,6 +219,9 @@ class CommentController extends ActiveController
         $ret['data']['perPage'] = $pre_page;
         $ret['data']['pageCount'] = intval(ceil($ret['data']['totalCount'] / $ret['data']['perPage']));
         $ret['data']['pageCount'] = 1;
+
+        $likeModel = new Like();
+        $redis = Yii::$app->redis;
 
         if($ret['data']['totalCount'] > 0) {
 
@@ -263,6 +266,15 @@ class CommentController extends ActiveController
                 $ret['data']['commentList']['hot'] = $this->processCommentHierarchy($commentHotCommentPairIdArr,$commentHotAllCommentContentArr);
                 //热门评论按照赞数倒序排列
                 ArrayHelper::multisort($ret['data']['commentList']['hot'], 'like_count',SORT_DESC,SORT_NUMERIC);
+
+                //组装用户是否赞过该评论数据
+                foreach ($ret['data']['commentList']['hot'] as $key => $hotCommentItem) {
+                    $hotCommentItem['is_like'] = 0;
+                    $commentLikeKey = $likeModel->genCommentLikeKey($hotCommentItem['comment_id']);
+                    $isLike = $redis->getbit($commentLikeKey,$uid);
+                    $hotCommentItem['is_like'] = intval($isLike);
+                    $ret['data']['commentList']['hot'][$key] = $hotCommentItem;
+                }
             }
 
             //最新评论
@@ -299,7 +311,18 @@ class CommentController extends ActiveController
             //组织最新评论数据
             $ret['data']['commentList']['new'] = $this->processCommentHierarchy($commentNewCommentPairIdArr,$commentNewAllCommentContentArr);
 
+
+            //组装用户是否赞过该评论数据
+            foreach ($ret['data']['commentList']['new'] as $key => $newCommentItem) {
+                $newCommentItem['is_like'] = 0;
+                $commentLikeKey = $likeModel->genCommentLikeKey($newCommentItem['comment_id']);
+                $isLike = $redis->getbit($commentLikeKey,$uid);
+                $newCommentItem['is_like'] = intval($isLike);
+                $ret['data']['commentList']['new'][$key] = $newCommentItem;
+            }
+
         }
+
         $ret['code'] = $response->statusCode;
         $ret['msg'] = $response->statusText;
         return $ret;

@@ -64,7 +64,13 @@ class LikeController extends ActiveController
         $transaction = Yii::$app->db->beginTransaction();
         try {
 
-            //记录赞
+            //Redis记录赞
+            $likeModel = new Like();
+            $redis = Yii::$app->redis;
+            $commentLikeKey = $likeModel->genCommentLikeKey($commentId);
+            $redis->setbit($commentLikeKey,$uid,1);
+
+            //DB记录赞
             $condition = array(
                 'like.target_id' => $commentId,
                 'like.target_type' => $this->likeCommentTargetType,
@@ -124,7 +130,12 @@ class LikeController extends ActiveController
         $transaction = Yii::$app->db->beginTransaction();
         try {
 
-            //删除记录赞
+            //删除记录赞Redis
+            $redis = Yii::$app->redis;
+            $commentLikeKey = $this->genCommentLikeKey($commentId);
+            $redis->setbit($commentLikeKey,$uid,0);
+
+            //删除记录赞DB
             $condition = array(
 
                 'like.target_id' => $commentId,
