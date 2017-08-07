@@ -11,7 +11,7 @@ use yii\rest\ActiveController;
 
 class NotifyController extends ActiveController
 {
-    public $modelClass = 'common\models\Tag';
+    public $modelClass = 'common\models\UserNotify';
     public $serializer = [
         'class' => 'yii\rest\Serializer',
         'collectionEnvelope' => 'items',

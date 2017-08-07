@@ -2,4 +2,6 @@ main-local.php
 params-local.php
 test-local.php
 db.php
+redis.php
 /db-local.php
+/params.php

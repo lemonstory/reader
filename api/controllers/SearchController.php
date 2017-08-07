@@ -38,7 +38,6 @@ class SearchController extends ActiveController
 
         // 使用"prepareDataProvider()"方法自定义数据provider
 //        $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
-
     }
 
 

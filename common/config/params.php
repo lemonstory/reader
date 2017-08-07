@@ -29,6 +29,12 @@ return [
     'mnsAccessOwnerId' => "1120189427353178",
     'mnsEndpoint' => 'http://1120189427353178.mns.cn-hangzhou-internal.aliyuncs.com/',
 
+    //aliyun sms 短信服务
+    'smsAccessKeyId' => "QHzux6QVXjQgfBNM",
+    'smsAccessKeySecret'=> "diWfijmBbiGlwle1s9KyAL8BQhB3Qc",
+    'smsSignName'=> "有味读书",
+    'smsTemplateCode'=> "SMS_82705009",
+
     //队列-用户通知-名称
     'mnsQueueNotifyName' => "youwei-queue-notify",
 
