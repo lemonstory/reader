@@ -68,7 +68,7 @@ class SsoController extends ActiveController
                 $qqUserInfo = $this->getQqUserInfo($accessToken,$openId);
                 $userName = $qqUserInfo['nickName'];
                 //用户姓名不能重复
-                if (isset($user['cellphone']) && User::find()->where(['username' => $userName])->exists()) {
+                if (isset($user['mobile_phone']) && User::find()->where(['username' => $userName])->exists()) {
                     Yii::$app->getSession()->setFlash('error', [
                         Yii::t('app', "User with the same username as in {client} account already exists but isn't linked to it. Login using email first to link it.", ['client' => $clientId]),
                     ]);

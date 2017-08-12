@@ -60,23 +60,69 @@ class SmsController extends ActiveController {
 //        $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
     }
 
-    //$phoneNumbers
-    public function actionSendSms()
-    {
 
-        $request = Yii::$app->request;
-//        $phoneNumbers = $request->get('phoneNumbers');
-        $phoneNumbers = '18600024911';
+    /**
+     * 发送验证码
+     * 阿里云流量限制：对同一个手机号码发送短信验证码，1条/分钟，5条/小时，累计10条/天
+     * @param $mobilePhone
+     * @return mixed
+     * @see https://help.aliyun.com/document_detail/55284.html?spm=5176.product44282.4.4.sVbOok
+     */
+    public function actionSendSms($mobilePhone)
+    {
         $sms = new Sms();
         $signName = Yii::$app->params['smsSignName'];
         $templateCode = Yii::$app->params['smsTemplateCode'];
         $templateParam = array('number' => '1234');
-        $outId = "123";
-        $response = $sms->sendSms($signName,$templateCode,$phoneNumbers,$templateParam,$outId);
+        //外部流水扩展字段
+        $outId = "";
+        //$response -> stdClass Object ( [Message] => OK [RequestId] => ACA1E730-8BDC-4C47-9F63-E9311F9BC992 [BizId] => 179315102107980174^0 [Code] => OK )
+        $response = $sms->sendSms($signName,$templateCode,$mobilePhone,$templateParam,$outId);
 
-//        stdClass Object ( [Message] => OK [RequestId] => ACA1E730-8BDC-4C47-9F63-E9311F9BC992 [BizId] => 179315102107980174^0 [Code] => OK )
-//        print_r($response);
+        //格式化输出
+        $ret = array();
+        $data = array();
+        $data['RequestId'] = $response->RequestId;
+        $data['BizId'] = $response->BizId;
+        $ret['data'] = $data;
+        $ret['code'] = $response->Code;
+        $ret['msg'] = $response->Message;
+        return $ret;
     }
+
+    /**
+     * 短信发送记录查询
+     * @param $mobilePhone
+     * @param $bizId
+     * @return mixed
+     * @see https://help.aliyun.com/document_detail/55452.html?spm=5176.doc55451.6.557.ylPC1q
+     */
+    public function actionQuerySendDetails($mobilePhone,$bizId) {
+
+        $sms = new Sms();
+        $pageSize = 10;
+        $currentPage = 1;
+        $sendDate = date("Ymd",time());
+        $response = $sms->queryDetails($mobilePhone,$sendDate,$pageSize,$currentPage,$bizId);
+
+        //格式化输出
+        $ret = array();
+        $ret['code'] = $response->Code;
+        $ret['msg'] = $response->Message;
+        if(1 == $response->TotalCount) {
+
+            $SmsSendDetailDTO = $response->SmsSendDetailDTOs->SmsSendDetailDTO;
+            $ret['data']['SendDate'] = $SmsSendDetailDTO[0]->SendDate;
+            $ret['data']['SendStatus'] = $SmsSendDetailDTO[0]->SendStatus;
+            $ret['data']['ReceiveDate'] = $SmsSendDetailDTO[0]->ReceiveDate;
+            $ret['data']['ErrCode'] = $SmsSendDetailDTO[0]->ErrCode;
+            $ret['data']['TemplateCode'] = $SmsSendDetailDTO[0]->TemplateCode;
+            $ret['data']['Content'] = $SmsSendDetailDTO[0]->Content;
+            $ret['data']['PhoneNum'] = $SmsSendDetailDTO[0]->PhoneNum;
+        }
+        return $ret;
+    }
+
 
 }
 

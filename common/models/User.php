@@ -13,7 +13,7 @@ use yii\web\IdentityInterface;
  *
  * @property integer $uid
  * @property string $username
- * @property string $cellphone
+ * @property string $mobile_phone
  * @property string $password
  * @property string $avatar
  * @property string $signature
@@ -58,12 +58,18 @@ class User extends ActiveRecord implements IdentityInterface
             [['password_hash', 'password_reset_token', 'email'], 'string', 'max' => 256],
             [['status'], 'integer'],
             [['register_time', 'create_time', 'last_modify_time'], 'safe'],
-            [['cellphone'], 'string', 'max' => 11],
+            [['mobile_phone'], 'string', 'max' => 11],
             [['avatar'], 'string', 'max' => 2083],
             [['signature'], 'string', 'max' => 100],
             [['register_ip', 'last_login_ip'], 'string', 'max' => 15],
             ['status', 'default', 'value' => Yii::$app->params['STATUS_ACTIVE']],
             ['status', 'in', 'range' => [Yii::$app->params['STATUS_ACTIVE'],Yii::$app->params['STATUS_DELETED']]],
+
+            //手机号验证规则
+            ['mobile_phone', 'number'],
+            ['mobile_phone', 'string', 'min' => 11],
+            ['mobile_phone', 'filter', 'filter' => 'trim'],
+            ['mobile_phone', 'unique', 'targetClass' => '\common\models\User', 'message' => '手机号已被使用'],
         ];
     }
 
@@ -79,7 +85,7 @@ class User extends ActiveRecord implements IdentityInterface
             'password_hash' => Yii::t('app', 'Password Hash'),
             'password_reset_token' => Yii::t('app', 'Password Reset Token'),
             'email' => Yii::t('app', 'Email'),
-            'cellphone' => Yii::t('app', '手机号码'),
+            'mobile_phone' => Yii::t('app', '手机号码'),
             'avatar' => Yii::t('app', '头像'),
             'signature' => Yii::t('app', '个性签名'),
             'status' => Yii::t('app', '状态'),

@@ -1340,7 +1340,64 @@
                             "perPage": 20
                         }
                     }
+         25）发送手机验证码
+             api:    sms/send-sms
+             method: get
+             params:
+                    mobilePhone:手机号码
+             example:
+                    http://api.youwei.xiaoningmeng.net/sms/send-sms?mobilePhone=15339188014
+             ret:   Json
+                    {
+                        "data": {
+                            "RequestId": "C862746D-5B72-43CB-ADBB-BB99B1F3952D",
+                            "BizId": "593409302510526665^0"
+                        },
+                        "code": "OK",
+                        "msg": "OK"
+                    }
+                    
+                    {
+                        "data": {
+                            "RequestId": "F4A54AD6-B593-482F-951E-0C214DCE4FFA",
+                            "BizId": null
+                        },
+                        "code": "isv.BUSINESS_LIMIT_CONTROL",
+                        "msg": "触发业务级流控限制"
+                    }
+             备注：RequestId：请求ID，BizId：发送回执ID,可根据该ID查询具体的发送状态，code：短信发送状态运营商返回的错误码,
+             触发业务级流控限制: 是指对同一个手机号码发送短信验证码，支持1条/分钟，5条/小时 ，累计10条/天。(发送短信太频繁了)
+             短信接口调用错误码文档地址：https://help.aliyun.com/knowledge_detail/57717.html?spm=5176.doc55451.6.576.WT9y6G
+          
+         26）查询手机验证码发送状态
+             api:    sms/send-sms
+             method: get
+             params:
+                    mobilePhone:手机号码
+                    bizId:发送回执ID
+             example:
+                    http://api.youwei.xiaoningmeng.net/sms/query-send-details?mobilePhone=15339188014&bizId=539300602507735533^0
+             ret:   Json
+                    {
+                        "code": "OK",
+                        "msg": "OK",
+                        "data": {
+                            "SendDate": "2017-08-12 11:15:35",
+                            "SendStatus": 3,
+                            "ReceiveDate": "2017-08-12 11:15:41",
+                            "ErrCode": "DELIVERED",
+                            "TemplateCode": "SMS_82705009",
+                            "Content": "【有味读书】您的验证码是1234。请在10分钟内按照页面中的提示提交验证码完成验证。",
+                            "PhoneNum": "15339188014"
+                        }
+                    }
+                    
+           备注：code = OK 且 SendStatus=3, 且 ErrCode = DELIVERED 表示短信已发送成功
             
+            
+         26) 用户注册(手机号 + 密码)
+         27) 修改用户名
+         28) 手机号密码登录
             
 
          

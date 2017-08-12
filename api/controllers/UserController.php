@@ -160,7 +160,7 @@ class UserController extends ActiveController
 
                 $userInfo['uid'] = $userModel->uid;
                 $userInfo['name'] = $userModel->name;
-                $userInfo['cellphone'] = $userModel->cellphone;
+                $userInfo['mobile_phone'] = $userModel->mobile_phone;
                 $userInfo['avatar'] = $userModel->avatar;
                 $userInfo['signature'] = $userModel->signature;
                 $userInfo['status'] = $userModel->status;

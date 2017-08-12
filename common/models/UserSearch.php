@@ -20,7 +20,7 @@ class UserSearch extends User
     {
         return [
             [['uid', 'status'], 'integer'],
-            [['username', 'cellphone', 'password_hash', 'avatar', 'signature', 'register_ip', 'register_time', 'last_login_ip', 'last_login_time', 'last_modify_time'], 'safe'],
+            [['username', 'mobile_phone', 'password_hash', 'avatar', 'signature', 'register_ip', 'register_time', 'last_login_ip', 'last_login_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -68,7 +68,7 @@ class UserSearch extends User
         ]);
 
         $query->andFilterWhere(['like', 'username', $this->username])
-            ->andFilterWhere(['like', 'cellphone', $this->cellphone])
+            ->andFilterWhere(['like', 'mobile_phone', $this->mobile_phone])
             ->andFilterWhere(['like', 'avatar', $this->avatar])
             ->andFilterWhere(['like', 'signature', $this->signature])
             ->andFilterWhere(['like', 'register_ip', $this->register_ip])

@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'headerOptions' => ['style' => 'width:50px'],
             ],
             [
-                'attribute' => 'cellphone',
+                'attribute' => 'mobile_phone',
                 'headerOptions' => ['style' => 'width:50px'],
                 'value' => function ($model) {
                     $ret = "";
