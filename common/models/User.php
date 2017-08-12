@@ -26,6 +26,7 @@ use yii\web\IdentityInterface;
  * @property string password_hash
  * @property mixed auth_key
  * @property string password_reset_token
+ * @property string access_token
  */
 class User extends ActiveRecord implements IdentityInterface
 {
@@ -53,14 +54,23 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['username'], 'required'],
-            [['username', 'auth_key'], 'string', 'max' => 32],
+
+            //用户名验证规则
+            ['username', 'required'],
+            ['username', 'filter', 'filter' => 'trim'],
+            ['username', 'string', 'min' => 4,'max' => 24, 'message' => '姓名长度限制 4-24个字符','tooShort' => '姓名长度限制 4-24个字符', 'tooLong' => '姓名长度限制 4-24个字符'],
+            ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => '该用户名已经被占用'],
+
+            //个性签名验证规则
+            [['signature'], 'string', 'max' => 100, 'message' => '个性签名长度限制 最多100个字符','tooShort' => '个性签名长度限制 最多100个字符', 'tooLong' => '个性签名长度限制 最多100个字符'],
+
+            ['auth_key', 'string', 'max' => 32],
             [['password_hash', 'password_reset_token', 'email'], 'string', 'max' => 256],
             [['status'], 'integer'],
             [['register_time', 'create_time', 'last_modify_time'], 'safe'],
             [['mobile_phone'], 'string', 'max' => 11],
             [['avatar'], 'string', 'max' => 2083],
-            [['signature'], 'string', 'max' => 100],
+
             [['register_ip', 'last_login_ip'], 'string', 'max' => 15],
             ['status', 'default', 'value' => Yii::$app->params['STATUS_ACTIVE']],
             ['status', 'in', 'range' => [Yii::$app->params['STATUS_ACTIVE'],Yii::$app->params['STATUS_DELETED']]],
@@ -70,6 +80,9 @@ class User extends ActiveRecord implements IdentityInterface
             ['mobile_phone', 'string', 'min' => 11],
             ['mobile_phone', 'filter', 'filter' => 'trim'],
             ['mobile_phone', 'unique', 'targetClass' => '\common\models\User', 'message' => '手机号已被使用'],
+
+            //头像验证规则
+            ['avatar', 'url', 'defaultScheme' => 'http','message' => '头像地址不是一个合法的url'],
         ];
     }
 
@@ -120,8 +133,15 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        // echo "findIdentityByAccessToken RUN!!! <br/>";
-        throw new NotSupportedException('"findIdentityByAccessToken" is not implemented.');
+        return static::findOne(['access_token' => $token]);
+    }
+
+    /**
+     * 生成access_token
+     */
+    public function generateAccessToken()
+    {
+        $this->access_token = Yii::$app->security->generateRandomString();
     }
 
     /**

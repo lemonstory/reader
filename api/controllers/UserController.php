@@ -4,10 +4,12 @@ namespace api\controllers;
 
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
+use common\models\SignupForm;
 use common\models\Story;
 use common\models\User;
 use common\models\UserOauth;
 use common\models\UserReadStoryRecord;
+use yii\base\Response;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
@@ -18,6 +20,11 @@ use common\models\UploadForm;
 use yii\web\ServerErrorHttpException;
 use common\components\DateTimeHelper;
 
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\HttpBasicAuth;
+use yii\filters\auth\HttpBearerAuth;
+use yii\filters\auth\QueryParamAuth;
+
 class UserController extends ActiveController
 {
     public $modelClass = 'common\models\User';
@@ -25,6 +32,24 @@ class UserController extends ActiveController
         'class' => 'yii\rest\Serializer',
         'collectionEnvelope' => 'items',
     ];
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+
+        //用户认证
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::className(),
+            //部分action需要access-token认证，部分action不需要
+            'except' => ['qq-login', 'signup'],
+            'authMethods' => [
+//                HttpBasicAuth::className(),
+//                HttpBearerAuth::className(),
+                QueryParamAuth::className(),
+            ],
+        ];
+        return $behaviors;
+    }
 
     public function actions()
     {
@@ -180,8 +205,176 @@ class UserController extends ActiveController
         }
 
         return $userInfo;
-
     }
 
+
+    /**
+     * 手机号注册
+     * @param $mobilePhone
+     * @param $password
+     * @return mixed
+     */
+    public function actionSignup($mobilePhone,$password) {
+
+        $signupFormModel = new SignupForm();
+        $signupFormModel->mobile_phone = $mobilePhone;
+        $signupFormModel->password = $password;
+        $signupFormModel->username = "用户_".rand(1000,9999);
+
+        $userModel = $signupFormModel->signup();
+        $ret = array();
+        if(is_null($userModel)) {
+
+            foreach ($signupFormModel->getErrors() as $attribute => $error)
+            {
+                foreach ($error as $message)
+                {
+                    //throw new Exception($attribute.": ".$message);
+                    $ret['data'] = array();
+                    $ret['code'] = 400;
+                    $ret['msg'] = $message;
+                }
+            }
+        }else {
+
+            //注册成功返回用户信息
+            $ret['data'] = $this->retUserInfoData($userModel);
+            $ret['code'] = 200;
+            $ret['msg'] = 'OK';
+        }
+
+        return $ret;
+    }
+
+    /**
+     * 修改用户名
+     * @param $username
+     * @return mixed
+     */
+    public function actionUpdateUsername($username) {
+
+        $userModel = Yii::$app->user->identity;
+        $ret['data'] = array();
+        if(!is_null($userModel)) {
+
+            $userModel->username = $username;
+            if(!$userModel->save(true,['username'])) {
+                foreach ($userModel->getErrors() as $attribute => $error)
+                {
+                    foreach ($error as $message)
+                    {
+                        //throw new Exception($attribute.": ".$message);
+                        $ret['code'] = 400;
+                        $ret['msg'] = $message;
+                    }
+                }
+            }else {
+                $ret['data'] = $this->retUserInfoData($userModel);
+                $ret['code'] = 200;
+                $ret['msg'] = 'OK';
+            }
+
+        }else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
+        }
+        return $ret;
+    }
+
+    /**
+     * 修改用户头像
+     * @param $avatar
+     * @return mixed
+     */
+    public function actionUpdateAvatar($avatar) {
+
+        $userModel = Yii::$app->user->identity;
+        $ret['data'] = array();
+        if(!is_null($userModel)) {
+
+            $userModel->avatar = $avatar;
+            if(!$userModel->save(true,['avatar'])) {
+                foreach ($userModel->getErrors() as $attribute => $error)
+                {
+                    foreach ($error as $message)
+                    {
+                        //throw new Exception($attribute.": ".$message);
+                        $ret['code'] = 400;
+                        $ret['msg'] = $message;
+                    }
+                }
+            }else {
+                $ret['data'] = $this->retUserInfoData($userModel);
+                $ret['code'] = 200;
+                $ret['msg'] = 'OK';
+            }
+
+        }else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
+        }
+        return $ret;
+    }
+
+
+    /**
+     * 修改个性签名
+     * @param $signature
+     * @return mixed
+     */
+    public function actionUpdateSignature($signature) {
+
+        $userModel = Yii::$app->user->identity;
+        $ret['data'] = array();
+        if(!is_null($userModel)) {
+
+            $userModel->signature = $signature;
+            if(!$userModel->save(true,['signature'])) {
+                foreach ($userModel->getErrors() as $attribute => $error)
+                {
+                    foreach ($error as $message)
+                    {
+                        //throw new Exception($attribute.": ".$message);
+                        $ret['code'] = 400;
+                        $ret['msg'] = $message;
+                    }
+                }
+            }else {
+                $ret['data'] = $this->retUserInfoData($userModel);
+                $ret['code'] = 200;
+                $ret['msg'] = 'OK';
+            }
+
+        }else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
+        }
+        return $ret;
+    }
+
+
+    /**
+     * 组织返回用户信息数据
+     * @param $userModel
+     * @return mixed
+     */
+    private function retUserInfoData($userModel) {
+
+        $data = array();
+        $data['uid'] = $userModel->uid;
+        $data['username'] = $userModel->username;
+        $data['mobile_phone'] = $userModel->mobile_phone;
+        $data['email'] = $userModel->email;
+        $data['avatar'] = $userModel->avatar;
+        $data['signature'] = $userModel->signature;
+        $data['access_token'] = $userModel->access_token;
+        $data['status'] = $userModel->status;
+        $data['register_ip'] = $userModel->register_ip;
+        $data['register_time'] = $userModel->register_time;
+        $data['last_login_ip'] = $userModel->last_login_ip;
+        $data['last_login_time'] = $userModel->last_login_time;
+        $data['last_modify_time'] = $userModel->last_modify_time;
+        return $data;
+    }
 
 }

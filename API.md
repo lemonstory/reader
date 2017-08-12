@@ -1251,7 +1251,7 @@
                      "msg": "OK"
                  }
          
-         24）获取用户通知列表
+         24）获取用户通知列表[已完成]
              api:    /notify/index
              method: get
              params:
@@ -1340,7 +1340,8 @@
                             "perPage": 20
                         }
                     }
-         25）发送手机验证码
+                    
+         25）发送手机验证码[已完成]
              api:    sms/send-sms
              method: get
              params:
@@ -1348,6 +1349,18 @@
              example:
                     http://api.youwei.xiaoningmeng.net/sms/send-sms?mobilePhone=15339188014
              ret:   Json
+                    
+                    //失败
+                    {
+                        "data": {
+                            "RequestId": "F4A54AD6-B593-482F-951E-0C214DCE4FFA",
+                            "BizId": null
+                        },
+                        "code": "isv.BUSINESS_LIMIT_CONTROL",
+                        "msg": "触发业务级流控限制"
+                    }
+                    
+                    //成功
                     {
                         "data": {
                             "RequestId": "C862746D-5B72-43CB-ADBB-BB99B1F3952D",
@@ -1357,19 +1370,12 @@
                         "msg": "OK"
                     }
                     
-                    {
-                        "data": {
-                            "RequestId": "F4A54AD6-B593-482F-951E-0C214DCE4FFA",
-                            "BizId": null
-                        },
-                        "code": "isv.BUSINESS_LIMIT_CONTROL",
-                        "msg": "触发业务级流控限制"
-                    }
+                    
              备注：RequestId：请求ID，BizId：发送回执ID,可根据该ID查询具体的发送状态，code：短信发送状态运营商返回的错误码,
              触发业务级流控限制: 是指对同一个手机号码发送短信验证码，支持1条/分钟，5条/小时 ，累计10条/天。(发送短信太频繁了)
              短信接口调用错误码文档地址：https://help.aliyun.com/knowledge_detail/57717.html?spm=5176.doc55451.6.576.WT9y6G
           
-         26）查询手机验证码发送状态
+         26）查询手机验证码发送状态[已完成]
              api:    sms/send-sms
              method: get
              params:
@@ -1395,8 +1401,155 @@
            备注：code = OK 且 SendStatus=3, 且 ErrCode = DELIVERED 表示短信已发送成功
             
             
-         26) 用户注册(手机号 + 密码)
-         27) 修改用户名
+         26) 手机号注册[已完成]
+             api:    user/signup
+             method: get
+             params:
+                    mobilePhone:手机号码
+                    password:密码
+             example:
+                    http://api.youwei.xiaoningmeng.net/user/signup?mobilePhone=18600024911&password=123456
+             ret:   Json
+                    //失败
+                    {
+                        "data": [],
+                        "code": 400,
+                        "msg": "手机号已经被使用"
+                    }
+                    //成功
+                    {
+                        "data": {
+                            "uid": 10152,
+                            "username": "用户_3832",
+                            "mobile_phone": "18600024925",
+                            "email": null,
+                            "avatar": null,
+                            "signature": null,
+                            "access_token": "3j4I6i9p_bjOMnR13VoAIGxbMxEr6rtO",
+                            "status": 1,
+                            "register_ip": "127.0.0.1",
+                            "register_time": "2017-08-12 19:39:04",
+                            "last_login_ip": "127.0.0.1",
+                            "last_login_time": "2017-08-12 19:39:04",
+                            "last_modify_time": "2017-08-12 19:39:04"
+                        },
+                        "code": 200,
+                        "msg": "OK"
+                    }
+                    
+         27) 修改用户名[已完成]
+             api:    user/update-avatar
+             method: get
+             params:
+                    access-token:登录用户授权访问凭证
+                    avatar:用户新头像地址
+             example:
+                    http://api.youwei.xiaoningmeng.net/user/update-username?username=vvvvvv&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
+                    http://api.youwei.xiaoningmeng.net/user/update-username?username=12&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
+             ret:   Json
+                    
+                    //失败
+                    {
+                        "data": [],
+                        "code": 400,
+                        "msg": "姓名长度限制 4-24个字符"
+                    }
+                
+                    //成功
+                    {
+                        "data": {
+                            "uid": 10148,
+                            "username": "vvvvvv",
+                            "mobile_phone": "18600024914",
+                            "email": null,
+                            "avatar": "http://wx1.sinaimg.cn/mw690/4deda15fly1fig4zy0kj0j22kw3vde87.jpg",
+                            "signature": "444444444",
+                            "access_token": "x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX",
+                            "status": 1,
+                            "register_ip": "",
+                            "register_time": "2017-08-12 18:42:46",
+                            "last_login_ip": "",
+                            "last_login_time": null,
+                            "last_modify_time": "2017-08-12 19:27:46"
+                        },
+                        "code": 200,
+                        "msg": "OK"
+                    }
+                    备注：用户名长度限制：4-24个字符
+         
+         28）修改用户头像[已完成]
+             api:    user/update-avatar
+             method: get
+             params:
+                    access-token:登录用户授权访问凭证
+                    avatar:用户新头像地址
+             example:
+                    http://api.youwei.xiaoningmeng.net/user/update-avatar?avatar=http://wx1.sinaimg.cn/mw690/4deda15fly1fig4zy0kj0j22kw3vde87.jpg&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
+             ret:   Json
+             
+                   //失败
+                   {
+                       "data": [],
+                       "code": 400,
+                       "msg": "头像地址不是一个合法的url"
+                   }
+                 
+                   //成功
+                   {
+                       "data": {
+                           "uid": 10148,
+                           "username": "用户_8321",
+                           "mobile_phone": "18600024914",
+                           "email": null,
+                           "avatar": "http://wx1.sinaimg.cn/mw690/4deda15fly1fig4zy0kj0j22kw3vde87.jpg",
+                           "signature": "444444444",
+                           "access_token": "x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX",
+                           "status": 1,
+                           "register_ip": "",
+                           "register_time": "2017-08-12 18:42:46",
+                           "last_login_ip": "",
+                           "last_login_time": null,
+                           "last_modify_time": "2017-08-12 19:26:02"
+                       },
+                       "code": 200,
+                       "msg": "OK"
+                   }
+                   
+         29）修改个性签名[已完成]
+             api:    user/update-signature
+             method: get
+             params:
+                    access-token:登录用户授权访问凭证
+                    avatar:用户新头像地址
+             example:
+                    http://api.youwei.xiaoningmeng.net/user/update-signature?signature=bbbbbbbbbbb&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
+             ret:   Json
+                  
+                    //成功
+                    {
+                        "data": {
+                            "uid": 10148,
+                            "username": "用户_8321",
+                            "mobile_phone": "18600024914",
+                            "email": null,
+                            "avatar": null,
+                            "signature": "444444444",
+                            "access_token": "x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX",
+                            "status": 1,
+                            "register_ip": "",
+                            "register_time": "2017-08-12 18:42:46",
+                            "last_login_ip": "",
+                            "last_login_time": null,
+                            "last_modify_time": "2017-08-12 19:13:03"
+                        },
+                        "code": 200,
+                        "msg": "OK"
+                    }
+                    
+                    备注：个性签名长度限制 最多100个字符
+         
+
+            
          28) 手机号密码登录
             
 
