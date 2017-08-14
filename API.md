@@ -1444,8 +1444,8 @@
                     access-token:登录用户授权访问凭证
                     avatar:用户新头像地址
              example:
-                    http://api.youwei.xiaoningmeng.net/user/update-username?username=vvvvvv&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
-                    http://api.youwei.xiaoningmeng.net/user/update-username?username=12&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
+                    http://api.youwei.xiaoningmeng.net/user/update-username?uid=10148&username=vvvvvv&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
+                    http://api.youwei.xiaoningmeng.net/user/update-username?uid=10148&username=12&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
              ret:   Json
                     
                     //失败
@@ -1484,7 +1484,7 @@
                     access-token:登录用户授权访问凭证
                     avatar:用户新头像地址
              example:
-                    http://api.youwei.xiaoningmeng.net/user/update-avatar?avatar=http://wx1.sinaimg.cn/mw690/4deda15fly1fig4zy0kj0j22kw3vde87.jpg&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
+                    http://api.youwei.xiaoningmeng.net/user/update-avatar?uid=10148&avatar=http://wx1.sinaimg.cn/mw690/4deda15fly1fig4zy0kj0j22kw3vde87.jpg&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
              ret:   Json
              
                    //失败
@@ -1522,7 +1522,7 @@
                     access-token:登录用户授权访问凭证
                     avatar:用户新头像地址
              example:
-                    http://api.youwei.xiaoningmeng.net/user/update-signature?signature=bbbbbbbbbbb&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
+                    http://api.youwei.xiaoningmeng.net/user/update-signature?uid=10148&signature=bbbbbbbbbbb&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
              ret:   Json
                   
                     //成功

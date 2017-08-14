@@ -75,27 +75,27 @@ class UserController extends ActiveController
      * @param $pre_page
      * @return ActiveDataProvider
      */
-    public function actionStorys($uid,$page,$pre_page) {
+    public function actionStorys($uid, $page, $pre_page)
+    {
 
         $response = Yii::$app->getResponse();
         $offset = ($page - 1) * $pre_page;
         $story = Story::find()
             ->with([
                 'actors' => function (ActiveQuery $query) {
-                    $query->andWhere(['is_visible' => Yii::$app->params['STATUS_ACTIVE'],'status' => Yii::$app->params['STATUS_ACTIVE']]);
+                    $query->andWhere(['is_visible' => Yii::$app->params['STATUS_ACTIVE'], 'status' => Yii::$app->params['STATUS_ACTIVE']]);
                 },
-                'tags'=> function (ActiveQuery $query) {
+                'tags' => function (ActiveQuery $query) {
                     $query->andWhere(['status' => Yii::$app->params['STATUS_ACTIVE']]);
                 },
             ])
-
-            ->where(['uid' => $uid,'status' => Yii::$app->params['STATUS_ACTIVE']])
+            ->where(['uid' => $uid, 'status' => Yii::$app->params['STATUS_ACTIVE']])
             ->offset($offset)
             ->limit($pre_page)
             ->orderBy(['last_modify_time' => SORT_DESC]);
 
-        $provider =  new ActiveDataProvider([
-            'query' =>$story,
+        $provider = new ActiveDataProvider([
+            'query' => $story,
             'pagination' => [
                 'pageSize' => $pre_page,
             ],
@@ -161,20 +161,21 @@ class UserController extends ActiveController
      * QQ登录
      * @return array 用户个人信息
      */
-    public function actionQqLogin() {
+    public function actionQqLogin()
+    {
 
-        $accessToken = Yii::$app->request->get('accessToken','');
-        $openId = Yii::$app->request->get('openId','');
+        $accessToken = Yii::$app->request->get('accessToken', '');
+        $openId = Yii::$app->request->get('openId', '');
         $userInfo = array();
 
-        if(!empty($accessToken) && !empty($openId)) {
+        if (!empty($accessToken) && !empty($openId)) {
 
 
             $oauthCondition = ['oauth_id' => $openId];
             $userOauthModel = UserOauth::find()->where($oauthCondition);
             $count = $userOauthModel->count();
 
-            if($count == 1) {
+            if ($count == 1) {
 
                 $userOauthModel->oauth_access_token = $accessToken;
                 $userOauthModel->save();
@@ -190,13 +191,13 @@ class UserController extends ActiveController
                 $userInfo['signature'] = $userModel->signature;
                 $userInfo['status'] = $userModel->status;
 
-            }elseif ($count == 0) {
+            } elseif ($count == 0) {
 
                 $qcObj = null;
                 $getInfo = $qcObj->get_user_info();
 
 
-            }else {
+            } else {
 
                 //TODO:系统出现错误
             }
@@ -214,28 +215,27 @@ class UserController extends ActiveController
      * @param $password
      * @return mixed
      */
-    public function actionSignup($mobilePhone,$password) {
+    public function actionSignup($mobilePhone, $password)
+    {
 
         $signupFormModel = new SignupForm();
         $signupFormModel->mobile_phone = $mobilePhone;
         $signupFormModel->password = $password;
-        $signupFormModel->username = "用户_".rand(1000,9999);
+        $signupFormModel->username = "用户_" . rand(1000, 9999);
 
         $userModel = $signupFormModel->signup();
         $ret = array();
-        if(is_null($userModel)) {
+        if (is_null($userModel)) {
 
-            foreach ($signupFormModel->getErrors() as $attribute => $error)
-            {
-                foreach ($error as $message)
-                {
+            foreach ($signupFormModel->getErrors() as $attribute => $error) {
+                foreach ($error as $message) {
                     //throw new Exception($attribute.": ".$message);
                     $ret['data'] = array();
                     $ret['code'] = 400;
                     $ret['msg'] = $message;
                 }
             }
-        }else {
+        } else {
 
             //注册成功返回用户信息
             $ret['data'] = $this->retUserInfoData($userModel);
@@ -248,104 +248,119 @@ class UserController extends ActiveController
 
     /**
      * 修改用户名
+     * @param $uid
      * @param $username
      * @return mixed
      */
-    public function actionUpdateUsername($username) {
+    public function actionUpdateUsername($uid, $username)
+    {
 
         $userModel = Yii::$app->user->identity;
         $ret['data'] = array();
-        if(!is_null($userModel)) {
-
-            $userModel->username = $username;
-            if(!$userModel->save(true,['username'])) {
-                foreach ($userModel->getErrors() as $attribute => $error)
-                {
-                    foreach ($error as $message)
-                    {
-                        //throw new Exception($attribute.": ".$message);
-                        $ret['code'] = 400;
-                        $ret['msg'] = $message;
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
+                $userModel->username = $username;
+                if (!$userModel->save(true, ['username'])) {
+                    foreach ($userModel->getErrors() as $attribute => $error) {
+                        foreach ($error as $message) {
+                            //throw new Exception($attribute.": ".$message);
+                            $ret['code'] = 400;
+                            $ret['msg'] = $message;
+                        }
                     }
+                } else {
+                    $ret['data'] = $this->retUserInfoData($userModel);
+                    $ret['code'] = 200;
+                    $ret['msg'] = 'OK';
                 }
-            }else {
-                $ret['data'] = $this->retUserInfoData($userModel);
-                $ret['code'] = 200;
-                $ret['msg'] = 'OK';
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
             }
 
-        }else {
+        } else {
             $ret['code'] = 400;
             $ret['msg'] = '用户不存在';
         }
+
         return $ret;
     }
 
     /**
      * 修改用户头像
+     * @param $uid
      * @param $avatar
      * @return mixed
      */
-    public function actionUpdateAvatar($avatar) {
+    public function actionUpdateAvatar($uid, $avatar)
+    {
 
         $userModel = Yii::$app->user->identity;
         $ret['data'] = array();
-        if(!is_null($userModel)) {
-
-            $userModel->avatar = $avatar;
-            if(!$userModel->save(true,['avatar'])) {
-                foreach ($userModel->getErrors() as $attribute => $error)
-                {
-                    foreach ($error as $message)
-                    {
-                        //throw new Exception($attribute.": ".$message);
-                        $ret['code'] = 400;
-                        $ret['msg'] = $message;
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
+                $userModel->avatar = $avatar;
+                if (!$userModel->save(true, ['avatar'])) {
+                    foreach ($userModel->getErrors() as $attribute => $error) {
+                        foreach ($error as $message) {
+                            //throw new Exception($attribute.": ".$message);
+                            $ret['code'] = 400;
+                            $ret['msg'] = $message;
+                        }
                     }
+                } else {
+                    $ret['data'] = $this->retUserInfoData($userModel);
+                    $ret['code'] = 200;
+                    $ret['msg'] = 'OK';
                 }
-            }else {
-                $ret['data'] = $this->retUserInfoData($userModel);
-                $ret['code'] = 200;
-                $ret['msg'] = 'OK';
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
             }
 
-        }else {
+        } else {
             $ret['code'] = 400;
             $ret['msg'] = '用户不存在';
         }
+
         return $ret;
     }
 
 
     /**
      * 修改个性签名
+     * @param $uid
      * @param $signature
      * @return mixed
      */
-    public function actionUpdateSignature($signature) {
+    public function actionUpdateSignature($uid, $signature)
+    {
 
         $userModel = Yii::$app->user->identity;
         $ret['data'] = array();
-        if(!is_null($userModel)) {
 
-            $userModel->signature = $signature;
-            if(!$userModel->save(true,['signature'])) {
-                foreach ($userModel->getErrors() as $attribute => $error)
-                {
-                    foreach ($error as $message)
-                    {
-                        //throw new Exception($attribute.": ".$message);
-                        $ret['code'] = 400;
-                        $ret['msg'] = $message;
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
+                $userModel->signature = $signature;
+                if (!$userModel->save(true, ['signature'])) {
+                    foreach ($userModel->getErrors() as $attribute => $error) {
+                        foreach ($error as $message) {
+                            //throw new Exception($attribute.": ".$message);
+                            $ret['code'] = 400;
+                            $ret['msg'] = $message;
+                        }
                     }
+                } else {
+                    $ret['data'] = $this->retUserInfoData($userModel);
+                    $ret['code'] = 200;
+                    $ret['msg'] = 'OK';
                 }
-            }else {
-                $ret['data'] = $this->retUserInfoData($userModel);
-                $ret['code'] = 200;
-                $ret['msg'] = 'OK';
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
             }
 
-        }else {
+        } else {
             $ret['code'] = 400;
             $ret['msg'] = '用户不存在';
         }
@@ -358,7 +373,8 @@ class UserController extends ActiveController
      * @param $userModel
      * @return mixed
      */
-    private function retUserInfoData($userModel) {
+    private function retUserInfoData($userModel)
+    {
 
         $data = array();
         $data['uid'] = $userModel->uid;
