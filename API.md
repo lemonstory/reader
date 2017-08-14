@@ -1549,7 +1549,7 @@
                     备注：个性签名长度限制 最多100个字符
          
          30）获取他人已发布的故事信息
-          api:    /user/storys
+          api:    user/others-storys
           method: GET
           params:
                  uid:用户uid
