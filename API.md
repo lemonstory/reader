@@ -30,7 +30,7 @@
  ```
  我的故事
     
-     1)获取用户发布的故事[已完成]
+     1)获取用户自己发布的故事[已完成]
      
         api:    /user/storys
         method: GET
@@ -1548,6 +1548,58 @@
                     
                     备注：个性签名长度限制 最多100个字符
          
+         30）获取他人已发布的故事信息
+          api:    /user/storys
+          method: GET
+          params:
+                 uid:用户uid
+                 page:页码
+                 pre_page:每页显示内容数
+          ret:    Json数组
+          example:http://api.youwei.xiaoningmeng.net/user/others-storys?uid=2&page=1&pre_page=1
+          {
+              "data": {
+                  "storyList": [
+                      {
+                          "story_id": 2,
+                          "name": "大盗贼",
+                          "description": "没炒过股，没买过彩票，官道商场一窍不通，陆离发现自己唯一能做的就是玩游戏。",
+                          "cover": "http://youwei-pic.oss-cn-shanghai.aliyuncs.com/cover/2017/07/02/0_1498987493.jpg",
+                          "uid": 2,
+                          "chapter_count": 10,
+                          "message_count": 222,
+                          "taps": "14",
+                          "is_published": 1,
+                          "create_time": "2017-06-13 09:41:41",
+                          "last_modify_time": "2017-08-08 14:34:07",
+                          "actor": [],
+                          "tag": [
+                              {
+                                  "tag_id": 1,
+                                  "name": "言情",
+                                  "number": 1
+                              },
+                              {
+                                  "tag_id": 2,
+                                  "name": "悬疑",
+                                  "number": 2
+                              },
+                              {
+                                  "tag_id": 3,
+                                  "name": "搞笑",
+                                  "number": 3
+                              }
+                          ]
+                      }
+                  ],
+                  "totalCount": 4,
+                  "pageCount": 4,
+                  "currentPage": 1,
+                  "perPage": 1
+              },
+              "code": 200,
+              "msg": "OK"
+          }
 
             
          28) 手机号密码登录
