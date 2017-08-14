@@ -17,6 +17,7 @@ use yii\web\IdentityInterface;
  * @property string $password
  * @property string $avatar
  * @property string $signature
+ * @property string $taps
  * @property integer $status
  * @property string $register_ip
  * @property string $register_time
@@ -101,6 +102,7 @@ class User extends ActiveRecord implements IdentityInterface
             'mobile_phone' => Yii::t('app', '手机号码'),
             'avatar' => Yii::t('app', '头像'),
             'signature' => Yii::t('app', '个性签名'),
+            'taps' => Yii::t('app', '点击数'),
             'status' => Yii::t('app', '状态'),
             'register_ip' => Yii::t('app', '注册ip'),
             'register_time' => Yii::t('app', '注册时间'),

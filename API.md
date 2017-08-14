@@ -1548,7 +1548,7 @@
                     
                     备注：个性签名长度限制 最多100个字符
          
-         30）获取他人已发布的故事信息
+         30）获取他人已发布的故事信息[已完成]
           api:    user/others-storys
           method: GET
           params:
@@ -1600,6 +1600,37 @@
               "code": 200,
               "msg": "OK"
           }
+          
+        31) 获取他人用户信息[已完成]
+         api:    user/others-info
+         method: GET
+         params:
+               uid:用户uid
+         ret:    Json数组
+         example:
+               http://api.youwei.xiaoningmeng.net/user/others-info?uid=2
+               http://api.youwei.xiaoningmeng.net/user/others-info?uid=20000
+         //正确
+         {
+             "data": {
+                 "uid": 2,
+                 "username": "小爱",
+                 "avatar": "http://tvax1.sinaimg.cn/crop.74.0.302.302.50/6a2dec21ly8ff6ujky4rrj20c808et9j.jpg",
+                 "signature": "也是签名",
+                 "taps": "0",
+                 "status": 1
+             },
+             "code": 200,
+             "msg": "OK"
+         }
+         
+         //错误
+         {
+             "data": [],
+             "code": 400,
+             "msg": "用户不存在"
+         }
+         
 
             
          28) 手机号密码登录

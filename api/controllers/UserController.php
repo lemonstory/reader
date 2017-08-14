@@ -41,7 +41,7 @@ class UserController extends ActiveController
         $behaviors['authenticator'] = [
             'class' => CompositeAuth::className(),
             //部分action需要access-token认证，部分action不需要
-            'except' => ['qq-login', 'signup', 'others-storys'],
+            'except' => ['qq-login', 'signup', 'others-storys', 'others-info'],
             'authMethods' => [
 //                HttpBasicAuth::className(),
 //                HttpBearerAuth::className(),
@@ -473,29 +473,62 @@ class UserController extends ActiveController
         return $ret;
     }
 
+    /**
+     * 获取他人的用户信息
+     * @param $uid
+     * @return mixed
+     */
+    public function actionOthersInfo($uid) {
+
+        $condition = array(
+            'uid' => $uid,
+            'status' => Yii::$app->params['STATUS_ACTIVE'],
+        );
+        $userModel = User::find()->where($condition)->one();
+        $ret['data'] = array();
+
+        if (!is_null($userModel)) {
+
+            $ret['data'] = $this->retUserInfoData($userModel,true);
+            $ret['code'] = 200;
+            $ret['msg'] = 'OK';
+
+        }else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
+        }
+
+        return $ret;
+    }
 
     /**
      * 组织返回用户信息数据
      * @param $userModel
+     * @param $isOthers //是否是访问他人用户信息
      * @return mixed
      */
-    private function retUserInfoData($userModel)
+    private function retUserInfoData($userModel,$isOthers=false)
     {
 
         $data = array();
         $data['uid'] = $userModel->uid;
         $data['username'] = $userModel->username;
-        $data['mobile_phone'] = $userModel->mobile_phone;
-        $data['email'] = $userModel->email;
         $data['avatar'] = $userModel->avatar;
         $data['signature'] = $userModel->signature;
-        $data['access_token'] = $userModel->access_token;
+        $data['taps'] = $userModel->taps;
         $data['status'] = $userModel->status;
-        $data['register_ip'] = $userModel->register_ip;
-        $data['register_time'] = $userModel->register_time;
-        $data['last_login_ip'] = $userModel->last_login_ip;
-        $data['last_login_time'] = $userModel->last_login_time;
-        $data['last_modify_time'] = $userModel->last_modify_time;
+
+        if(!$isOthers) {
+            $data['mobile_phone'] = $userModel->mobile_phone;
+            $data['email'] = $userModel->email;
+            $data['access_token'] = $userModel->access_token;
+            $data['register_ip'] = $userModel->register_ip;
+            $data['register_time'] = $userModel->register_time;
+            $data['last_login_ip'] = $userModel->last_login_ip;
+            $data['last_login_time'] = $userModel->last_login_time;
+            $data['last_modify_time'] = $userModel->last_modify_time;
+        }
+
         return $data;
     }
 
