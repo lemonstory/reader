@@ -36,10 +36,11 @@
         method: GET
         params:
                 uid:用户uid
+                access-token:登录用户授权访问凭证
                 page:页码
                 pre_page:每页显示内容数
         ret:    Json数组
-        example:http://api.youwei.xiaoningmeng.net/user/storys?uid=1&page=1&pre_page=1
+        example:http://api.youwei.xiaoningmeng.net/user/storys?uid=1&page=1&pre_page=1&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
         
               {
                    "code": 200,
@@ -84,10 +85,9 @@
                     
      2)创建故事[支持批量][已完成]
      
-        api:    /story/batch-create
+        api:    /story/batch-create?uid=x&access-token=y
         method: POST
         params:
-                uid:用户uid
                 storys[0][local_story_id]:本地故事id
                 storys[0][name]:标题
                 storys[0][description]:简介
@@ -136,10 +136,9 @@
      (已同步的故事:选择封面,标题，描述; 选择标签; 点击发布; 设置角色不可见; 故事点击量同步..等等)    
      3)修改,删除故事[支持批量][已完成]
       
-         api:    /story/batch-update
+         api:    /story/batch-update?uid=x&access-token=y
          method: POST
          params:
-                 uid:用户uid
                  storys[0][story_id]:故事id
                  storys[0][name]:标题
                  storys[0][description]:简介
@@ -175,10 +174,9 @@
                      
      4)新建,修改,删除章节消息内容[已完成]
      
-          api:    /chapter/commit-message-content
+          api:    /chapter/commit-message-content?uid=x&access-token=y
           method: POST(multipart/form-data)
           params:
-                  uid:用户uid
                   local_story_id:本地故事id
                   story_id:故事id
                   local_chapter_id:本地章节id
@@ -421,10 +419,11 @@
               method: GET
               params:
                       uid:用户uid
+                      access-token:登录用户授权凭证
                       page:页码
                       time:阅读记录最后更新时间
                       per_page:每页显示内容数
-              example:http://api.youwei.xiaoningmeng.net/user-read-story-record/index?uid=1&time=0&page=1&per_page=20
+              example:http://api.youwei.xiaoningmeng.net/user-read-story-record/index?uid=1&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX&time=0&page=1&per_page=20
               ret:    Json数组
                         {
                             "data": {
@@ -462,10 +461,9 @@
                         }
                         
          10)提交阅读记录更改(新增,修改,删除)[已完成]
-               api:    /user-read-story-record/batch-process
+               api:    /user-read-story-record/batch-process?uid=x&access-token=y
                method: POST
                params:
-                      uid:用户uid
                       read_story_records[0][story_id]:故事id
                       read_story_records[0][last_chapter_id]:最后阅读章节id
                       read_story_records[0][last_message_line_number]:最后阅读的消息行号
@@ -511,7 +509,8 @@
                params:
                        uid:用户uid
                        story_ids:以逗号(半角)分隔的故事id列表
-               example:http://api.youwei.xiaoningmeng.net/user-read-story-record/stories-update?uid=1&story_ids=1,2,3,4,5,6,13
+                       access-token:登录用户授权凭证
+               example:http://api.youwei.xiaoningmeng.net/user-read-story-record/stories-update?uid=1&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX&story_ids=1,2,3,4,5,6,13
                ret:    Json数组
                          {
                              "code": 200,
@@ -856,10 +855,9 @@
                     }
 
          19)提交消息的评论(投票)数据[已完成]
-                api:    /comment/vote-commit
+                api:    /comment/vote-commit?uid=x&access-token=y
                 method: POST
                 params:
-                       uid:用户uid
                        message_id:消息id
                        content:内容(枚举值：1，2，3，4)
                 example:api.youwei.xiaoningmeng.net/comment/vote-commit
@@ -1176,10 +1174,9 @@
                 备注：hot:热门评论,new:最新评论,parent:父级评论,status:parent节点下面的status=0,表示父级评论被删除，is_like:表示用户是否赞过改评论,
                 
          21)提交故事的评论数据[已完成]
-                api:    /comment/commit
+                api:    /comment/commit?uid=x&access-token=y
                 method: POST
                 params:
-                       uid:用户uid
                        story_id:故事id
                        content:评论文字内容
                        parent_comment_id:父级评论id
@@ -1229,7 +1226,8 @@
                  params:
                         comment_id:评论id
                         uid:用户uid
-                 example:http://api.youwei.xiaoningmeng.net/like/comment-like?comment_id=1&uid=1
+                        access-token:登录用户授权凭证
+                 example:http://api.youwei.xiaoningmeng.net/like/comment-like?comment_id=1&uid=1&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
                  ret:    Json
                      {
                          "data": [],
@@ -1243,7 +1241,8 @@
              params:
                     comment_id:评论id
                     uid:用户uid
-             example:http://api.youwei.xiaoningmeng.net/like/comment-dislike?comment_id=1&uid=1
+                    access-token:登录用户授权凭证
+             example:http://api.youwei.xiaoningmeng.net/like/comment-dislike?comment_id=1&uid=1&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
              ret:    Json
                  {
                      "data": [],
@@ -1256,11 +1255,12 @@
              method: get
              params:
                     uid:用户uid
+                    access-token:登录用户授权凭证
                     page:页码
                     pre_page:每页显示内容数
              example:
-                    http://api.youwei.xiaoningmeng.net/notify/index?uid=4&page=1&pre_page=20
-                    http://api.youwei.xiaoningmeng.net/notify/index?uid=2&page=1&pre_page=20
+                    http://api.youwei.xiaoningmeng.net/notify/index?uid=4&page=1&pre_page=20&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
+                    http://api.youwei.xiaoningmeng.net/notify/index?uid=2&page=1&pre_page=20&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
              ret:   Json
                     {
                         "code": 200,

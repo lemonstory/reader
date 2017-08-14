@@ -12,6 +12,8 @@ use common\models\UserOauth;
 use common\models\UserReadStoryRecord;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\QueryParamAuth;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use yii\web\UploadedFile;
@@ -27,17 +29,35 @@ class LikeController extends ActiveController
         'class' => 'yii\rest\Serializer',
         'collectionEnvelope' => 'items',
     ];
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+
+        //用户认证
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::className(),
+            //部分action需要access-token认证，部分action不需要
+            'except' => [],
+            'authMethods' => [
+//                HttpBasicAuth::className(),
+//                HttpBearerAuth::className(),
+                QueryParamAuth::className(),
+            ],
+        ];
+        return $behaviors;
+    }
+
     public $likeCommentTargetType = '';
 
     public function init()
     {
         parent::init();
-        if(empty($this->likeTargetType)) {
+        if (empty($this->likeTargetType)) {
             $likeTargetTypeArr = Yii::$app->params['LIKE_TARGET_TYPE'];
-            $likeTargetTypeArr = ArrayHelper::index($likeTargetTypeArr,'alias');
+            $likeTargetTypeArr = ArrayHelper::index($likeTargetTypeArr, 'alias');
             $this->likeCommentTargetType = intval($likeTargetTypeArr['comment']['value']);
         }
-
     }
 
     public function actions()
@@ -49,138 +69,165 @@ class LikeController extends ActiveController
 
         // 使用"prepareDataProvider()"方法自定义数据provider
 //        $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
-
     }
 
 
     //评论点赞
-    public function actionCommentLike($comment_id,$uid)
+    public function actionCommentLike($comment_id, $uid)
     {
         $response = Yii::$app->getResponse();
-        $commentId = Yii::$app->getRequest()->get('comment_id',null);
-        $ownerUid = Yii::$app->getRequest()->get('uid',null);
-
+        $commentId = Yii::$app->getRequest()->get('comment_id', null);
+        $ownerUid = Yii::$app->getRequest()->get('uid', null);
         $data = array();
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
 
-            //Redis记录赞
-            $likeModel = new Like();
-            $redis = Yii::$app->redis;
-            $commentLikeKey = $likeModel->genCommentLikeKey($commentId);
-            $redis->setbit($commentLikeKey,$uid,1);
+        $userModel = Yii::$app->user->identity;
+        $ret['data'] = $data;
+        if (!is_null($userModel)) {
+            if ($ownerUid == $userModel->uid) {
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
 
-            //DB记录赞
-            $condition = array(
-                'like.target_id' => $commentId,
-                'like.target_type' => $this->likeCommentTargetType,
-                'like.owner_uid' => $ownerUid,
-            );
-            $likeModel = Like::findOne($condition);
-            if(is_null($likeModel)) {
-                $likeModel = new Like();
-            }
+                    //Redis记录赞
+                    $likeModel = new Like();
+                    $redis = Yii::$app->redis;
+                    $commentLikeKey = $likeModel->genCommentLikeKey($commentId);
+                    $redis->setbit($commentLikeKey, $uid, 1);
 
-            if($likeModel->getIsNewRecord() || (!$likeModel->getIsNewRecord() && $likeModel->status == Yii::$app->params['STATUS_DELETED'])) {
+                    //DB记录赞
+                    $condition = array(
+                        'like.target_id' => $commentId,
+                        'like.target_type' => $this->likeCommentTargetType,
+                        'like.owner_uid' => $ownerUid,
+                    );
+                    $likeModel = Like::findOne($condition);
+                    if (is_null($likeModel)) {
+                        $likeModel = new Like();
+                    }
 
-                //评论赞数+1
-                $commentModel = Comment::findOne(['comment_id' => $comment_id]);
-                $commentModel->updateCounters(['like_count' => 1]);
+                    if ($likeModel->getIsNewRecord() || (!$likeModel->getIsNewRecord() && $likeModel->status == Yii::$app->params['STATUS_DELETED'])) {
 
-                $likeModel->owner_uid = $ownerUid;
-                $likeModel->target_uid = $commentModel->owner_uid;
-                $likeModel->target_id = $commentId;
-                $likeModel->target_type = $this->likeCommentTargetType;
-                $likeModel->status = Yii::$app->params['STATUS_ACTIVE'];
-                $likeModel->save();
-                if ($likeModel->hasErrors()) {
+                        //评论赞数+1
+                        $commentModel = Comment::findOne(['comment_id' => $comment_id]);
+                        $commentModel->updateCounters(['like_count' => 1]);
 
-                    Yii::error($likeModel->getErrors());
-                    throw new ServerErrorHttpException('评论点赞保存失败');
+                        $likeModel->owner_uid = $ownerUid;
+                        $likeModel->target_uid = $commentModel->owner_uid;
+                        $likeModel->target_id = $commentId;
+                        $likeModel->target_type = $this->likeCommentTargetType;
+                        $likeModel->status = Yii::$app->params['STATUS_ACTIVE'];
+                        $likeModel->save();
+                        if ($likeModel->hasErrors()) {
+
+                            Yii::error($likeModel->getErrors());
+                            throw new ServerErrorHttpException('评论点赞保存失败');
+                        }
+
+                    } else {
+                        //不能重复点赞
+                        $response->statusCode = 400;
+                        $response->statusText = '不能重复点赞';
+                    }
+                    $transaction->commit();
+
+                } catch (\Exception $e) {
+
+                    $transaction->rollBack();
+                    Yii::error($e->getMessage());
+                    $response->statusCode = 400;
+                    $response->statusText = $e->getMessage();
                 }
 
-            }else {
-                //不能重复点赞
-                $response->statusCode = 400;
-                $response->statusText = '不能重复点赞';
+                $ret['data'] = $data;
+                $ret['code'] = $response->statusCode;
+                $ret['msg'] = $response->statusText;
+
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
             }
-            $transaction->commit();
-
-        }catch (\Exception $e){
-
-            $transaction->rollBack();
-            Yii::error($e->getMessage());
-            $response->statusCode = 400;
-            $response->statusText = $e->getMessage();
+        } else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
         }
-
-        $ret['data'] = $data;
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
         return $ret;
     }
 
 
-    public function actionCommentDislike($comment_id,$uid) {
+    public function actionCommentDislike($comment_id, $uid)
+    {
 
         $response = Yii::$app->getResponse();
-        $commentId = Yii::$app->getRequest()->get('comment_id',null);
-        $ownerId = Yii::$app->getRequest()->get('uid',null);
+        $commentId = Yii::$app->getRequest()->get('comment_id', null);
+        $ownerId = Yii::$app->getRequest()->get('uid', null);
         $data = array();
-        $transaction = Yii::$app->db->beginTransaction();
-        try {
 
-            //删除记录赞Redis
-            $redis = Yii::$app->redis;
-            $commentLikeKey = $this->genCommentLikeKey($commentId);
-            $redis->setbit($commentLikeKey,$uid,0);
-
-            //删除记录赞DB
-            $condition = array(
-
-                'like.target_id' => $commentId,
-                'like.target_type' => $this->likeCommentTargetType,
-                'like.owner_uid' => $ownerId,
-                'like.status' => Yii::$app->params['STATUS_ACTIVE'],
-            );
-
-            $likeModel = Like::findOne($condition);
-            if(!is_null($likeModel)) {
-
-                //评论赞数-1
-                $commentModel = Comment::findOne(['comment_id' => $comment_id]);
-                if($commentModel->like_count > 0) {
-                    $commentModel->updateCounters(['like_count' => -1]);
-                }
-
-                $likeModel->owner_uid = $uid;
-                $likeModel->target_uid = $commentModel->owner_uid;
-                $likeModel->target_id = $commentId;
-                $likeModel->target_type = $this->likeCommentTargetType;
-                $likeModel->status = Yii::$app->params['STATUS_DELETED'];
-                $likeModel->save();
-                if ($likeModel->hasErrors()) {
-                    Yii::error($likeModel->getErrors());
-                    throw new ServerErrorHttpException('评论点赞保存失败');
-                }
-
-            }else{
-                $response->statusCode = 400;
-                $response->statusText = '没有点赞记录';
-            }
-            $transaction->commit();
-
-        }catch (\Exception $e){
-
-            $transaction->rollBack();
-            Yii::error($e->getMessage());
-            $response->statusCode = 400;
-            $response->statusText = $e->getMessage();
-        }
-
+        $userModel = Yii::$app->user->identity;
         $ret['data'] = $data;
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
+                $transaction = Yii::$app->db->beginTransaction();
+                try {
+
+                    //删除记录赞Redis
+                    $redis = Yii::$app->redis;
+                    $commentLikeKey = $this->genCommentLikeKey($commentId);
+                    $redis->setbit($commentLikeKey, $uid, 0);
+
+                    //删除记录赞DB
+                    $condition = array(
+
+                        'like.target_id' => $commentId,
+                        'like.target_type' => $this->likeCommentTargetType,
+                        'like.owner_uid' => $ownerId,
+                        'like.status' => Yii::$app->params['STATUS_ACTIVE'],
+                    );
+
+                    $likeModel = Like::findOne($condition);
+                    if (!is_null($likeModel)) {
+
+                        //评论赞数-1
+                        $commentModel = Comment::findOne(['comment_id' => $comment_id]);
+                        if ($commentModel->like_count > 0) {
+                            $commentModel->updateCounters(['like_count' => -1]);
+                        }
+
+                        $likeModel->owner_uid = $uid;
+                        $likeModel->target_uid = $commentModel->owner_uid;
+                        $likeModel->target_id = $commentId;
+                        $likeModel->target_type = $this->likeCommentTargetType;
+                        $likeModel->status = Yii::$app->params['STATUS_DELETED'];
+                        $likeModel->save();
+                        if ($likeModel->hasErrors()) {
+                            Yii::error($likeModel->getErrors());
+                            throw new ServerErrorHttpException('评论点赞保存失败');
+                        }
+
+                    } else {
+                        $response->statusCode = 400;
+                        $response->statusText = '没有点赞记录';
+                    }
+                    $transaction->commit();
+
+                } catch (\Exception $e) {
+
+                    $transaction->rollBack();
+                    Yii::error($e->getMessage());
+                    $response->statusCode = 400;
+                    $response->statusText = $e->getMessage();
+                }
+
+                $ret['data'] = $data;
+                $ret['code'] = $response->statusCode;
+                $ret['msg'] = $response->statusText;
+
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
+            }
+        } else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
+        }
         return $ret;
     }
 }

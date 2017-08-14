@@ -78,81 +78,96 @@ class UserController extends ActiveController
     public function actionStorys($uid, $page, $pre_page)
     {
 
-        $response = Yii::$app->getResponse();
-        $offset = ($page - 1) * $pre_page;
-        $story = Story::find()
-            ->with([
-                'actors' => function (ActiveQuery $query) {
-                    $query->andWhere(['is_visible' => Yii::$app->params['STATUS_ACTIVE'], 'status' => Yii::$app->params['STATUS_ACTIVE']]);
-                },
-                'tags' => function (ActiveQuery $query) {
-                    $query->andWhere(['status' => Yii::$app->params['STATUS_ACTIVE']]);
-                },
-            ])
-            ->where(['uid' => $uid, 'status' => Yii::$app->params['STATUS_ACTIVE']])
-            ->offset($offset)
-            ->limit($pre_page)
-            ->orderBy(['last_modify_time' => SORT_DESC]);
+        $userModel = Yii::$app->user->identity;
+        $ret['data'] = array();
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
 
-        $provider = new ActiveDataProvider([
-            'query' => $story,
-            'pagination' => [
-                'pageSize' => $pre_page,
-            ],
-        ]);
+                $response = Yii::$app->getResponse();
+                $offset = ($page - 1) * $pre_page;
+                $story = Story::find()
+                    ->with([
+                        'actors' => function (ActiveQuery $query) {
+                            $query->andWhere(['is_visible' => Yii::$app->params['STATUS_ACTIVE'], 'status' => Yii::$app->params['STATUS_ACTIVE']]);
+                        },
+                        'tags' => function (ActiveQuery $query) {
+                            $query->andWhere(['status' => Yii::$app->params['STATUS_ACTIVE']]);
+                        },
+                    ])
+                    ->where(['uid' => $uid, 'status' => Yii::$app->params['STATUS_ACTIVE']])
+                    ->offset($offset)
+                    ->limit($pre_page)
+                    ->orderBy(['last_modify_time' => SORT_DESC]);
 
-        $storyModels = $provider->getModels();
-        $ret = array();
-        foreach ($storyModels as $storyModelItem) {
+                $provider = new ActiveDataProvider([
+                    'query' => $story,
+                    'pagination' => [
+                        'pageSize' => $pre_page,
+                    ],
+                ]);
 
-            $story = array();
-            $story['story_id'] = $storyModelItem->story_id;
-            $story['name'] = $storyModelItem->name;
-            $story['description'] = $storyModelItem->description;
-            $story['cover'] = $storyModelItem->cover;
-            $story['uid'] = $storyModelItem->uid;
-            $story['chapter_count'] = $storyModelItem->chapter_count;
-            $story['message_count'] = $storyModelItem->message_count;
-            $story['taps'] = $storyModelItem->taps;
-            $story['is_published'] = $storyModelItem->is_published;
-            $story['create_time'] = $storyModelItem->create_time;
-            $story['last_modify_time'] = $storyModelItem->last_modify_time;
+                $storyModels = $provider->getModels();
+                $ret = array();
+                foreach ($storyModels as $storyModelItem) {
 
-            //actor
-            $actorModels = $storyModelItem->actors;
-            $actorList = array();
-            foreach ($actorModels as $actorModelItem) {
-                $actor = array();
-                $actor['actor_id'] = $actorModelItem->actor_id;
-                $actor['name'] = $actorModelItem->name;
-                $actor['avatar'] = $actorModelItem->avatar;
-                $actor['number'] = $actorModelItem->number;
-                $actor['is_visible'] = $actorModelItem->is_visible;
-                $actorList[] = $actor;
+                    $story = array();
+                    $story['story_id'] = $storyModelItem->story_id;
+                    $story['name'] = $storyModelItem->name;
+                    $story['description'] = $storyModelItem->description;
+                    $story['cover'] = $storyModelItem->cover;
+                    $story['uid'] = $storyModelItem->uid;
+                    $story['chapter_count'] = $storyModelItem->chapter_count;
+                    $story['message_count'] = $storyModelItem->message_count;
+                    $story['taps'] = $storyModelItem->taps;
+                    $story['is_published'] = $storyModelItem->is_published;
+                    $story['create_time'] = $storyModelItem->create_time;
+                    $story['last_modify_time'] = $storyModelItem->last_modify_time;
+
+                    //actor
+                    $actorModels = $storyModelItem->actors;
+                    $actorList = array();
+                    foreach ($actorModels as $actorModelItem) {
+                        $actor = array();
+                        $actor['actor_id'] = $actorModelItem->actor_id;
+                        $actor['name'] = $actorModelItem->name;
+                        $actor['avatar'] = $actorModelItem->avatar;
+                        $actor['number'] = $actorModelItem->number;
+                        $actor['is_visible'] = $actorModelItem->is_visible;
+                        $actorList[] = $actor;
+                    }
+                    $story['actor'] = $actorList;
+
+                    //tag
+                    $tagModels = $storyModelItem->tags;
+                    $tagList = array();
+                    foreach ($tagModels as $tagModelItem) {
+                        $tag = array();
+                        $tag['tag_id'] = $tagModelItem->tag_id;
+                        $tag['name'] = $tagModelItem->name;
+                        $tag['number'] = $tagModelItem->number;
+                        $tagList[] = $tag;
+                    }
+                    $story['tag'] = $tagList;
+                    $ret['data']['storyList'][] = $story;
+                }
+
+                $pagination = $provider->getPagination();
+                $ret['data']['totalCount'] = $pagination->totalCount;
+                $ret['data']['pageCount'] = $pagination->getPageCount();
+                $ret['data']['currentPage'] = $pagination->getPage() + 1;
+                $ret['data']['perPage'] = $pagination->getPageSize();
+                $ret['code'] = $response->statusCode;
+                $ret['msg'] = $response->statusText;
+
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
             }
-            $story['actor'] = $actorList;
-
-            //tag
-            $tagModels = $storyModelItem->tags;
-            $tagList = array();
-            foreach ($tagModels as $tagModelItem) {
-                $tag = array();
-                $tag['tag_id'] = $tagModelItem->tag_id;
-                $tag['name'] = $tagModelItem->name;
-                $tag['number'] = $tagModelItem->number;
-                $tagList[] = $tag;
-            }
-            $story['tag'] = $tagList;
-            $ret['data']['storyList'][] = $story;
+        } else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
         }
 
-        $pagination = $provider->getPagination();
-        $ret['data']['totalCount'] = $pagination->totalCount;
-        $ret['data']['pageCount'] = $pagination->getPageCount();
-        $ret['data']['currentPage'] = $pagination->getPage() + 1;
-        $ret['data']['perPage'] = $pagination->getPageSize();
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
         return $ret;
     }
 

@@ -28,8 +28,25 @@ class CommentController extends ActiveController
         'class' => 'yii\rest\Serializer',
         'collectionEnvelope' => 'items',
     ];
-    public $commentTargetTypeArr = '';
 
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+        //用户认证
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::className(),
+            //部分action需要access-token认证，部分action不需要
+            'except' => ['view','index','message-votes','story-votes'],
+            'authMethods' => [
+//                HttpBasicAuth::className(),
+//                HttpBearerAuth::className(),
+                QueryParamAuth::className(),
+            ],
+        ];
+        return $behaviors;
+    }
+
+    public $commentTargetTypeArr = '';
 
     public function init()
     {
@@ -153,41 +170,57 @@ class CommentController extends ActiveController
 
     /**
      * 提交消息的评论(投票)数据
+     * @param $uid 发布者Uid
      * @return array
      */
-    public function actionVoteCommit() {
+    public function actionVoteCommit($uid) {
 
         $response = Yii::$app->getResponse();
-        $ownerUid = Yii::$app->getRequest()->post('uid',null);
+        $ownerUid = $uid;
         $messageId = Yii::$app->getRequest()->post('message_id',null);
         $content = Yii::$app->getRequest()->post('content',null);
 
         //TODO:输入检查
         //content做枚举值检查
         $data = array();
-        try {
-            $commentModel = new Comment();
-            $commentModel->owner_uid = $ownerUid;
-            $commentModel->target_id = $messageId;
-            $commentModel->target_type = intval($this->commentTargetTypeArr['chapter-message-content']['value']);
-            $commentModel->content = $content;
-            $commentModel->save();
-            if ($commentModel->hasErrors()) {
-
-                Yii::error($commentModel->getErrors());
-                throw new ServerErrorHttpException('消息投票保存失败');
-            }
-            $data['comment_id'] = $commentModel->comment_id;
-        }catch (\Exception $e){
-
-            Yii::error($e->getMessage());
-            $response->statusCode = 400;
-            $response->statusText = '消息投票保存失败';
-        }
-
+        $userModel = Yii::$app->user->identity;
         $ret['data'] = $data;
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
+        if (!is_null($userModel)) {
+            if ($ownerUid == $userModel->uid) {
+
+                try {
+                    $commentModel = new Comment();
+                    $commentModel->owner_uid = $ownerUid;
+                    $commentModel->target_id = $messageId;
+                    $commentModel->target_type = intval($this->commentTargetTypeArr['chapter-message-content']['value']);
+                    $commentModel->content = $content;
+                    $commentModel->save();
+                    if ($commentModel->hasErrors()) {
+
+                        Yii::error($commentModel->getErrors());
+                        throw new ServerErrorHttpException('消息投票保存失败');
+                    }
+                    $data['comment_id'] = $commentModel->comment_id;
+                }catch (\Exception $e){
+
+                    Yii::error($e->getMessage());
+                    $response->statusCode = 400;
+                    $response->statusText = '消息投票保存失败';
+                }
+
+                $ret['data'] = $data;
+                $ret['code'] = $response->statusCode;
+                $ret['msg'] = $response->statusText;
+
+
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
+            }
+        } else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
+        }
         return $ret;
     }
 
@@ -389,100 +422,112 @@ class CommentController extends ActiveController
 
     /**
      * 提交故事评论
+     * @param $uid 发布者uid
      * @return mixed
      */
-    public function actionCommit() {
+    public function actionCommit($uid) {
 
         $response = Yii::$app->getResponse();
         $parentCommentId = Yii::$app->getRequest()->post('parent_comment_id',0);
-        $ownerUid = Yii::$app->getRequest()->post('uid',null);
+        $ownerUid = $uid;
         $storyId = Yii::$app->getRequest()->post('story_id',null);
         $content = Yii::$app->getRequest()->post('content',null);
         $targetUid = 0;
         $commentId = 0;
+        $userModel = Yii::$app->user->identity;
+        $ret['data'] = array();
+        if (!is_null($userModel)) {
+            if ($ownerUid == $userModel->uid) {
+                //TODO:输入检查
+                try {
+                    if(!empty($parentCommentId)) {
 
-        //TODO:输入检查
-        try {
-            if(!empty($parentCommentId)) {
-
-                $parentCommentModel = Comment::findOne(['comment_id' => $parentCommentId]);
-                if(!is_null($parentCommentModel)) {
-                    if($parentCommentModel->status != Yii::$app->params['STATUS_DELETED']){
-                        $targetUid = $parentCommentModel->owner_uid;
-                    }else{
-                        throw new ServerErrorHttpException('父级评论被删除');
+                        $parentCommentModel = Comment::findOne(['comment_id' => $parentCommentId]);
+                        if(!is_null($parentCommentModel)) {
+                            if($parentCommentModel->status != Yii::$app->params['STATUS_DELETED']){
+                                $targetUid = $parentCommentModel->owner_uid;
+                            }else{
+                                throw new ServerErrorHttpException('父级评论被删除');
+                            }
+                        }else{
+                            throw new ServerErrorHttpException('父级评论不存在');
+                        }
                     }
-                }else{
-                    throw new ServerErrorHttpException('父级评论不存在');
-                }
-            }
 
-            $commentModel = new Comment();
-            $commentModel->owner_uid = $ownerUid;
-            $commentModel->target_id = $storyId;
-            $commentModel->target_uid = $targetUid;
-            $commentModel->target_type = intval($this->commentTargetTypeArr['story']['value']);
-            $commentModel->content = $content;
-            $commentModel->parent_comment_id = $parentCommentId;
-            $commentModel->save();
-            if ($commentModel->hasErrors()) {
+                    $commentModel = new Comment();
+                    $commentModel->owner_uid = $ownerUid;
+                    $commentModel->target_id = $storyId;
+                    $commentModel->target_uid = $targetUid;
+                    $commentModel->target_type = intval($this->commentTargetTypeArr['story']['value']);
+                    $commentModel->content = $content;
+                    $commentModel->parent_comment_id = $parentCommentId;
+                    $commentModel->save();
+                    if ($commentModel->hasErrors()) {
 
-                Yii::error($commentModel->getErrors());
-                $errorStr = "";
-                foreach ($commentModel->getErrors() as $errors) {
-                    foreach ($errors as $error) {
-                        $errorStr = $errorStr . $error;
+                        Yii::error($commentModel->getErrors());
+                        $errorStr = "";
+                        foreach ($commentModel->getErrors() as $errors) {
+                            foreach ($errors as $error) {
+                                $errorStr = $errorStr . $error;
+                            }
+                        }
+                        throw new ServerErrorHttpException($errorStr);
                     }
+                    $commentId = $commentModel->comment_id;
+
+                    //更新故事评论数量
+                    $storyModel = Story::findOne(['story_id' => $storyId, 'status' => Yii::$app->params['STATUS_ACTIVE']]);
+                    if(!is_null($storyModel)) {
+                        $storyModel->comment_count = $storyModel->comment_count + 1;
+                        $storyModel->save();
+                        if ($storyModel->hasErrors()) {
+
+                            Yii::error($commentModel->getErrors());
+                            throw new ServerErrorHttpException('故事评论数量保存失败');
+                        }
+                    }
+
+                }catch (\Exception $e){
+
+                    Yii::error($e->getMessage());
+                    $response->statusCode = 400;
+                    $response->statusText = $e->getMessage();
                 }
-                throw new ServerErrorHttpException($errorStr);
-            }
-            $commentId = $commentModel->comment_id;
 
-            //更新故事评论数量
-            $storyModel = Story::findOne(['story_id' => $storyId, 'status' => Yii::$app->params['STATUS_ACTIVE']]);
-            if(!is_null($storyModel)) {
-                $storyModel->comment_count = $storyModel->comment_count + 1;
-                $storyModel->save();
-                if ($storyModel->hasErrors()) {
 
-                    Yii::error($commentModel->getErrors());
-                    throw new ServerErrorHttpException('故事评论数量保存失败');
+                //获取评论内容
+                $commentIdArr = array();
+                $commentIdArr[] = $commentId;
+                if(!empty($parentCommentId)) {
+                    $commentIdArr[] = $parentCommentId;
                 }
+
+                $commentContentArr = Comment::find()
+                    ->where(['comment_id' => $commentIdArr])
+                    ->joinWith([
+                        'user'=> function (ActiveQuery $query)  {
+                            $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
+                        },
+                    ])
+                    ->asArray()
+                    ->all();
+                $commentContentArr = ArrayHelper::index($commentContentArr,'comment_id');
+
+                //组织评论数据
+                $commentPairIdArr = array($commentId => $parentCommentId);
+                $commentContent = $this->processCommentHierarchy($commentPairIdArr,$commentContentArr);
+
+                $ret['data'] = $commentContent;
+                $ret['code'] = $response->statusCode;
+                $ret['msg'] = $response->statusText;
+            }else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
             }
-
-        }catch (\Exception $e){
-
-            Yii::error($e->getMessage());
-            $response->statusCode = 400;
-            $response->statusText = $e->getMessage();
+        } else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
         }
-
-
-        //获取评论内容
-        $commentIdArr = array();
-        $commentIdArr[] = $commentId;
-        if(!empty($parentCommentId)) {
-            $commentIdArr[] = $parentCommentId;
-        }
-
-        $commentContentArr = Comment::find()
-            ->where(['comment_id' => $commentIdArr])
-            ->joinWith([
-                'user'=> function (ActiveQuery $query)  {
-                    $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
-                },
-            ])
-            ->asArray()
-            ->all();
-        $commentContentArr = ArrayHelper::index($commentContentArr,'comment_id');
-
-        //组织评论数据
-        $commentPairIdArr = array($commentId => $parentCommentId);
-        $commentContent = $this->processCommentHierarchy($commentPairIdArr,$commentContentArr);
-
-        $ret['data'] = $commentContent;
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
         return $ret;
     }
 }

@@ -8,6 +8,8 @@ use common\models\Story;
 use common\models\User;
 use common\models\UserReadStoryRecord;
 use yii\data\ActiveDataProvider;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\QueryParamAuth;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use yii\web\UploadedFile;
@@ -23,6 +25,24 @@ class UserReadStoryRecordController extends ActiveController
         'class' => 'yii\rest\Serializer',
         'collectionEnvelope' => 'items',
     ];
+
+    public function behaviors()
+    {
+        $behaviors = parent::behaviors();
+
+        //用户认证
+        $behaviors['authenticator'] = [
+            'class' => CompositeAuth::className(),
+            //部分action需要access-token认证，部分action不需要
+            'except' => [],
+            'authMethods' => [
+//                HttpBasicAuth::className(),
+//                HttpBearerAuth::className(),
+                QueryParamAuth::className(),
+            ],
+        ];
+        return $behaviors;
+    }
 
     public $columnStoryNames = array(
         'story.story_id',
@@ -64,49 +84,64 @@ class UserReadStoryRecordController extends ActiveController
      * @param $story_ids //以逗号分隔的故事id列表
      * @return mixed
      */
-    public function actionStoriesUpdate($uid,$story_ids) {
+    public function actionStoriesUpdate($uid, $story_ids)
+    {
 
+        $userModel = Yii::$app->user->identity;
         $data = array();
-        $data['storyList'] = array();
-        $pattern = "/^\d+(,\d+)*$/";
-        $time = preg_match_all($pattern,$story_ids,$matches);
-        if(intval($time) > 0) {
+        $ret['data'] = $data;
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
 
-            //获取故事信息
-            $storyCondition = [
-                "and",
-                "story.status=".Yii::$app->params['STATUS_ACTIVE'],
-                "story.story_id in (".$story_ids.")",
-                "story.last_modify_time>user_read_story_record.last_modify_time",
-                "user_read_story_record.status=".Yii::$app->params['STATUS_ACTIVE'],
-                "user_read_story_record.uid=".$uid,
-            ];
+                $data['storyList'] = array();
+                $pattern = "/^\d+(,\d+)*$/";
+                $time = preg_match_all($pattern, $story_ids, $matches);
+                if (intval($time) > 0) {
+
+                    //获取故事信息
+                    $storyCondition = [
+                        "and",
+                        "story.status=" . Yii::$app->params['STATUS_ACTIVE'],
+                        "story.story_id in (" . $story_ids . ")",
+                        "story.last_modify_time>user_read_story_record.last_modify_time",
+                        "user_read_story_record.status=" . Yii::$app->params['STATUS_ACTIVE'],
+                        "user_read_story_record.uid=" . $uid,
+                    ];
 
 //        $offset = ($page - 1) * $per_page;
-            $with = 'story';
-            $userReadStoryRecordArr = UserReadStoryRecord::find()
-                ->select($this->columnStoryNames)
-                ->innerJoinWith($with)
-                ->Where($storyCondition)
+                    $with = 'story';
+                    $userReadStoryRecordArr = UserReadStoryRecord::find()
+                        ->select($this->columnStoryNames)
+                        ->innerJoinWith($with)
+                        ->Where($storyCondition)
 //            ->offset($offset)
 //            ->limit($per_page)
-                ->orderBy(['user_read_story_record.last_modify_time' => SORT_ASC])
-                ->asArray()
-                ->all();
+                        ->orderBy(['user_read_story_record.last_modify_time' => SORT_ASC])
+                        ->asArray()
+                        ->all();
 
-            if(!empty($userReadStoryRecordArr)) {
-                $data['storyList'] = $this->composeUserReadStoryRecordData($userReadStoryRecordArr);
+                    if (!empty($userReadStoryRecordArr)) {
+                        $data['storyList'] = $this->composeUserReadStoryRecordData($userReadStoryRecordArr);
+                    }
+
+                    $ret['code'] = 200;
+                    $ret['message'] = 'OK';
+
+                } else {
+
+                    $ret['code'] = 400;
+                    $ret['message'] = 'story_ids输入错误';
+                }
+                $ret['data'] = $data;
+
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
             }
-
-            $ret['code'] = 200;
-            $ret['message'] = 'OK';
-
-        }else {
-
+        } else {
             $ret['code'] = 400;
-            $ret['message'] = 'story_ids输入错误';
+            $ret['msg'] = '用户不存在';
         }
-        $ret['data'] = $data;
         return $ret;
     }
 
@@ -118,50 +153,64 @@ class UserReadStoryRecordController extends ActiveController
      * @param $per_page
      * @return mixed
      */
-    public function actionIndex($uid,$time,$page,$per_page) {
+    public function actionIndex($uid, $time, $page, $per_page)
+    {
 
-        $storyCondition = [
-            "and",
-            "story.status=".Yii::$app->params['STATUS_ACTIVE'],
-            "user_read_story_record.status=".Yii::$app->params['STATUS_ACTIVE'],
-            "user_read_story_record.uid=".$uid,
-            "user_read_story_record.last_modify_time>".$time,
-        ];
-
-        $offset = ($page - 1) * $per_page;
-        $with = 'story';
-        $query = UserReadStoryRecord::find()
-            ->select($this->columnStoryNames)
-            ->innerJoinWith($with)
-            ->Where($storyCondition)
-            ->offset($offset)
-            ->limit($per_page)
-            ->orderBy(['user_read_story_record.last_modify_time' => SORT_ASC]);
-
-        $provider =  new ActiveDataProvider([
-            'query' =>$query,
-            'pagination' => [
-                'pageSize' => $per_page,
-            ],
-        ]);
-
+        $userModel = Yii::$app->user->identity;
         $data = array();
-        //getModels还是按照UserReadStoryRecord(Model类)的结构返回数据,虽然上面有SELECT name的定义
-        //关系'story'会是$userReadStoryRecordModels的Item的属性
-        $userReadStoryRecordModels = $provider->getModels();
-        $pagination = $provider->getPagination();
-        $data['totalCount'] = $pagination->totalCount;
-        $data['pageCount'] = $pagination->getPageCount();
-        $data['currentPage'] = $pagination->getPage() + 1;
-        $data['perPage'] = $pagination->getPageSize();
-
-        if(!empty($userReadStoryRecordModels)) {
-            $data['storyList'] = $this->composeUserReadStoryRecordData($userReadStoryRecordModels);
-        }
-
         $ret['data'] = $data;
-        $ret['code'] = 200;
-        $ret['message'] = 'OK';
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
+                $storyCondition = [
+                    "and",
+                    "story.status=" . Yii::$app->params['STATUS_ACTIVE'],
+                    "user_read_story_record.status=" . Yii::$app->params['STATUS_ACTIVE'],
+                    "user_read_story_record.uid=" . $uid,
+                    "user_read_story_record.last_modify_time>" . $time,
+                ];
+
+                $offset = ($page - 1) * $per_page;
+                $with = 'story';
+                $query = UserReadStoryRecord::find()
+                    ->select($this->columnStoryNames)
+                    ->innerJoinWith($with)
+                    ->Where($storyCondition)
+                    ->offset($offset)
+                    ->limit($per_page)
+                    ->orderBy(['user_read_story_record.last_modify_time' => SORT_ASC]);
+
+                $provider = new ActiveDataProvider([
+                    'query' => $query,
+                    'pagination' => [
+                        'pageSize' => $per_page,
+                    ],
+                ]);
+
+                $data = array();
+                //getModels还是按照UserReadStoryRecord(Model类)的结构返回数据,虽然上面有SELECT name的定义
+                //关系'story'会是$userReadStoryRecordModels的Item的属性
+                $userReadStoryRecordModels = $provider->getModels();
+                $pagination = $provider->getPagination();
+                $data['totalCount'] = $pagination->totalCount;
+                $data['pageCount'] = $pagination->getPageCount();
+                $data['currentPage'] = $pagination->getPage() + 1;
+                $data['perPage'] = $pagination->getPageSize();
+
+                if (!empty($userReadStoryRecordModels)) {
+                    $data['storyList'] = $this->composeUserReadStoryRecordData($userReadStoryRecordModels);
+                }
+
+                $ret['data'] = $data;
+                $ret['code'] = 200;
+                $ret['message'] = 'OK';
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
+            }
+        } else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
+        }
         return $ret;
     }
 
@@ -171,7 +220,8 @@ class UserReadStoryRecordController extends ActiveController
      * @param $userReadStoryRecords
      * @return array
      */
-    private function composeUserReadStoryRecordData($userReadStoryRecords) {
+    private function composeUserReadStoryRecordData($userReadStoryRecords)
+    {
 
         $uidArr = array();
         $messageIdArr = array();
@@ -204,8 +254,8 @@ class UserReadStoryRecordController extends ActiveController
         $userInfoList = ArrayHelper::index($userInfoList, 'uid');
 
         //消息内容序号
-        $messageNumberArr = ChapterMessageContent::find()->select(['message_id','number'])->where(['message_id' => $messageIdArr])->asArray()->all();
-        $messageNumberArr = ArrayHelper::map($messageNumberArr,'message_id','number');
+        $messageNumberArr = ChapterMessageContent::find()->select(['message_id', 'number'])->where(['message_id' => $messageIdArr])->asArray()->all();
+        $messageNumberArr = ArrayHelper::map($messageNumberArr, 'message_id', 'number');
 
         //章节信息
         $chapterCondition = array(
@@ -232,26 +282,26 @@ class UserReadStoryRecordController extends ActiveController
             $lastChapterId = $storyReadPositionData[$storyId]['last_chapter_id'];
             $lastMessageId = $storyReadPositionData[$storyId]['last_message_id'];
             $lastMessageNumber = 0;
-            if(isset($messageNumberArr[$lastMessageId]) && !empty($messageNumberArr[$lastMessageId])) {
+            if (isset($messageNumberArr[$lastMessageId]) && !empty($messageNumberArr[$lastMessageId])) {
                 $lastMessageNumber = $messageNumberArr[$lastMessageId];
             }
 
-            if($totalMessageCount > 0) {
+            if ($totalMessageCount > 0) {
                 foreach ($chapterArr as $chapterItem) {
 
                     //章节id是自增
-                    if($chapterItem['story_id'] == $storyId && $chapterItem['chapter_id'] <= $lastChapterId) {
-                        if($chapterItem['chapter_id'] != $lastChapterId) {
+                    if ($chapterItem['story_id'] == $storyId && $chapterItem['chapter_id'] <= $lastChapterId) {
+                        if ($chapterItem['chapter_id'] != $lastChapterId) {
                             $readMessageCount = $readMessageCount + $chapterItem['message_count'];
-                        }else if($chapterItem['chapter_id'] == $lastChapterId) {
+                        } else if ($chapterItem['chapter_id'] == $lastChapterId) {
                             $readMessageCount = $readMessageCount + $lastMessageNumber;
                         }
                     }
                 }
 
                 $val = $readMessageCount / $totalMessageCount;
-                $userReadProgressArr[$storyId] = round($val,2);
-            }else {
+                $userReadProgressArr[$storyId] = round($val, 2);
+            } else {
                 $userReadProgressArr[$storyId] = 0;
             }
         }
@@ -274,7 +324,7 @@ class UserReadStoryRecordController extends ActiveController
             $dataItem['last_message_id'] = $item['last_message_id'];
 
             //组装消息内容序号
-            if(isset($messageNumberArr[$dataItem['last_message_id']]) && !empty($messageNumberArr[$dataItem['last_message_id']])) {
+            if (isset($messageNumberArr[$dataItem['last_message_id']]) && !empty($messageNumberArr[$dataItem['last_message_id']])) {
                 $dataItem['last_message_number'] = $messageNumberArr[$dataItem['last_message_id']];
             }
 
@@ -282,9 +332,9 @@ class UserReadStoryRecordController extends ActiveController
             $dataItem['last_modify_time'] = $item['last_modify_time'];
 
             //合并故事和作者数据
-            if(!empty($userInfoList[$item['uid']])) {
+            if (!empty($userInfoList[$item['uid']])) {
                 $dataItem['user'] = $userInfoList[$item['uid']];
-            }else {
+            } else {
                 $dataItem['user'] = array();
             }
             $storyList[] = $dataItem;
@@ -295,70 +345,83 @@ class UserReadStoryRecordController extends ActiveController
     /**
      * 提交阅读记录更改(新增,修改,删除)
      * {该方法的命名不是特别满意}
+     * @param $uid 用户uid
      * @return mixed
      */
-    public function actionBatchProcess() {
+    public function actionBatchProcess($uid)
+    {
 
-        //TODO:用户登录检查
         $response = Yii::$app->getResponse();
         $inputReadStoryRecords = Yii::$app->getRequest()->post('read_story_records');
-        $uid = Yii::$app->getRequest()->post('uid');
+//        $uid = Yii::$app->getRequest()->post('uid');
         $ret = array();
         $data = array();
         $hasError = false;
-
-        if(!empty($inputReadStoryRecords)) {
-
-            foreach ($inputReadStoryRecords as $readStoryRecordItem) {
-                $transaction = Yii::$app->db->beginTransaction();
-                try {
-
-                    $readStoryRecordItem['uid'] = $uid;
-                    $condition = array(
-                        'uid' => $readStoryRecordItem['uid'],
-                        'story_id' => $readStoryRecordItem['story_id']
-                    );
-                    $readStoryRecordModel = UserReadStoryRecord::findOne($condition);
-                    if(is_null($readStoryRecordModel)) {
-                        $readStoryRecordModel = new UserReadStoryRecord();
-                        $readStoryRecordModel->loadDefaultValues();
-                    }
-
-                    $readStoryRecordModel->setAttributes($readStoryRecordItem);
-                    $readStoryRecordItem['create_time'] = DateTimeHelper::inputCheck($readStoryRecordItem['create_time']);
-                    $readStoryRecordItem['last_modify_time'] = DateTimeHelper::inputCheck($readStoryRecordItem['last_modify_time']);
-
-                    $readStoryRecordModel->save();
-                    if($readStoryRecordModel->hasErrors()) {
-                        Yii::error($readStoryRecordModel->getErrors());
-                        throw new ServerErrorHttpException('操作失败');
-                    }
-
-                    $transaction->commit();
-                    $data['userReadStoryRecordList'][] = $readStoryRecordModel->getAttributes();
-
-                }catch (\Exception $e){
-
-                    //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
-                    $hasError = true;
-                    $transaction->rollBack();
-//                    Yii::error($e->getMessage());
-                    $response->statusCode = 400;
-                    $response->statusText = '系统出现错误';
-                }
-            }
-
-            if(count($data) > 0 && $hasError) {
-                $response->statusCode = 206;
-                $response->statusText = '成功处理部分数据' ;
-            }
-        }else{
-            $response->statusCode = 400;
-            $response->statusText = '输入参数错误' ;
-        }
+        $userModel = Yii::$app->user->identity;
         $ret['data'] = $data;
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
+
+                if (!empty($inputReadStoryRecords)) {
+                    foreach ($inputReadStoryRecords as $readStoryRecordItem) {
+                        $transaction = Yii::$app->db->beginTransaction();
+                        try {
+
+                            $readStoryRecordItem['uid'] = $uid;
+                            $condition = array(
+                                'uid' => $readStoryRecordItem['uid'],
+                                'story_id' => $readStoryRecordItem['story_id']
+                            );
+                            $readStoryRecordModel = UserReadStoryRecord::findOne($condition);
+                            if (is_null($readStoryRecordModel)) {
+                                $readStoryRecordModel = new UserReadStoryRecord();
+                                $readStoryRecordModel->loadDefaultValues();
+                            }
+
+                            $readStoryRecordModel->setAttributes($readStoryRecordItem);
+                            $readStoryRecordItem['create_time'] = DateTimeHelper::inputCheck($readStoryRecordItem['create_time']);
+                            $readStoryRecordItem['last_modify_time'] = DateTimeHelper::inputCheck($readStoryRecordItem['last_modify_time']);
+
+                            $readStoryRecordModel->save();
+                            if ($readStoryRecordModel->hasErrors()) {
+                                Yii::error($readStoryRecordModel->getErrors());
+                                throw new ServerErrorHttpException('操作失败');
+                            }
+
+                            $transaction->commit();
+                            $data['userReadStoryRecordList'][] = $readStoryRecordModel->getAttributes();
+
+                        } catch (\Exception $e) {
+
+                            //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
+                            $hasError = true;
+                            $transaction->rollBack();
+//                    Yii::error($e->getMessage());
+                            $response->statusCode = 400;
+                            $response->statusText = '系统出现错误';
+                        }
+                    }
+
+                    if (count($data) > 0 && $hasError) {
+                        $response->statusCode = 206;
+                        $response->statusText = '成功处理部分数据';
+                    }
+                } else {
+                    $response->statusCode = 400;
+                    $response->statusText = '输入参数错误';
+                }
+                $ret['data'] = $data;
+                $ret['code'] = $response->statusCode;
+                $ret['msg'] = $response->statusText;
+
+            } else {
+                $ret['code'] = 400;
+                $ret['msg'] = 'uid与token不相符';
+            }
+        } else {
+            $ret['code'] = 400;
+            $ret['msg'] = '用户不存在';
+        }
         return $ret;
     }
 }
