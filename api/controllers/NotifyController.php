@@ -61,8 +61,7 @@ class NotifyController extends ActiveController
                 $response = Yii::$app->getResponse();
                 $offset = ($page - 1) * $pre_page;
                 $notify = UserNotify::find()
-                    ->where(['uid' => $uid,
-                        'is_read' => 0])
+                    ->where(['uid' => $uid,])
                     ->offset($offset)
                     ->limit($pre_page)
                     ->orderBy(['last_modify_time' => SORT_DESC]);
@@ -207,9 +206,8 @@ class NotifyController extends ActiveController
                     }
 
                     //设置通知消息为已读
-                    //TODO:测试期间暂时关闭
                     $notifyIds = implode(",", $notifyIdsArr);
-//            $updatedRows = UserNotify::updateAll(['is_read' => 1], 'uid=:uid AND id IN(' . $notifyIds . ")", ['uid' => $uid]);
+                    $updatedRows = UserNotify::updateAll(['is_read' => 1], 'uid=:uid AND id IN(' . $notifyIds . ")", ['uid' => $uid]);
                 }
 
                 $ret['data']['notifyList'] = $notifyList;

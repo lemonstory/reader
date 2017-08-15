@@ -141,8 +141,8 @@ class NotifyController extends Controller
                 }
             }
 
-            //删除历史数据
-            $validTime = strtotime("-6 month");
+            //删除历史数据,保留最近三个月的通知数据
+            $validTime = strtotime("-3 month");
             $this->deleteHistoryUserNofity($validTime);
         }
     }
