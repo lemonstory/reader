@@ -59,10 +59,15 @@ class MnsQueue extends Component
         }
     }
 
-    public function receiveMessage($isDeleteReceivedMessage=true,$queueName) {
+    /**
+     * 接收队列消息
+     * @param $queueName
+     * @return array|bool $data['messageBody']:消息体,$data['receiptHandle']:消息临时句柄
+     * @see https://help.aliyun.com/document_detail/27477.html
+     */
+    public function receiveMessage($queueName) {
 
-        echo "receiveMessage Run!!! \n";
-
+        $data = array();
         $queue = $this->client->getQueueRef($queueName);
         // 3. receive message
         $receiptHandle = NULL;
@@ -79,12 +84,9 @@ class MnsQueue extends Component
 
 //            }
             $receiptHandle = $res->getReceiptHandle();
-            if($isDeleteReceivedMessage) {
-                $deleteRes = $this->deleteMessage($receiptHandle,$queueName);
-            }
-
-            //TODO:没有对$deleteRes做检查出来
-            return $messageBody;
+            $data['messageBody'] = $messageBody;
+            $data['receiptHandle'] = $receiptHandle;
+            return $data;
         }
         catch (MnsException $e)
         {

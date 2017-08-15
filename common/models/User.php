@@ -59,7 +59,7 @@ class User extends ActiveRecord implements IdentityInterface
             //用户名验证规则
             ['username', 'required'],
             ['username', 'filter', 'filter' => 'trim'],
-            ['username', 'string', 'min' => 4,'max' => 24, 'message' => '姓名长度限制 4-24个字符','tooShort' => '姓名长度限制 4-24个字符', 'tooLong' => '姓名长度限制 4-24个字符'],
+            ['username', 'string', 'min' => 2,'max' => 12, 'message' => '姓名长度限制 4-24个字符','tooShort' => '姓名长度限制 4-24个字符', 'tooLong' => '姓名长度限制 4-24个字符'],
             ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => '该用户名已经被占用'],
 
             //个性签名验证规则

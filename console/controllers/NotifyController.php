@@ -45,10 +45,11 @@ class NotifyController extends Controller
         //接收消息
         $mnsQueue = new MnsQueue();
         $queueName = Yii::$app->params['mnsQueueNotifyName'];
-        $isDeleteReceivedMessage = true;
         while (true) {
 
-            $messageBody = $mnsQueue->receiveMessage($isDeleteReceivedMessage, $queueName);
+            $data = $mnsQueue->receiveMessage($queueName);
+            $messageBody = $data['messageBody'];
+            $receiptHandle = $data['receiptHandle'];
             $messageBody = \GuzzleHttp\json_decode($messageBody,true);
             if (!empty($messageBody) && is_array($messageBody)) {
 
@@ -58,7 +59,10 @@ class NotifyController extends Controller
                     case "post_story":
                         $uid = $messageBody['data']['uid'];
                         $storyId = $messageBody['data']['story_id'];
-                        $this->receivePostStory($uid, $storyId);
+                        $ret = $this->receivePostStory($uid, $storyId);
+                        if($ret) {
+                            $mnsQueue->deleteMessage($receiptHandle,$queueName);
+                        }
                         break;
 
                     //我发布章节
@@ -66,7 +70,10 @@ class NotifyController extends Controller
                         $uid = $messageBody['data']['uid'];
                         $storyId = $messageBody['data']['story_id'];
                         $chapterId = $messageBody['data']['chapter_id'];
-                        $this->receivePostChapter($uid, $storyId, $chapterId);
+                        $ret = $this->receivePostChapter($uid, $storyId, $chapterId);
+                        if($ret) {
+                            $mnsQueue->deleteMessage($receiptHandle,$queueName);
+                        }
                         break;
 
                     //用户评论故事
@@ -76,7 +83,10 @@ class NotifyController extends Controller
                         $storyId = $messageBody['data']['story_id'];
                         $commentUid = $messageBody['data']['comment_uid'];
                         $commentId = $messageBody['data']['comment_id'];
-                        $this->receiveCommentStory($authorUid, $storyId, $commentUid, $commentId);
+                        $ret = $this->receiveCommentStory($authorUid, $storyId, $commentUid, $commentId);
+                        if($ret) {
+                            $mnsQueue->deleteMessage($receiptHandle,$queueName);
+                        }
                         break;
 
                     //回复评论
@@ -87,7 +97,10 @@ class NotifyController extends Controller
                         $commentId = $messageBody['data']['comment_id'];
                         $replyUid = $messageBody['data']['reply_uid'];
                         $replyId = $messageBody['data']['reply_id'];
-                        $this->receiveReplyComment($storyId, $commentUid, $commentId, $replyUid, $replyId);
+                        $ret = $this->receiveReplyComment($storyId, $commentUid, $commentId, $replyUid, $replyId);
+                        if($ret) {
+                            $mnsQueue->deleteMessage($receiptHandle,$queueName);
+                        }
                         break;
 
                     //用户对故事点赞
@@ -96,7 +109,10 @@ class NotifyController extends Controller
                         $authorUid = $messageBody['data']['author_uid'];
                         $storyId = $messageBody['data']['story_id'];
                         $likeUid = $messageBody['data']['like_uid'];
-                        $this->receiveLikeStory($authorUid, $storyId, $likeUid);
+                        $ret = $this->receiveLikeStory($authorUid, $storyId, $likeUid);
+                        if($ret) {
+                            $mnsQueue->deleteMessage($receiptHandle,$queueName);
+                        }
                         break;
 
                     //用户对评论点赞
@@ -105,7 +121,10 @@ class NotifyController extends Controller
                         $commentUid = $messageBody['data']['comment_uid'];
                         $commentId = $messageBody['data']['comment_id'];
                         $likeUid = $messageBody['data']['like_uid'];
-                        $this->receiveLikeComment($commentUid, $commentId, $likeUid);
+                        $ret = $this->receiveLikeComment($commentUid, $commentId, $likeUid);
+                        if($ret) {
+                            $mnsQueue->deleteMessage($receiptHandle,$queueName);
+                        }
                         break;
 
                     //用户对回复点赞
@@ -114,7 +133,10 @@ class NotifyController extends Controller
                         $replyUid = $messageBody['data']['reply_uid'];
                         $replyId = $messageBody['data']['reply_id'];
                         $likeUid = $messageBody['data']['like_uid'];
-                        $this->receiveLikeReply($replyUid, $replyId, $likeUid);
+                        $ret = $this->receiveLikeReply($replyUid, $replyId, $likeUid);
+                        if($ret) {
+                            $mnsQueue->deleteMessage($receiptHandle,$queueName);
+                        }
                         break;
                 }
             }
@@ -269,11 +291,11 @@ class NotifyController extends Controller
      * 向关注作者的用户发送作者发布新故事的通知
      * @param $uid
      * @param $storyId
+     * @return bool
      */
     public function receivePostStory($uid, $storyId)
     {
 
-        echo "receivePostStory RUN!!!\n";
         //TODO:获取关注$uid的用户列表,前期用户规模比较小全量分发
         $uidArr = User::find()
             ->select('uid')
@@ -321,11 +343,13 @@ class NotifyController extends Controller
             //执行批量添加
             try {
                 $ret = Yii::$app->db->createCommand()->batchInsert(UserNotify::tableName(), $columns, $rows)->execute();
+                return true;
             } catch (Exception $e) {
-                echo "Batchinsert user_notify Failed: " . $e->getMessage();
+                $error =  "Batchinsert user_notify Failed: " . $e->getMessage();
+                Yii::error($error);
+                return false;
             }
         }
-        return;
     }
 
     /**
@@ -334,6 +358,7 @@ class NotifyController extends Controller
      * @param $uid
      * @param $storyId
      * @param $chapterId
+     * @return bool
      */
     public function receivePostChapter($uid, $storyId, $chapterId)
     {
@@ -399,11 +424,13 @@ class NotifyController extends Controller
             //执行批量添加
             try {
                 $ret = Yii::$app->db->createCommand()->batchInsert(UserNotify::tableName(), $columns, $rows)->execute();
+                return true;
             } catch (Exception $e) {
-                echo "receivePostChapter user_notify Failed: " . $e->getMessage();
+                $error =  "receivePostChapter user_notify Failed: " . $e->getMessage();
+                Yii::error($error);
+                return false;
             }
         }
-        return;
     }
 
 
@@ -414,6 +441,7 @@ class NotifyController extends Controller
      * @param $storyId
      * @param $commentUid
      * @param $commentId
+     * @return bool
      */
     public function receiveCommentStory($authorUid, $storyId, $commentUid, $commentId)
     {
@@ -490,11 +518,12 @@ class NotifyController extends Controller
             $notifyInfoModel->is_read = $isRead;
             $isSaved = $notifyInfoModel->save();
             if (!$isSaved) {
-                print_r($notifyInfoModel->getErrors());
-                echo "notifyCommentStory save user_notify Fail " ;
+                Yii::error($notifyInfoModel->getErrors());
+                return false;
+            }else {
+                return true;
             }
         }
-        return;
     }
 
     /**
@@ -504,6 +533,7 @@ class NotifyController extends Controller
      * @param $commentId
      * @param $replyUid
      * @param $replyId
+     * @return bool
      */
     public function receiveReplyComment($storyId, $commentUid, $commentId, $replyUid, $replyId)
     {
@@ -589,11 +619,12 @@ class NotifyController extends Controller
             $notifyInfoModel->is_read = $isRead;
             $isSaved = $notifyInfoModel->save();
             if (!$isSaved) {
-                print_r($notifyInfoModel->getErrors());
-                echo "notifyReplyComment save user_notify Fail";
+                Yii::error($notifyInfoModel->getErrors());
+                return false;
+            }else {
+                return true;
             }
         }
-        return;
     }
 
     /**
@@ -601,6 +632,7 @@ class NotifyController extends Controller
      * @param $authorUid
      * @param $storyId
      * @param $likeUid
+     * @return bool
      */
     public function receiveLikeStory($authorUid, $storyId, $likeUid)
     {
@@ -669,10 +701,12 @@ class NotifyController extends Controller
             $notifyInfoModel->is_read = $isRead;
             $isSaved = $notifyInfoModel->save();
             if (!$isSaved) {
-                echo "notifyLikeStory save user_notify Fail";
+                Yii::error($notifyInfoModel->getErrors());
+                return false;
+            }else {
+                return true;
             }
         }
-        return;
     }
 
     /**
@@ -680,6 +714,7 @@ class NotifyController extends Controller
      * @param $commentUid
      * @param $commentId
      * @param $likeUid
+     * @return bool|void
      */
     public function receiveLikeComment($commentUid, $commentId, $likeUid)
     {
@@ -746,7 +781,10 @@ class NotifyController extends Controller
             $notifyInfoModel->is_read = $isRead;
             $isSaved = $notifyInfoModel->save();
             if (!$isSaved) {
-                echo "notifyLikeComment save user_notify Fail";
+                Yii::error($notifyInfoModel->getErrors());
+                return false;
+            }else {
+                return true;
             }
         }
         return;
@@ -757,6 +795,7 @@ class NotifyController extends Controller
      * @param $replyUid
      * @param $replyId
      * @param $likeUid
+     * @return bool|void
      */
     public function receiveLikeReply($replyUid, $replyId, $likeUid)
     {
@@ -824,7 +863,10 @@ class NotifyController extends Controller
             $notifyInfoModel->is_read = $isRead;
             $isSaved = $notifyInfoModel->save();
             if (!$isSaved) {
-                echo "notifyLikeReply save user_notify Fail";
+                Yii::error($notifyInfoModel->getErrors());
+                return false;
+            }else {
+                return true;
             }
         }
         return;
