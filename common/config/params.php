@@ -37,7 +37,8 @@ return [
 
     //队列-用户通知-名称
     'mnsQueueNotifyName' => "youwei-queue-notify",
-
+    //队列-故事,用户点击数增加-名称
+    'mnsQueueTapsIncreaseName' => "youwei-queue-taps-increase",
 
     //点赞对象类型
     'LIKE_TARGET_TYPE' => [

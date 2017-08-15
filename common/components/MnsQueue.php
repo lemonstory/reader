@@ -34,8 +34,8 @@ class MnsQueue extends Component
 
     public function sendMessage($messageBody,$queueName) {
 
-        echo "sendMessage Run!!! \n";
-        echo "messageBody : " . $messageBody . "\n";
+//        echo "sendMessage Run!!! \n";
+//        echo "messageBody : " . $messageBody . "\n";
 
         $queue = $this->client->getQueueRef($queueName);
         // 2. send message
@@ -48,12 +48,13 @@ class MnsQueue extends Component
         {
             //SendMessageResponse: containing the messageId and bodyMD5
             $res = $queue->sendMessage($request);
-            echo "MessageSent! \n";
+//            echo "MessageSent! \n";
             return true;
         }
         catch (MnsException $e)
         {
-            echo "SendMessage Failed: " . $e;
+            $msg = "SendMessage Failed: " . $e;
+            Yii::error($msg);
             return false;
         }
     }
@@ -70,11 +71,11 @@ class MnsQueue extends Component
             // when receiving messages, it's always a good practice to set the waitSeconds to be 30.
             // it means to send one http-long-polling request which lasts 30 seconds at most.
             $res = $queue->receiveMessage(30);
-            echo "ReceiveMessage Succeed! \n";
+//            echo "ReceiveMessage Succeed! \n";
 //            if (strtoupper($bodyMD5) == $res->getMessageBodyMD5())
 //            {
                 $messageBody =  $res->getMessageBody();
-            echo "messageBody : " . $messageBody . "\n";
+//            echo "messageBody : " . $messageBody . "\n";
 
 //            }
             $receiptHandle = $res->getReceiptHandle();
@@ -87,7 +88,8 @@ class MnsQueue extends Component
         }
         catch (MnsException $e)
         {
-            echo "ReceiveMessage Failed: " . $e;
+            $msg =  "ReceiveMessage Failed: " . $e;
+            Yii::error($msg);
             return false;
         }
     }
@@ -109,7 +111,8 @@ class MnsQueue extends Component
         }
         catch (MnsException $e)
         {
-            echo "DeleteMessage Failed: " . $e;
+            $msg = "DeleteMessage Failed: " . $e;
+            Yii::error($msg);
             return false;
         }
     }

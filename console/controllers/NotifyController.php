@@ -13,7 +13,7 @@
 namespace console\controllers;
 
 use common\components\MnsQueue;
-use common\components\NotifyMessageHelper;
+use common\components\QueueMessageHelper;
 use common\models\Chapter;
 use common\models\Comment;
 use common\models\Story;
@@ -134,14 +134,14 @@ class NotifyController extends Controller
 //        //1)用户发布新故事
 //        $uid = 2;
 //        $storyId = 2;
-//        $messageBody = NotifyMessageHelper::postStory($uid, $storyId);
+//        $messageBody = QueueMessageHelper::postStory($uid, $storyId);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 
 //        //2)用户发布新章节
 //        $uid = 2;
 //        $storyId = 2;
 //        $chapterId = 1;
-//        $messageBody = NotifyMessageHelper::postChapter($uid, $storyId, $chapterId);
+//        $messageBody = QueueMessageHelper::postChapter($uid, $storyId, $chapterId);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 
         //3)用户评论故事
@@ -149,7 +149,7 @@ class NotifyController extends Controller
 //        $storyId = 2;
 //        $commentUid = 2;
 //        $commentId = 2;
-//        $messageBody = NotifyMessageHelper::commentStory($authorUid, $storyId, $commentUid, $commentId);
+//        $messageBody = QueueMessageHelper::commentStory($authorUid, $storyId, $commentUid, $commentId);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        //4)回复评论
@@ -158,7 +158,7 @@ class NotifyController extends Controller
         $commentId = 2;
         $replyUid = 4;
         $replyId = 18;
-        $messageBody = NotifyMessageHelper::replyComment($storyId, $commentUid, $commentId, $replyUid, $replyId);
+        $messageBody = QueueMessageHelper::replyComment($storyId, $commentUid, $commentId, $replyUid, $replyId);
         $mnsQueue->sendMessage($messageBody, $queueName);
 //        //聚合
 //        $storyId = 2;
@@ -166,100 +166,100 @@ class NotifyController extends Controller
 //        $commentId = 2;
 //        $replyUid = 5;
 //        $replyId = 19;
-//        $messageBody = NotifyMessageHelper::replyComment($storyId, $commentUid, $commentId, $replyUid, $replyId);
+//        $messageBody = QueueMessageHelper::replyComment($storyId, $commentUid, $commentId, $replyUid, $replyId);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
         //5)用户对故事点赞
 //        $uid = 2;
 //        $storyId = 2;
 //        $likeUid = 6;
-//        $messageBody = NotifyMessageHelper::likeStory($uid, $storyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeStory($uid, $storyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $uid = 2;
 //        $storyId = 2;
 //        $likeUid = 7;
-//        $messageBody = NotifyMessageHelper::likeStory($uid, $storyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeStory($uid, $storyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $uid = 2;
 //        $storyId = 2;
 //        $likeUid = 8;
-//        $messageBody = NotifyMessageHelper::likeStory($uid, $storyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeStory($uid, $storyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $uid = 2;
 //        $storyId = 2;
 //        $likeUid = 9;
-//        $messageBody = NotifyMessageHelper::likeStory($uid, $storyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeStory($uid, $storyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $uid = 2;
 //        $storyId = 2;
 //        $likeUid = 10;
-//        $messageBody = NotifyMessageHelper::likeStory($uid, $storyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeStory($uid, $storyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $uid = 2;
 //        $storyId = 2;
 //        $likeUid = 11;
-//        $messageBody = NotifyMessageHelper::likeStory($uid, $storyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeStory($uid, $storyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
         //6)用户对评论点赞
 //        $commentUid = 2;
 //        $commentId = 2;
 //        $likeUid = 5;
-//        $messageBody = NotifyMessageHelper::likeComment($commentUid, $commentId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeComment($commentUid, $commentId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $commentUid = 2;
 //        $commentId = 2;
 //        $likeUid = 6;
-//        $messageBody = NotifyMessageHelper::likeComment($commentUid, $commentId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeComment($commentUid, $commentId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $commentUid = 2;
 //        $commentId = 2;
 //        $likeUid = 7;
-//        $messageBody = NotifyMessageHelper::likeComment($commentUid, $commentId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeComment($commentUid, $commentId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        //7) 用户对回复点赞
 //        $replyUid = 4;
 //        $replyId = 18;
 //        $likeUid = 6;
-//        $messageBody = NotifyMessageHelper::likeReply($replyUid, $replyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeReply($replyUid, $replyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $replyUid = 4;
 //        $replyId = 18;
 //        $likeUid = 7;
-//        $messageBody = NotifyMessageHelper::likeReply($replyUid, $replyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeReply($replyUid, $replyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $replyUid = 4;
 //        $replyId = 18;
 //        $likeUid = 8;
-//        $messageBody = NotifyMessageHelper::likeReply($replyUid, $replyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeReply($replyUid, $replyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $replyUid = 4;
 //        $replyId = 18;
 //        $likeUid = 9;
-//        $messageBody = NotifyMessageHelper::likeReply($replyUid, $replyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeReply($replyUid, $replyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $replyUid = 4;
 //        $replyId = 18;
 //        $likeUid = 10;
-//        $messageBody = NotifyMessageHelper::likeReply($replyUid, $replyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeReply($replyUid, $replyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 //
 //        $replyUid = 4;
 //        $replyId = 18;
 //        $likeUid = 11;
-//        $messageBody = NotifyMessageHelper::likeReply($replyUid, $replyId, $likeUid);
+//        $messageBody = QueueMessageHelper::likeReply($replyUid, $replyId, $likeUid);
 //        $mnsQueue->sendMessage($messageBody, $queueName);
 
     }

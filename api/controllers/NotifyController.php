@@ -3,7 +3,7 @@
 namespace api\controllers;
 
 use common\components\MnsQueue;
-use common\components\NotifyMessageHelper;
+use common\components\QueueMessageHelper;
 use common\models\UserNotify;
 use Yii;
 use yii\data\ActiveDataProvider;

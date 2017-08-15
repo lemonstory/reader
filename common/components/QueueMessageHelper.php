@@ -8,7 +8,7 @@
 namespace common\components;
 use yii\base\Component;
 
-class NotifyMessageHelper extends Component
+class QueueMessageHelper extends Component
 {
     /**
      * 用户发布新故事
@@ -138,6 +138,24 @@ class NotifyMessageHelper extends Component
         $message['data']['reply_uid'] = $replyUid;
         $message['data']['reply_id'] = $replyId;
         $message['data']['like_uid'] = $likeUid;
+        $messageBody = \GuzzleHttp\json_encode($message);
+        return $messageBody;
+    }
+
+    /**
+     * 用户,故事点击数增加
+     * @param $uid 点击用户uid
+     * @param $storyId 被点击故事id
+     * @param $taps 点击数
+     * @return string
+     */
+    public static function tapsIncrease($uid,$storyId,$taps) {
+
+        $message = array();
+        $message['action'] = "taps_increase";
+        $message['data']['uid'] = $uid;
+        $message['data']['story_id'] = $storyId;
+        $message['data']['taps'] = $taps;
         $messageBody = \GuzzleHttp\json_encode($message);
         return $messageBody;
     }

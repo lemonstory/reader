@@ -1631,6 +1631,32 @@
              "msg": "用户不存在"
          }
          
+         32) 增加用户,故事点击数         
+          api:    tap/taps-increase
+          method: GET
+          params:
+                uid:用户uid
+                storyId:故事id
+                taps:点击数
+          ret: Json数组
+          example:
+               http://api.youwei.xiaoningmeng.net/tap/taps-increase?uid=1&storyId=2&taps=2
+               http://api.youwei.xiaoningmeng.net/tap/taps-increase?uid=1&storyId=2&taps=0
+          //正确
+          {
+              "data": [],
+              "code": 200,
+              "msg": "OK"
+          }
+        
+         //错误
+         {
+             "data": [],
+             "code": 400,
+             "msg": "参数错误"
+         }
+         
+         
 
             
          28) 手机号密码登录
