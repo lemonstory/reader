@@ -10,6 +10,7 @@ use common\models\Story;
 use common\models\StoryActor;
 use common\models\StoryTag;
 use common\models\StoryTagRelation;
+use common\models\UserReadStoryRecord;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\filters\auth\CompositeAuth;
@@ -211,10 +212,24 @@ class StoryController extends ActiveController
                             if ($storyModel->hasErrors()) {
 
                                 Yii::error($storyModel->getErrors());
-                                print_r($storyModel->getErrors());
                                 throw new ServerErrorHttpException('编辑故事输入错误');
                             }
                             $storyId = $storyModel->story_id;
+
+                            //删除故事则阅读记录也一并删除
+                            if($storyItem['status'] == Yii::$app->params['STATUS_DELETED']) {
+                                $userReadStoryRecordCondition = array(
+                                    'uid' => $uid,
+                                    'story_id' => $storyId,
+                                );
+                                $userReadStoryRecordModel = UserReadStoryRecord::find()->where($userReadStoryRecordCondition)->one();
+                                $userReadStoryRecordModel->status = Yii::$app->params['STATUS_DELETED'];
+                                $userReadStoryRecordModel->save(false,['status']);
+                                if ($userReadStoryRecordModel->hasErrors()) {
+                                    Yii::error($userReadStoryRecordModel->getErrors());
+                                    throw new ServerErrorHttpException('阅读记录删除失败');
+                                }
+                            }
 
                             //更新角色
                             //接收到的角色值:[{"actor_id":1, "number":"1","name":"姓名-1","avatar":"","is_visible":1},{"actor_id":2,"number":"2","name":"姓名-2","avatar":"","is_visible":1}];
