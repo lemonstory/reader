@@ -7,6 +7,8 @@ use common\components\QueueMessageHelper;
 use common\models\UserNotify;
 use Yii;
 use yii\data\ActiveDataProvider;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 
 class NotifyController extends ActiveController
