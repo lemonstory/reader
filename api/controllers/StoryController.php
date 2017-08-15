@@ -4,6 +4,8 @@ namespace api\controllers;
 
 use api\controllers\MessageParsedown;
 use common\components\DateTimeHelper;
+use common\components\MnsQueue;
+use common\components\QueueMessageHelper;
 use common\models\Story;
 use common\models\StoryActor;
 use common\models\StoryTag;
@@ -132,6 +134,12 @@ class StoryController extends ActiveController
                                 $dataItem = $this->getStoryInfoWithModel($storyModel);
                                 $dataItem['local_story_id'] = $storyItem['local_story_id'];
                                 $data[] = $dataItem;
+
+                                //消息通知->用户发布新故事
+                                $mnsQueue = new MnsQueue();
+                                $queueName = Yii::$app->params['mnsQueueNotifyName'];
+                                $messageBody = QueueMessageHelper::postStory($uid, $storyId);
+                                $mnsQueue->sendMessage($messageBody, $queueName);
                             }
                         } catch (\Exception $e) {
 

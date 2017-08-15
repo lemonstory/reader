@@ -2,6 +2,8 @@
 
 namespace api\controllers;
 
+use common\components\MnsQueue;
+use common\components\QueueMessageHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Comment;
@@ -120,6 +122,21 @@ class LikeController extends ActiveController
 
                             Yii::error($likeModel->getErrors());
                             throw new ServerErrorHttpException('评论点赞保存失败');
+                        }
+
+                        $mnsQueue = new MnsQueue();
+                        $queueName = Yii::$app->params['mnsQueueNotifyName'];
+                        $commentUid = $commentModel->owner_uid;
+                        if(empty($commentModel->parent_comment_id)) {
+
+                            //消息通知->用户对评论点赞
+                            $messageBody = QueueMessageHelper::likeComment($commentUid, $commentId, $ownerUid);
+                            $mnsQueue->sendMessage($messageBody, $queueName);
+                        }else {
+
+                            //消息通知->用户对回复点赞
+                            $messageBody = QueueMessageHelper::likeReply($commentUid, $commentId, $ownerUid);
+                            $mnsQueue->sendMessage($messageBody, $queueName);
                         }
 
                     } else {

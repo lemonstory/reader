@@ -2,6 +2,8 @@
 
 namespace api\controllers;
 
+use common\components\MnsQueue;
+use common\components\QueueMessageHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Comment;
@@ -436,6 +438,8 @@ class CommentController extends ActiveController
         $commentId = 0;
         $userModel = Yii::$app->user->identity;
         $ret['data'] = array();
+        $mnsQueue = new MnsQueue();
+        $queueName = Yii::$app->params['mnsQueueNotifyName'];
         if (!is_null($userModel)) {
             if ($ownerUid == $userModel->uid) {
                 //TODO:输入检查
@@ -474,10 +478,23 @@ class CommentController extends ActiveController
                         throw new ServerErrorHttpException($errorStr);
                     }
                     $commentId = $commentModel->comment_id;
-
-                    //更新故事评论数量
                     $storyModel = Story::findOne(['story_id' => $storyId, 'status' => Yii::$app->params['STATUS_ACTIVE']]);
                     if(!is_null($storyModel)) {
+
+                        //消息通知->用户评论故事
+                        $authorUid = $storyModel->uid;
+                        if(empty($parentCommentId)) {
+                            $messageBody = QueueMessageHelper::commentStory($authorUid, $storyId, $ownerUid, $commentId);
+                            $mnsQueue->sendMessage($messageBody, $queueName);
+
+                        }else {
+
+                            //消息通知->回复评论
+                            $messageBody = QueueMessageHelper::replyComment($storyId, $targetUid, $parentCommentId, $ownerUid, $commentId);
+                            $mnsQueue->sendMessage($messageBody, $queueName);
+                        }
+
+                        //更新故事评论数量
                         $storyModel->comment_count = $storyModel->comment_count + 1;
                         $storyModel->save();
                         if ($storyModel->hasErrors()) {
@@ -493,7 +510,6 @@ class CommentController extends ActiveController
                     $response->statusCode = 400;
                     $response->statusText = $e->getMessage();
                 }
-
 
                 //获取评论内容
                 $commentIdArr = array();

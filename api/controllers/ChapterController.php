@@ -2,6 +2,8 @@
 
 namespace api\controllers;
 
+use common\components\MnsQueue;
+use common\components\QueueMessageHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use yii\rest\ActiveController;
@@ -168,6 +170,12 @@ class ChapterController extends ActiveController
                             $data['create_time'] = $chapterModel->create_time;
                             $data['last_modify_time'] = $chapterModel->last_modify_time;
                             $data['message_count'] = $messageCount;
+
+                            //消息通知->用户发布新章节
+                            $mnsQueue = new MnsQueue();
+                            $queueName = Yii::$app->params['mnsQueueNotifyName'];
+                            $messageBody = QueueMessageHelper::postChapter($uid, $chapterModel->story_id, $chapterModel->chapter_id);
+                            $mnsQueue->sendMessage($messageBody, $queueName);
 
                         }catch (\Exception $e){
 
