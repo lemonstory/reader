@@ -184,23 +184,20 @@ class LikeController extends ActiveController
             if ($uid == $userModel->uid) {
                 $transaction = Yii::$app->db->beginTransaction();
                 try {
-
-                    //删除记录赞Redis
-                    $redis = Yii::$app->redis;
-                    $commentLikeKey = $this->genCommentLikeKey($commentId);
-                    $redis->setbit($commentLikeKey, $uid, 0);
-
                     //删除记录赞DB
                     $condition = array(
-
                         'like.target_id' => $commentId,
                         'like.target_type' => $this->likeCommentTargetType,
                         'like.owner_uid' => $ownerId,
                         'like.status' => Yii::$app->params['STATUS_ACTIVE'],
                     );
-
                     $likeModel = Like::findOne($condition);
                     if (!is_null($likeModel)) {
+
+                        //删除记录赞Redis
+                        $redis = Yii::$app->redis;
+                        $commentLikeKey = $likeModel->genCommentLikeKey($commentId);
+                        $redis->setbit($commentLikeKey, $uid, 0);
 
                         //评论赞数-1
                         $commentModel = Comment::findOne(['comment_id' => $comment_id]);
