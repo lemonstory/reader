@@ -159,6 +159,17 @@ class User extends ActiveRecord implements IdentityInterface
     }
 
     /**
+     * Finds user by mobilePhone
+     *
+     * @param string $mobilePhone
+     * @return static|null
+     */
+    public static function findByMobilePhone($mobilePhone)
+    {
+        return static::findOne(['mobile_phone' => $mobilePhone, 'status' => Yii::$app->params['STATUS_ACTIVE']]);
+    }
+
+    /**
      * Finds user by password reset token
      *
      * @param string $token password reset token

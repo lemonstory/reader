@@ -1631,7 +1631,7 @@
              "msg": "用户不存在"
          }
          
-         32) 增加用户,故事点击数         
+         32) 增加用户,故事点击数[已完成]
           api:    tap/taps-increase
           method: GET
           params:
@@ -1659,7 +1659,43 @@
          
 
             
-         28) 手机号密码登录
+         33) 手机号密码登录[已完成]
+          api:    user/mobile-phone-login
+          method: POST
+          params:
+                mobilePhone:手机号
+                password:密码
+          ret: Json数组
+          example:
+               http://api.youwei.xiaoningmeng.net/tap/taps-increase?uid=1&storyId=2&taps=2
+               http://api.youwei.xiaoningmeng.net/tap/taps-increase?uid=1&storyId=2&taps=0
+          //正确
+          {
+              "data": {
+                  "uid": 10127,
+                  "username": "cccc",
+                  "avatar": "http://wx1.sinaimg.cn/mw690/4deda15fly1fig4zy0kj0j22kw3vde87.jpg",
+                  "signature": null,
+                  "taps": "0",
+                  "status": 1,
+                  "mobile_phone": "18600024911",
+                  "email": null,
+                  "access_token": "o6OP3lvDAMfTaxXiy9LG1ro5V-C4gEig",
+                  "register_ip": "",
+                  "register_time": "2017-08-12 14:44:47",
+                  "last_login_ip": "",
+                  "last_login_time": null,
+                  "last_modify_time": "2017-08-16 14:45:53"
+              },
+              "code": 200
+          }
+         
+          //错误
+          {
+              "data": [],
+              "code": 400,
+              "msg": "手机号或密码错误."
+          }
             
 
          

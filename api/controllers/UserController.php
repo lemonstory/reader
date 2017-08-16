@@ -2,6 +2,7 @@
 
 namespace api\controllers;
 
+use api\models\LoginForm;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\SignupForm;
@@ -41,7 +42,7 @@ class UserController extends ActiveController
         $behaviors['authenticator'] = [
             'class' => CompositeAuth::className(),
             //部分action需要access-token认证，部分action不需要
-            'except' => ['qq-login', 'signup', 'others-storys', 'others-info'],
+            'except' => ['qq-login', 'signup', 'mobile-phone-login', 'others-storys', 'others-info'],
             'authMethods' => [
 //                HttpBasicAuth::className(),
 //                HttpBearerAuth::className(),
@@ -351,6 +352,51 @@ class UserController extends ActiveController
 
         return $ret;
     }
+
+
+    /**
+     * 手机号登录
+     * @return string|\yii\web\Response
+     * @internal param $mobilePhone
+     * @internal param $password
+     */
+    public function actionMobilePhoneLogin()
+    {
+
+        $mobilePhone = Yii::$app->request->post('mobilePhone');
+        $password = Yii::$app->request->post('password');
+        $ret['data'] = array();
+        if (Yii::$app->user->isGuest) {
+
+            $loginFormModel = new LoginForm();
+            $loginFormModel->mobilePhone = $mobilePhone;
+            $loginFormModel->password = $password;
+
+            if ($loginFormModel->login()) {
+                //登录成功
+                $userModel = Yii::$app->user->identity;
+                $ret['data'] = $this->retUserInfoData($userModel);
+                $ret['code'] = 200;
+            } else {
+                //登录失败
+                if($loginFormModel->hasErrors()) {
+                    foreach ($loginFormModel->getErrors() as $attribute => $error) {
+                        foreach ($error as $message) {
+                            //throw new Exception($attribute.": ".$message);
+                            $ret['code'] = 400;
+                            $ret['msg'] = $message;
+                        }
+                    }
+                }
+            }
+        }else {
+            //不应该执行到这里
+            $ret['code'] = 500;
+            $ret['msg'] = '系统出现错误';
+        }
+        return $ret;
+    }
+
 
     /**
      * 修改用户名
