@@ -15,6 +15,8 @@ use common\models\UserReadStoryRecord;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
 use yii\db\Query;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\QueryParamAuth;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
 use yii\web\UploadedFile;
@@ -233,7 +235,7 @@ class CommentController extends ActiveController
      * @param $pre_page
      * @return array
      */
-    public function actionIndex($uid,$story_id,$page,$pre_page) {
+    public function actionIndex($story_id,$page,$pre_page) {
 
         $response = Yii::$app->getResponse();
         $ret = array();

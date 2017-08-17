@@ -193,7 +193,6 @@ class LikeController extends ActiveController
                     );
                     $likeModel = Like::findOne($condition);
                     if (!is_null($likeModel)) {
-
                         //删除记录赞Redis
                         $redis = Yii::$app->redis;
                         $commentLikeKey = $likeModel->genCommentLikeKey($commentId);

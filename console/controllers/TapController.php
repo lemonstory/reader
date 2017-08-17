@@ -38,8 +38,22 @@ class TapController extends Controller
         return ['m' => 'message'];
     }
 
+    /**
+     * 接收用户点击消息
+     * @see https://stackoverflow.com/questions/41427048/yii2-console-command-pass-arguments-with-name
+     */
     public function actionReceiveMessage()
     {
+
+        //单进程-进程锁处理
+        $lock_file = dirname(__FILE__) . "/tap-receive-message.lock";
+        $lock_file_handle = fopen($lock_file, 'w');
+        if ($lock_file_handle === false)
+            die("Can not create lock file {$lock_file}\n");
+        if (!flock($lock_file_handle, LOCK_EX + LOCK_NB)) {
+            die(date("Y-m-d H:i:s") . "[tap/receive-message] Process already exists.\n");
+        }
+
         //接收消息
         $mnsQueue = new MnsQueue();
         $queueName = Yii::$app->params['mnsQueueTapsIncreaseName'];
