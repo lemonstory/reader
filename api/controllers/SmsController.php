@@ -73,20 +73,35 @@ class SmsController extends ActiveController {
         $sms = new Sms();
         $signName = Yii::$app->params['smsSignName'];
         $templateCode = Yii::$app->params['smsTemplateCode'];
-        $templateParam = array('number' => '1234');
-        //外部流水扩展字段
-        $outId = "";
-        //$response -> stdClass Object ( [Message] => OK [RequestId] => ACA1E730-8BDC-4C47-9F63-E9311F9BC992 [BizId] => 179315102107980174^0 [Code] => OK )
-        $response = $sms->sendSms($signName,$templateCode,$mobilePhone,$templateParam,$outId);
+        $number = rand(1000,9999);
+        $templateParam = array('number' => $number);
+        //redis存储
+        $redis = Yii::$app->redis;
+        $key = sprintf(Yii::$app->params['cacheKeyYouweiSmsNumber'],$mobilePhone);
+        $seconds = Yii::$app->params['expireSmsNumberTime'];
+        $value = $number;
+        $isSet = $redis->setex($key, $seconds, $value);
+        if($isSet) {
+            //外部流水扩展字段
+            $outId = "";
+            //$response -> stdClass Object ( [Message] => OK [RequestId] => ACA1E730-8BDC-4C47-9F63-E9311F9BC992 [BizId] => 179315102107980174^0 [Code] => OK )
+            $response = $sms->sendSms($signName,$templateCode,$mobilePhone,$templateParam,$outId);
 
-        //格式化输出
-        $ret = array();
-        $data = array();
-        $data['RequestId'] = $response->RequestId;
-        $data['BizId'] = $response->BizId;
-        $ret['data'] = $data;
-        $ret['code'] = $response->Code;
-        $ret['msg'] = $response->Message;
+            //格式化输出
+            $ret = array();
+            $data = array();
+            $data['RequestId'] = $response->RequestId;
+            $data['BizId'] = $response->BizId;
+            $ret['data'] = $data;
+            $ret['code'] = $response->Code;
+            $ret['msg'] = $response->Message;
+        }else {
+
+            $ret['data'] = array();
+            $ret['code'] = 500;
+            //redis写入失败
+            $ret['msg'] = '系统出现错误';
+        }
         return $ret;
     }
 
@@ -123,6 +138,30 @@ class SmsController extends ActiveController {
         return $ret;
     }
 
+    /**
+     * 验证码校验
+     * @param $mobilePhone
+     * @param $number
+     * @return array
+     */
+    public function actionVerifySms($mobilePhone,$number) {
+
+        $redis = Yii::$app->redis;
+        $key = sprintf(Yii::$app->params['cacheKeyYouweiSmsNumber'],$mobilePhone);
+        $value = $redis->get($key);
+        $ret = array();
+        $ret['data'] = array();
+        if(!empty($value) &&  $value == $number) {
+
+            $ret['code'] = 200;
+            $ret['msg'] = 'OK';
+
+        }else {
+            $ret['code'] = 400;
+            $ret['msg'] = '验证码已过期(或)输入错误';
+        }
+        return $ret;
+    }
 
 }
 

@@ -51,7 +51,7 @@ class TapController extends Controller
         if ($lock_file_handle === false)
             die("Can not create lock file {$lock_file}\n");
         if (!flock($lock_file_handle, LOCK_EX + LOCK_NB)) {
-            die(date("Y-m-d H:i:s") . "[tap/receive-message] Process already exists.\n");
+            die(date("Y-m-d H:i:s") . " [tap/receive-message] Process already exists.\n");
         }
 
         //接收消息

@@ -1399,9 +1399,33 @@
                     }
                     
            备注：code = OK 且 SendStatus=3, 且 ErrCode = DELIVERED 表示短信已发送成功
+           
+           
+         27) 短信验证码校验[已完成]
+              api:    user/verify-sms
+              method: get
+              params:
+                     mobilePhone:手机号码
+                     number:验证码
+              example:
+                     http://api.youwei.xiaoningmeng.net/sms/verify-sms?mobilePhone=15339188014&number=6471
+         
+              //成功
+             {
+                 "data": [],
+                 "code": 200,
+                 "msg": "OK"
+             }
+             
+             //失败
+            {
+                "data": [],
+                "code": 400,
+                "msg": "验证码已过期(或)输入错误"
+            }
             
             
-         26) 手机号注册[已完成]
+         28) 手机号注册[已完成]
              api:    user/signup
              method: get
              params:
@@ -1437,7 +1461,7 @@
                         "msg": "OK"
                     }
                     
-         27) 修改用户名[已完成]
+         29) 修改用户名[已完成]
              api:    user/update-avatar
              method: get
              params:
@@ -1477,7 +1501,7 @@
                     }
                     备注：用户名长度限制：4-24个字符
          
-         28）修改用户头像[已完成]
+         30）修改用户头像[已完成]
              api:    user/update-avatar
              method: get
              params:
@@ -1515,7 +1539,7 @@
                        "msg": "OK"
                    }
                    
-         29）修改个性签名[已完成]
+         31）修改个性签名[已完成]
              api:    user/update-signature
              method: get
              params:
@@ -1548,7 +1572,7 @@
                     
                     备注：个性签名长度限制 最多100个字符
          
-         30）获取他人已发布的故事信息[已完成]
+         32）获取他人已发布的故事信息[已完成]
           api:    user/others-storys
           method: GET
           params:
@@ -1601,7 +1625,7 @@
               "msg": "OK"
           }
           
-        31) 获取他人用户信息[已完成]
+        33) 获取他人用户信息[已完成]
          api:    user/others-info
          method: GET
          params:
@@ -1631,7 +1655,7 @@
              "msg": "用户不存在"
          }
          
-         32) 增加用户,故事点击数[已完成]
+         34) 增加用户,故事点击数[已完成]
           api:    tap/taps-increase
           method: GET
           params:
@@ -1659,7 +1683,7 @@
          
 
             
-         33) 手机号密码登录[已完成]
+         35) 手机号密码登录[已完成]
           api:    user/mobile-phone-login
           method: POST
           params:

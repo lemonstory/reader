@@ -72,5 +72,9 @@ return [
 
     //Redis键名称
     'cacheKeyYouweiStoriesHotRank' => 'youwei_stories_hot_rank',
+    'cacheKeyYouweiSmsNumber' => 'youwei_sms_number_%s',
+
+    //短信验证码有效时间10分钟
+    'expireSmsNumberTime' => 10 * 60,
 
 ];
