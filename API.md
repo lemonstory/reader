@@ -1726,8 +1726,8 @@
           api:    user/qq-login
           method: get
           params:
-                mobilePhone:手机号
-                password:密码
+                openId:
+                accessToken:
           ret: Json数组
           example:
                http://api.youwei.xiaoningmeng.net/user/qq-login?openId=7CB11FEBF8619D174359106ADBD2253E&accessToken=A1E39653ACE44FAC2887ADF342565B29
