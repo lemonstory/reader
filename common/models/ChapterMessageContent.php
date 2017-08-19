@@ -41,7 +41,7 @@ class ChapterMessageContent extends \yii\db\ActiveRecord
             [['voice_over', 'text'], 'string'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['img'], 'string', 'max' => 2083],
-            [['story_id', 'chapter_id', 'number'], 'unique', 'targetAttribute' => ['story_id', 'chapter_id', 'number'], 'message' => 'The combination of 故事id, 章节id and 消息序号 has already been taken.'],
+            [['story_id', 'chapter_id', 'number'], 'unique', 'targetAttribute' => ['story_id', 'chapter_id', 'number'], 'message' => '唯一性索引story_id,chapter_id,number已存在'],
         ];
     }
 
