@@ -17,6 +17,10 @@ use yii\web\IdentityInterface;
  * @property string $password
  * @property string $avatar
  * @property string $signature
+ * @property integer $gender
+ * @property string $city
+ * @property string $province
+ * @property string $birthday
  * @property string $taps
  * @property integer $status
  * @property string $register_ip
@@ -95,13 +99,17 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             'uid' => Yii::t('app', '用户uid'),
             'username' => Yii::t('app', '姓名'),
-            'auth_key' => Yii::t('app', 'Auth Key'),
+            'auth_key' => Yii::t('app', 'Oauth Key'),
             'password_hash' => Yii::t('app', 'Password Hash'),
             'password_reset_token' => Yii::t('app', 'Password Reset Token'),
             'email' => Yii::t('app', 'Email'),
             'mobile_phone' => Yii::t('app', '手机号码'),
             'avatar' => Yii::t('app', '头像'),
             'signature' => Yii::t('app', '个性签名'),
+            'gender' => Yii::t('app', '性别'),
+            'city' => Yii::t('app', '城市'),
+            'province' => Yii::t('app', '省份'),
+            'birthday' => Yii::t('app', '生日'),
             'taps' => Yii::t('app', '点击数'),
             'status' => Yii::t('app', '状态'),
             'register_ip' => Yii::t('app', '注册ip'),

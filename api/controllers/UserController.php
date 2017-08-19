@@ -3,28 +3,20 @@
 namespace api\controllers;
 
 use api\models\LoginForm;
-use common\models\Chapter;
-use common\models\ChapterMessageContent;
+use common\components\DateTimeHelper;
+use common\models\Oauth;
 use common\models\SignupForm;
 use common\models\Story;
 use common\models\User;
-use common\models\UserOauth;
-use common\models\UserReadStoryRecord;
-use yii\base\Response;
+use DateTime;
+use QC;
+use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
-use yii\helpers\ArrayHelper;
-use yii\rest\ActiveController;
-use yii\web\UploadedFile;
-use Yii;
-use common\models\UploadForm;
-use yii\web\ServerErrorHttpException;
-use common\components\DateTimeHelper;
-
 use yii\filters\auth\CompositeAuth;
-use yii\filters\auth\HttpBasicAuth;
-use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\QueryParamAuth;
+use yii\rest\ActiveController;
+use yii\web\ServerErrorHttpException;
 
 class UserController extends ActiveController
 {
@@ -267,6 +259,7 @@ class UserController extends ActiveController
     /**
      * QQ登录
      * @return array 用户个人信息
+     * @see http://wiki.connect.qq.com/get_user_info
      */
     public function actionQqLogin()
     {
@@ -277,42 +270,138 @@ class UserController extends ActiveController
 
         if (!empty($accessToken) && !empty($openId)) {
 
-
-            $oauthCondition = ['oauth_id' => $openId];
-            $userOauthModel = UserOauth::find()->where($oauthCondition);
-            $count = $userOauthModel->count();
-
+            $oauthCondition = ['source' => 'qq', 'source_id' => $openId];
+            $oauthQueryObj = Oauth::find()->where($oauthCondition);
+            $count = $oauthQueryObj->count();
+            $oauthModel = $oauthQueryObj->one();
             if ($count == 1) {
 
-                $userOauthModel->oauth_access_token = $accessToken;
-                $userOauthModel->save();
-
-                $uid = $userOauthModel->uid;
+                //TODO:开发授权用户的accessToken需要存储
+                $uid = $oauthModel->uid;
                 $userCondition = ['uid' => $uid];
                 $userModel = User::findOne($userCondition);
-
-                $userInfo['uid'] = $userModel->uid;
-                $userInfo['name'] = $userModel->name;
-                $userInfo['mobile_phone'] = $userModel->mobile_phone;
-                $userInfo['avatar'] = $userModel->avatar;
-                $userInfo['signature'] = $userModel->signature;
-                $userInfo['status'] = $userModel->status;
+                $ret['data'] = $this->retUserInfoData($userModel);
+                $ret['code'] = 200;
+                $ret['msg'] = 'OK';
 
             } elseif ($count == 0) {
 
-                $qcObj = null;
-                $getInfo = $qcObj->get_user_info();
+                include_once Yii::$app->vendorPath . "/qqconnect-server-sdk-php/API/qqConnectAPI.php";
+                $qcObj = new QC($accessToken, $openId);
+                $qqUserInfo = $qcObj->get_user_info();
 
+                //获取用户成功
+                if (is_array($qqUserInfo) && !empty($qqUserInfo) && isset($qqUserInfo['ret']) && 0 == $qqUserInfo['ret']) {
+
+                    $transaction = Yii::$app->db->beginTransaction();
+                    try {
+
+                        //存储用户信息
+                        $username = $qqUserInfo['nickname'];
+                        if (!empty($qqUserInfo['figureurl_qq_2'])) {
+                            $avatar = $qqUserInfo['figureurl_qq_2'];
+                        } else {
+                            $avatar = $qqUserInfo['figureurl_qq_1'];
+                        }
+
+                        //性别 女=0; 男=1
+                        $gender = 0;
+                        if (!empty($qqUserInfo['gender'])) {
+                            if (0 == strcmp($qqUserInfo['gender'], "男")) {
+                                $gender = 1;
+                            } else {
+                                $gender = 0;
+                            }
+                        }
+
+                        //TODO:省市这里数据存储需要修改
+                        $city = $qqUserInfo['city'];
+                        $province = $qqUserInfo['province'];
+
+                        $birthday = null;
+                        if (!empty($qqUserInfo['year'])) {
+
+                            $year = sprintf('%s-01-01 00:00:00', $qqUserInfo['year']);
+                            $birthday = $year;
+                        }
+
+                        //user数据表存储
+                        $userModel = new User();
+                        $userModel->username = $username;
+                        $userModel->avatar = $avatar;
+                        $userModel->gender = $gender;
+                        $userModel->city = $city;
+                        $userModel->province = $province;
+                        $userModel->birthday = $birthday;
+                        $userModel->status = Yii::$app->params['STATUS_ACTIVE'];
+                        $userModel->register_ip = Yii::$app->request->getUserIP();
+                        $userModel->register_time = time();
+                        $userModel->last_login_ip = Yii::$app->request->getUserIP();
+                        $userModel->last_login_time = time();
+                        $userModel->generateAuthKey();
+                        $userModel->generateAccessToken();
+                        if ($userModel->save(false)) {
+
+                            $uid = $userModel->uid;
+                            //Oauth数据表存储
+                            $oauthModel = new Oauth();
+                            $oauthModel->uid = $uid;
+                            $oauthModel->source = 'qq';
+                            $oauthModel->source_id = $openId;
+                            $oauthModel->status = Yii::$app->params['STATUS_ACTIVE'];
+
+                            if ($oauthModel->save()) {
+
+                                //返回用户信息
+                                $ret['data'] = $this->retUserInfoData($userModel);
+                                $ret['code'] = 200;
+                                $ret['msg'] = 'OK';
+
+                            } else {
+
+                                //错误处理
+                                if ($oauthModel->hasErrors()) {
+                                    Yii::error($oauthModel->getErrors());
+                                    throw new ServerErrorHttpException('开放授权信息保存失败');
+                                }
+                            }
+                        } else {
+
+                            //错误处理
+                            if ($userModel->hasErrors()) {
+                                //错误处理
+                                if ($userModel->hasErrors()) {
+
+                                    Yii::error($userModel->getErrors());
+                                    throw new ServerErrorHttpException('用户信息保存失败');
+                                }
+                            }
+                        }
+
+                        $transaction->commit();
+
+                    } catch (\Exception $e) {
+
+                        //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
+                        $transaction->rollBack();
+                        Yii::error($e->getMessage());
+                        $ret['code'] = 500;
+                        $ret['msg'] = $e->getMessage();
+                    }
+
+                } else {
+                    $ret['data'] = array();
+                    $ret['code'] = 500;
+                    $ret['msg'] = '调用QQ get_user_info接口获取用户信息失败';
+                }
 
             } else {
-
-                //TODO:系统出现错误
+                $ret['data'] = array();
+                $ret['code'] = 500;
+                $ret['msg'] = '系统错误,多个用户拥有相同的openId';
             }
-
-
         }
-
-        return $userInfo;
+        return $ret;
     }
 
 
@@ -379,7 +468,7 @@ class UserController extends ActiveController
                 $ret['code'] = 200;
             } else {
                 //登录失败
-                if($loginFormModel->hasErrors()) {
+                if ($loginFormModel->hasErrors()) {
                     foreach ($loginFormModel->getErrors() as $attribute => $error) {
                         foreach ($error as $message) {
                             //throw new Exception($attribute.": ".$message);
@@ -389,7 +478,7 @@ class UserController extends ActiveController
                     }
                 }
             }
-        }else {
+        } else {
             //不应该执行到这里
             $ret['code'] = 500;
             $ret['msg'] = '系统出现错误';
@@ -524,7 +613,8 @@ class UserController extends ActiveController
      * @param $uid
      * @return mixed
      */
-    public function actionOthersInfo($uid) {
+    public function actionOthersInfo($uid)
+    {
 
         $condition = array(
             'uid' => $uid,
@@ -535,11 +625,11 @@ class UserController extends ActiveController
 
         if (!is_null($userModel)) {
 
-            $ret['data'] = $this->retUserInfoData($userModel,true);
+            $ret['data'] = $this->retUserInfoData($userModel, true);
             $ret['code'] = 200;
             $ret['msg'] = 'OK';
 
-        }else {
+        } else {
             $ret['code'] = 400;
             $ret['msg'] = '用户不存在';
         }
@@ -553,7 +643,7 @@ class UserController extends ActiveController
      * @param $isOthers //是否是访问他人用户信息
      * @return mixed
      */
-    private function retUserInfoData($userModel,$isOthers=false)
+    private function retUserInfoData($userModel, $isOthers = false)
     {
 
         $data = array();
@@ -562,9 +652,13 @@ class UserController extends ActiveController
         $data['avatar'] = $userModel->avatar;
         $data['signature'] = $userModel->signature;
         $data['taps'] = $userModel->taps;
+        $data['gender'] = $userModel->gender;
+        $data['province'] = $userModel->province;
+        $data['city'] = $userModel->city;
+        $data['birthday'] = $userModel->birthday;
         $data['status'] = $userModel->status;
 
-        if(!$isOthers) {
+        if (!$isOthers) {
             $data['mobile_phone'] = $userModel->mobile_phone;
             $data['email'] = $userModel->email;
             $data['access_token'] = $userModel->access_token;

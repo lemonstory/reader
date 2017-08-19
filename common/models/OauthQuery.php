@@ -3,11 +3,11 @@
 namespace common\models;
 
 /**
- * This is the ActiveQuery class for [[Auth]].
+ * This is the ActiveQuery class for [[Oauth]].
  *
- * @see Auth
+ * @see Oauth
  */
-class AuthQuery extends \yii\db\ActiveQuery
+class OauthQuery extends \yii\db\ActiveQuery
 {
     /*public function active()
     {
@@ -16,7 +16,7 @@ class AuthQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return Auth[]|array
+     * @return Oauth[]|array
      */
     public function all($db = null)
     {
@@ -25,7 +25,7 @@ class AuthQuery extends \yii\db\ActiveQuery
 
     /**
      * @inheritdoc
-     * @return Auth|array|null
+     * @return Oauth|array|null
      */
     public function one($db = null)
     {

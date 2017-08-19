@@ -1720,8 +1720,48 @@
               "code": 400,
               "msg": "手机号或密码错误."
           }
+          
+        36) QQ联合登录[已完成]
+        
+          api:    user/qq-login
+          method: get
+          params:
+                mobilePhone:手机号
+                password:密码
+          ret: Json数组
+          example:
+               http://api.youwei.xiaoningmeng.net/user/qq-login?openId=7CB11FEBF8619D174359106ADBD2253E&accessToken=A1E39653ACE44FAC2887ADF342565B29
+               http://api.youwei.xiaoningmeng.net/user/qq-login?openId=7CB11FEBF8612253E&accessToken=A1E39653ACE44FAC2887ADF342565B29
+          
+          //成功
+          {
+              "data": {
+                  "uid": 10159,
+                  "username": " 啊",
+                  "avatar": "http://q.qlogo.cn/qqapp/101405801/7CB11FEBF8619D174359106ADBD2253E/100",
+                  "signature": null,
+                  "taps": "0",
+                  "gender": 1,
+                  "province": "黑龙江",
+                  "city": "哈尔滨",
+                  "birthday": "1991-01-01 00:00:00",
+                  "status": 1,
+                  "mobile_phone": null,
+                  "email": null,
+                  "access_token": "Jj3rxYeGutdV3YDxydGx57ldWJIAY4ky",
+                  "register_ip": "127.0.0.1",
+                  "register_time": "0000-00-00 00:00:00",
+                  "last_login_ip": "127.0.0.1",
+                  "last_login_time": "0000-00-00 00:00:00",
+                  "last_modify_time": "2017-08-19 12:08:43"
+              },
+              "code": 200,
+              "msg": "OK"
+          }
+          
+          //失败(QQ connect 输出)
+          <meta charset="UTF-8"><h3>error:</h3>-1<h3>msg  :</h3>client request's parameters are invalid, invalid openid
             
-
          
  ```
  

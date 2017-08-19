@@ -6,6 +6,8 @@ use common\components\MnsQueue;
 use common\components\QueueMessageHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
+use yii\filters\auth\CompositeAuth;
+use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
 use yii\web\UploadedFile;
 use Yii;
