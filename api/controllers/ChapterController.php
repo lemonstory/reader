@@ -6,6 +6,7 @@ use common\components\MnsQueue;
 use common\components\QueueMessageHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
+use common\models\Story;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\rest\ActiveController;
@@ -96,6 +97,7 @@ class ChapterController extends ActiveController
                                 $chapterCondition = array(
                                     'chapter_id' => $input['chapter_id'],
                                     'story_id' => $input['story_id'],
+                                    'status' => Yii::$app->params['STATUS_ACTIVE'],
                                 );
                                 $chapterModel = Chapter::findOne($chapterCondition);
                             }
@@ -123,11 +125,14 @@ class ChapterController extends ActiveController
                             $chapterModel->message_count = $messageCount;
                             $chapterModel->save();
                             if($chapterModel->hasErrors()) {
-                                Yii::error($chapterModel->getErrors());
-                                throw new ServerErrorHttpException('章节操作失败');
+                                foreach ($chapterModel->getErrors() as $attribute => $error) {
+                                    foreach ($error as $message) {
+                                        throw new ServerErrorHttpException($attribute.": ".$message);
+                                    }
+                                }
                             }
                             $chapterId = $chapterModel->chapter_id;
-
+                            $storyId = $chapterModel->story_id;
                             //这里可能有新增,或修改
                             if($messageCount > 0) {
                                 foreach ($messageContentXml->chapter_message_content->message as $messageItem) {
@@ -154,15 +159,38 @@ class ChapterController extends ActiveController
                                     $chapterMessageContentModel->text = (string)$messageItem->text;
                                     $chapterMessageContentModel->img = (string)$messageItem->img;
                                     $chapterMessageContentModel->status = (string)$messageItem->status;
-
                                     $chapterMessageContentModel->save();
                                     if($chapterMessageContentModel->hasErrors()) {
-                                        Yii::error($chapterMessageContentModel->getErrors());
-                                        throw new ServerErrorHttpException('消息内容操作失败');
+
+                                        foreach ($chapterMessageContentModel->getErrors() as $attribute => $error) {
+                                            foreach ($error as $message) {
+                                                throw new ServerErrorHttpException($attribute.": ".$message);
+                                            }
+                                        }
                                     }
                                 }
                                 //处理成功的文件会被删除
                                 unlink($file);
+                            }
+
+                            //修改故事章节总数量,消息总数量
+                            $storyCondition = array(
+                                'story_id' => $storyId,
+                                'status' => Yii::$app->params['STATUS_ACTIVE'],
+                            );
+                            $chapterCount = Chapter::find()->where($storyCondition)->count();
+                            $messageCount = ChapterMessageContent::find()->where($storyCondition)->count();
+
+                            $storyModel = Story::find()->where($storyCondition)->one();
+                            $storyModel->chapter_count = $chapterCount;
+                            $storyModel->message_count = $messageCount;
+                            $storyModel->save();
+                            if($storyModel->hasErrors()) {
+                                foreach ($storyModel->getErrors() as $attribute => $error) {
+                                    foreach ($error as $message) {
+                                        throw new ServerErrorHttpException($attribute.": ".$message);
+                                    }
+                                }
                             }
 
                             $transaction->commit();
@@ -185,17 +213,23 @@ class ChapterController extends ActiveController
                             $transaction->rollBack();
                             Yii::error($e->getMessage());
                             $response->statusCode = 400;
-                            $response->statusText = "消息内容操作出现系统错误";
+                            $response->statusText = $e->getMessage();
                         }
 
                     }else {
-                        $response->statusCode = 400;
-                        $response->statusText = '参数错误';
+
+                        foreach ($uploadFormModel->getErrors() as $attribute => $error) {
+                            foreach ($error as $message) {
+                                //throw new Exception($attribute.": ".$message);
+                                $response->statusCode = 400;
+                                $response->statusText = $message;
+                            }
+                        }
                     }
 
-                }else {
+                } else {
                     $response->statusCode = 400;
-                    $response->statusText = '参数错误';
+                    $response->statusText = '参数为空';
                 }
 
                 $ret['data'] = $data;
