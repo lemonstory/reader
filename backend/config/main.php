@@ -11,6 +11,7 @@ $params = array_merge(
 return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
+    'language' => 'zh-CN',
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'components' => [

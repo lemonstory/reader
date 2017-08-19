@@ -11,6 +11,7 @@ $params = array_merge(
 return [
     'id' => 'app-api',
     'basePath' => dirname(__DIR__),
+    'language' => 'zh-CN',
     'controllerNamespace' => 'api\controllers',
     'bootstrap' => ['log'],
     'components' => [
