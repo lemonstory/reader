@@ -40,7 +40,9 @@ class CommentController extends ActiveController
         $behaviors['authenticator'] = [
             'class' => CompositeAuth::className(),
             //部分action需要access-token认证，部分action不需要
-            'except' => ['view','index','message-votes','story-votes'],
+            'except' => ['view', 'message-votes', 'story-votes'],
+            //可选的action(access-token认证或不认证都可以)
+            'optional' => ['index',],
             'authMethods' => [
 //                HttpBasicAuth::className(),
 //                HttpBearerAuth::className(),
@@ -55,12 +57,11 @@ class CommentController extends ActiveController
     public function init()
     {
         parent::init();
-        if(empty($this->commentTargetType)) {
+        if (empty($this->commentTargetType)) {
             $commentTargetTypeArr = Yii::$app->params['COMMENT_TARGET_TYPE'];
-            $commentTargetTypeArr = ArrayHelper::index($commentTargetTypeArr,'alias');
+            $commentTargetTypeArr = ArrayHelper::index($commentTargetTypeArr, 'alias');
             $this->commentTargetTypeArr = $commentTargetTypeArr;
         }
-
     }
 
     public function actions()
@@ -85,23 +86,24 @@ class CommentController extends ActiveController
      * @param $message_id
      * @return array
      */
-    public function actionMessageVotes($message_id) {
+    public function actionMessageVotes($message_id)
+    {
 
-       $condition = array(
+        $condition = array(
             'target_id' => $message_id,
             'target_type' => intval($this->commentTargetTypeArr['chapter-message-content']['value']),
             'status' => Yii::$app->params['STATUS_ACTIVE'],
         );
         $votesCount = Comment::find()
-            ->select(['content','COUNT(*) AS count'])
+            ->select(['content', 'COUNT(*) AS count'])
             ->where($condition)
             ->groupBy(['content'])
             ->asArray()
             ->all();
-        $votesCount = ArrayHelper::map($votesCount,'content','count');
+        $votesCount = ArrayHelper::map($votesCount, 'content', 'count');
         foreach (Yii::$app->params['COMMENT_MESSAGE_VOTE_CONTENT'] as $content) {
 
-            if(!array_key_exists($content,$votesCount)) {
+            if (!array_key_exists($content, $votesCount)) {
                 $votesCount[$content] = 0;
             }
         }
@@ -127,7 +129,8 @@ class CommentController extends ActiveController
      * @param $story_id
      * @return array
      */
-    public function actionStoryVotes($story_id) {
+    public function actionStoryVotes($story_id)
+    {
 
         //select count(*) as count, content from `comment` LEFT JOIN chapter_message_content ON `comment`.target_id=`chapter_message_content`.message_id
         //where chapter_message_content.story_id=1  and `comment`.target_type=3 GROUP BY `comment`.content
@@ -141,17 +144,17 @@ class CommentController extends ActiveController
 
         );
         $votesCount = Comment::find()
-            ->select(['content','COUNT(*) AS count'])
-            ->leftJoin('chapter_message_content','comment.target_id=chapter_message_content.message_id')
+            ->select(['content', 'COUNT(*) AS count'])
+            ->leftJoin('chapter_message_content', 'comment.target_id=chapter_message_content.message_id')
             ->where($condition)
             ->groupBy(['comment.content'])
             ->asArray()
             ->all();
-        $votesCount = ArrayHelper::map($votesCount,'content','count');
+        $votesCount = ArrayHelper::map($votesCount, 'content', 'count');
 
         foreach (Yii::$app->params['COMMENT_MESSAGE_VOTE_CONTENT'] as $content) {
 
-            if(!array_key_exists($content,$votesCount)) {
+            if (!array_key_exists($content, $votesCount)) {
                 $votesCount[$content] = 0;
             }
         }
@@ -177,12 +180,13 @@ class CommentController extends ActiveController
      * @param $uid 发布者Uid
      * @return array
      */
-    public function actionVoteCommit($uid) {
+    public function actionVoteCommit($uid)
+    {
 
         $response = Yii::$app->getResponse();
         $ownerUid = $uid;
-        $messageId = Yii::$app->getRequest()->post('message_id',null);
-        $content = Yii::$app->getRequest()->post('content',null);
+        $messageId = Yii::$app->getRequest()->post('message_id', null);
+        $content = Yii::$app->getRequest()->post('content', null);
 
         //TODO:输入检查
         //content做枚举值检查
@@ -205,7 +209,7 @@ class CommentController extends ActiveController
                         throw new ServerErrorHttpException('消息投票保存失败');
                     }
                     $data['comment_id'] = $commentModel->comment_id;
-                }catch (\Exception $e){
+                } catch (\Exception $e) {
 
                     Yii::error($e->getMessage());
                     $response->statusCode = 400;
@@ -235,7 +239,8 @@ class CommentController extends ActiveController
      * @param $pre_page
      * @return array
      */
-    public function actionIndex($story_id,$page,$pre_page) {
+    public function actionIndex($story_id, $page, $pre_page)
+    {
 
         $response = Yii::$app->getResponse();
         $ret = array();
@@ -257,13 +262,13 @@ class CommentController extends ActiveController
         $ret['data']['pageCount'] = intval(ceil($ret['data']['totalCount'] / $ret['data']['perPage']));
         $ret['data']['pageCount'] = 1;
 
-        $likeModel = new Like();
-        $redis = Yii::$app->redis;
+//        $likeModel = new Like();
+//        $redis = Yii::$app->redis;
 
-        if($ret['data']['totalCount'] > 0) {
+        if ($ret['data']['totalCount'] > 0) {
 
             //第一页返回热门评论
-            if($ret['data']['currentPage'] == 1) {
+            if ($ret['data']['currentPage'] == 1) {
                 $ret['data']['commentList']['hot'] = array();
                 $commentHotCondition = ['>', 'comment.like_count', 0];
                 //热门评论
@@ -271,47 +276,47 @@ class CommentController extends ActiveController
                     ->select('comment.comment_id as comment_id,comment.parent_comment_id as parent_comment_id')
                     ->where($commentCondition)
                     ->andWhere($commentHotCondition)
-                    ->orderBy('comment.like_count',SORT_DESC)
+                    ->orderBy(['comment.like_count' => SORT_DESC])
                     ->limit(Yii::$app->params['COMMENT_HOT_MAX_COUNT'])
                     ->asArray()
                     ->all();
 
-                $commentHotCommentPairIdArr = ArrayHelper::map($commentHotIdArr,'comment_id','parent_comment_id');
-                $commentHotCommentIdArr = ArrayHelper::getColumn($commentHotIdArr,'comment_id');
-                $commentHotParentCommentIdArr = ArrayHelper::getColumn($commentHotIdArr,'parent_comment_id');
+                $commentHotCommentPairIdArr = ArrayHelper::map($commentHotIdArr, 'comment_id', 'parent_comment_id');
+                $commentHotCommentIdArr = ArrayHelper::getColumn($commentHotIdArr, 'comment_id');
+                $commentHotParentCommentIdArr = ArrayHelper::getColumn($commentHotIdArr, 'parent_comment_id');
 
                 //过滤parent_comment_id=0的值
-                $commentHotFilterParentCommentIdArr = array_filter($commentHotParentCommentIdArr, function($item){
+                $commentHotFilterParentCommentIdArr = array_filter($commentHotParentCommentIdArr, function ($item) {
                     return !empty($item);
                 });
 
-                $commentHotAllCommentIdArr = array_merge($commentHotCommentIdArr,$commentHotFilterParentCommentIdArr);
+                $commentHotAllCommentIdArr = array_merge($commentHotCommentIdArr, $commentHotFilterParentCommentIdArr);
 
                 //获取评论内容
                 $commentHotAllCommentContentArr = Comment::find()
                     ->where(['comment_id' => $commentHotAllCommentIdArr])
                     ->joinWith([
-                        'user'=> function (ActiveQuery $query)  {
+                        'user' => function (ActiveQuery $query) {
                             $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
                         },
                     ])
                     ->asArray()
                     ->all();
-                $commentHotAllCommentContentArr = ArrayHelper::index($commentHotAllCommentContentArr,'comment_id');
+                $commentHotAllCommentContentArr = ArrayHelper::index($commentHotAllCommentContentArr, 'comment_id');
 
                 //组织热门评论数据
-                $ret['data']['commentList']['hot'] = $this->processCommentHierarchy($commentHotCommentPairIdArr,$commentHotAllCommentContentArr);
+                $ret['data']['commentList']['hot'] = $this->processCommentHierarchy($commentHotCommentPairIdArr, $commentHotAllCommentContentArr);
                 //热门评论按照赞数倒序排列
-                ArrayHelper::multisort($ret['data']['commentList']['hot'], 'like_count',SORT_DESC,SORT_NUMERIC);
+                ArrayHelper::multisort($ret['data']['commentList']['hot'], 'like_count', SORT_DESC, SORT_NUMERIC);
 
-                //组装用户是否赞过该评论数据
-                foreach ($ret['data']['commentList']['hot'] as $key => $hotCommentItem) {
-                    $hotCommentItem['is_like'] = 0;
-                    $commentLikeKey = $likeModel->genCommentLikeKey($hotCommentItem['comment_id']);
-                    $isLike = $redis->getbit($commentLikeKey,$uid);
-                    $hotCommentItem['is_like'] = intval($isLike);
-                    $ret['data']['commentList']['hot'][$key] = $hotCommentItem;
-                }
+//                //组装用户是否赞过该评论数据
+//                foreach ($ret['data']['commentList']['hot'] as $key => $hotCommentItem) {
+//                    $hotCommentItem['is_like'] = 0;
+//                    $commentLikeKey = $likeModel->genCommentLikeKey($hotCommentItem['comment_id']);
+//                    $isLike = $redis->getbit($commentLikeKey, $uid);
+//                    $hotCommentItem['is_like'] = intval($isLike);
+//                    $ret['data']['commentList']['hot'][$key] = $hotCommentItem;
+//                }
             }
 
             //最新评论
@@ -319,44 +324,44 @@ class CommentController extends ActiveController
             $commentNewIdArr = Comment::find()
                 ->select('comment.comment_id as comment_id,comment.parent_comment_id as parent_comment_id')
                 ->where($commentCondition)
-                ->orderBy('comment.create_time',SORT_DESC)
+                ->orderBy(['comment.create_time' => SORT_DESC])
                 ->offset($offset)
                 ->limit($pre_page)
                 ->asArray()
                 ->all();
 
-            $commentNewCommentPairIdArr = ArrayHelper::map($commentNewIdArr,'comment_id','parent_comment_id');
-            $commentNewCommentIdArr = ArrayHelper::getColumn($commentNewIdArr,'comment_id');
-            $commentNewParentCommentIdArr = ArrayHelper::getColumn($commentNewIdArr,'parent_comment_id');
+            $commentNewCommentPairIdArr = ArrayHelper::map($commentNewIdArr, 'comment_id', 'parent_comment_id');
+            $commentNewCommentIdArr = ArrayHelper::getColumn($commentNewIdArr, 'comment_id');
+            $commentNewParentCommentIdArr = ArrayHelper::getColumn($commentNewIdArr, 'parent_comment_id');
 
             //过滤parent_comment_id=0的值
-            $commentNewFilterParentCommentIdArr = array_filter($commentNewParentCommentIdArr, function($item){
+            $commentNewFilterParentCommentIdArr = array_filter($commentNewParentCommentIdArr, function ($item) {
                 return !empty($item);
             });
-            $commentNewAllCommentIdArr = array_merge($commentNewCommentIdArr,$commentNewFilterParentCommentIdArr);
+            $commentNewAllCommentIdArr = array_merge($commentNewCommentIdArr, $commentNewFilterParentCommentIdArr);
             //获取评论内容
             $commentNewAllCommentContentArr = Comment::find()
                 ->where(['comment_id' => $commentNewAllCommentIdArr])
                 ->joinWith([
-                    'user'=> function (ActiveQuery $query)  {
+                    'user' => function (ActiveQuery $query) {
                         $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
                     },
                 ])
                 ->asArray()
                 ->all();
-            $commentNewAllCommentContentArr = ArrayHelper::index($commentNewAllCommentContentArr,'comment_id');
+            $commentNewAllCommentContentArr = ArrayHelper::index($commentNewAllCommentContentArr, 'comment_id');
             //组织最新评论数据
-            $ret['data']['commentList']['new'] = $this->processCommentHierarchy($commentNewCommentPairIdArr,$commentNewAllCommentContentArr);
+            $ret['data']['commentList']['new'] = $this->processCommentHierarchy($commentNewCommentPairIdArr, $commentNewAllCommentContentArr);
 
 
-            //组装用户是否赞过该评论数据
-            foreach ($ret['data']['commentList']['new'] as $key => $newCommentItem) {
-                $newCommentItem['is_like'] = 0;
-                $commentLikeKey = $likeModel->genCommentLikeKey($newCommentItem['comment_id']);
-                $isLike = $redis->getbit($commentLikeKey,$uid);
-                $newCommentItem['is_like'] = intval($isLike);
-                $ret['data']['commentList']['new'][$key] = $newCommentItem;
-            }
+//            //组装用户是否赞过该评论数据
+//            foreach ($ret['data']['commentList']['new'] as $key => $newCommentItem) {
+//                $newCommentItem['is_like'] = 0;
+//                $commentLikeKey = $likeModel->genCommentLikeKey($newCommentItem['comment_id']);
+//                $isLike = $redis->getbit($commentLikeKey, $uid);
+//                $newCommentItem['is_like'] = intval($isLike);
+//                $ret['data']['commentList']['new'][$key] = $newCommentItem;
+//            }
 
         }
 
@@ -370,57 +375,82 @@ class CommentController extends ActiveController
      * @param $commentContentArr
      * @return array
      */
-    private function processCommentHierarchy($commentPairIdArr,$commentContentArr) {
+    private function processCommentHierarchy($commentPairIdArr, $commentContentArr)
+    {
+        //获取登录用户uid
+        $uid = 0;
+        if (!Yii::$app->user->isGuest) {
+            $uid = Yii::$app->user->identity->getId();
+        }
+        $likeModel = new Like();
+        $redis = Yii::$app->redis;
+        $commentHierarchyList = array();
+        if (!empty($commentPairIdArr) && !empty($commentContentArr)) {
 
-            $commentHierarchyList = array();
-            if(!empty($commentPairIdArr) && !empty($commentContentArr)) {
+            foreach ($commentPairIdArr as $commentId => $parentCommentId) {
+                $comment = array();
+                $comment['comment_id'] = $commentContentArr[$commentId]['comment_id'];
+                $comment['parent_comment_id'] = $commentContentArr[$commentId]['parent_comment_id'];
+                $comment['target_id'] = $commentContentArr[$commentId]['target_id'];
+                $comment['target_type'] = $commentContentArr[$commentId]['target_type'];
+                $comment['content'] = $commentContentArr[$commentId]['content'];
+                $comment['target_uid'] = $commentContentArr[$commentId]['target_uid'];
+                $comment['like_count'] = $commentContentArr[$commentId]['like_count'];
 
-                foreach ($commentPairIdArr as $commentId => $parentCommentId) {
-                    $comment = array();
-                    $comment['comment_id'] = $commentContentArr[$commentId]['comment_id'];
-                    $comment['parent_comment_id'] = $commentContentArr[$commentId]['parent_comment_id'];
-                    $comment['target_id'] = $commentContentArr[$commentId]['target_id'];
-                    $comment['target_type'] = $commentContentArr[$commentId]['target_type'];
-                    $comment['content'] = $commentContentArr[$commentId]['content'];
-                    $comment['target_uid'] = $commentContentArr[$commentId]['target_uid'];
-                    $comment['like_count'] = $commentContentArr[$commentId]['like_count'];
-                    $comment['create_time'] = $commentContentArr[$commentId]['create_time'];
-                    $comment['last_modify_time'] = $commentContentArr[$commentId]['last_modify_time'];
-
-                    //user
-                    $comment['owner_uid'] = $commentContentArr[$commentId]['owner_uid'];
-                    $comment['owner_username'] = $commentContentArr[$commentId]['user']['username'];
-                    $comment['owner_avatar'] = $commentContentArr[$commentId]['user']['avatar'];
-                    $comment['owner_signature'] = $commentContentArr[$commentId]['user']['signature'];
-
-                    if(!empty($parentCommentId)) {
-                        $comment['parent'] = array();
-                        if($commentContentArr[$parentCommentId]['status'] == Yii::$app->params['STATUS_ACTIVE']) {
-                            $comment['parent']['comment_id'] = $commentContentArr[$parentCommentId]['comment_id'];
-                            $comment['parent']['parent_comment_id'] = $commentContentArr[$parentCommentId]['parent_comment_id'];
-                            $comment['parent']['target_id'] = $commentContentArr[$parentCommentId]['target_id'];
-                            $comment['parent']['target_type'] = $commentContentArr[$parentCommentId]['target_type'];
-                            $comment['parent']['content'] = $commentContentArr[$parentCommentId]['content'];
-                            $comment['parent']['target_uid'] = $commentContentArr[$parentCommentId]['target_uid'];
-                            $comment['parent']['like_count'] = $commentContentArr[$parentCommentId]['like_count'];
-                            $comment['parent']['create_time'] = $commentContentArr[$parentCommentId]['create_time'];
-                            $comment['parent']['last_modify_time'] = $commentContentArr[$parentCommentId]['last_modify_time'];
-                            $comment['parent']['status'] = $commentContentArr[$parentCommentId]['status'];
-
-                            //user
-                            $comment['parent']['owner_uid'] = $commentContentArr[$parentCommentId]['owner_uid'];
-                            $comment['parent']['owner_username'] = $commentContentArr[$parentCommentId]['user']['username'];
-                            $comment['parent']['owner_avatar'] = $commentContentArr[$parentCommentId]['user']['avatar'];
-                            $comment['parent']['owner_signature'] = $commentContentArr[$parentCommentId]['user']['signature'];
-
-                        }else{
-                            $comment['parent']['status'] = $commentContentArr[$parentCommentId]['status'];
-                        }
-                    }
-                    $commentHierarchyList[] = $comment;
+                //组装用户是否赞过该评论数据
+                $comment['is_like'] = 0;
+                if (!empty($uid)) {
+                    $commentLikeKey = $likeModel->genCommentLikeKey($comment['comment_id']);
+                    $isLike = $redis->getbit($commentLikeKey, $uid);
+                    $comment['is_like'] = intval($isLike);
                 }
+                $comment['create_time'] = $commentContentArr[$commentId]['create_time'];
+                $comment['last_modify_time'] = $commentContentArr[$commentId]['last_modify_time'];
+
+                //user
+                $comment['owner_uid'] = $commentContentArr[$commentId]['owner_uid'];
+                $comment['owner_username'] = $commentContentArr[$commentId]['user']['username'];
+                $comment['owner_avatar'] = $commentContentArr[$commentId]['user']['avatar'];
+                $comment['owner_signature'] = $commentContentArr[$commentId]['user']['signature'];
+
+                if (!empty($parentCommentId)) {
+                    $comment['parent'] = array();
+                    if ($commentContentArr[$parentCommentId]['status'] == Yii::$app->params['STATUS_ACTIVE']) {
+                        $comment['parent']['comment_id'] = $commentContentArr[$parentCommentId]['comment_id'];
+                        $comment['parent']['parent_comment_id'] = $commentContentArr[$parentCommentId]['parent_comment_id'];
+                        $comment['parent']['target_id'] = $commentContentArr[$parentCommentId]['target_id'];
+                        $comment['parent']['target_type'] = $commentContentArr[$parentCommentId]['target_type'];
+                        $comment['parent']['content'] = $commentContentArr[$parentCommentId]['content'];
+                        $comment['parent']['target_uid'] = $commentContentArr[$parentCommentId]['target_uid'];
+                        $comment['parent']['like_count'] = $commentContentArr[$parentCommentId]['like_count'];
+                        //组装用户是否赞过该评论数据
+                        $comment['parent']['is_like'] = 0;
+                        if (!empty($uid)) {
+                            $commentLikeKey = $likeModel->genCommentLikeKey($comment['parent']['comment_id']);
+                            $isLike = $redis->getbit($commentLikeKey, $uid);
+                            $comment['parent']['is_like'] = intval($isLike);
+                        }
+                        $comment['create_time'] = $commentContentArr[$commentId]['create_time'];
+                        $comment['last_modify_time'] = $commentContentArr[$commentId]['last_modify_time'];
+
+                        $comment['parent']['create_time'] = $commentContentArr[$parentCommentId]['create_time'];
+                        $comment['parent']['last_modify_time'] = $commentContentArr[$parentCommentId]['last_modify_time'];
+                        $comment['parent']['status'] = $commentContentArr[$parentCommentId]['status'];
+
+                        //user
+                        $comment['parent']['owner_uid'] = $commentContentArr[$parentCommentId]['owner_uid'];
+                        $comment['parent']['owner_username'] = $commentContentArr[$parentCommentId]['user']['username'];
+                        $comment['parent']['owner_avatar'] = $commentContentArr[$parentCommentId]['user']['avatar'];
+                        $comment['parent']['owner_signature'] = $commentContentArr[$parentCommentId]['user']['signature'];
+
+                    } else {
+                        $comment['parent']['status'] = $commentContentArr[$parentCommentId]['status'];
+                    }
+                }
+                $commentHierarchyList[] = $comment;
             }
-            return $commentHierarchyList;
+        }
+        return $commentHierarchyList;
     }
 
 
@@ -429,13 +459,14 @@ class CommentController extends ActiveController
      * @param $uid 发布者uid
      * @return mixed
      */
-    public function actionCommit($uid) {
+    public function actionCommit($uid)
+    {
 
         $response = Yii::$app->getResponse();
-        $parentCommentId = Yii::$app->getRequest()->post('parent_comment_id',0);
+        $parentCommentId = Yii::$app->getRequest()->post('parent_comment_id', 0);
         $ownerUid = $uid;
-        $storyId = Yii::$app->getRequest()->post('story_id',null);
-        $content = Yii::$app->getRequest()->post('content',null);
+        $storyId = Yii::$app->getRequest()->post('story_id', null);
+        $content = Yii::$app->getRequest()->post('content', null);
         $targetUid = 0;
         $commentId = 0;
         $userModel = Yii::$app->user->identity;
@@ -446,16 +477,16 @@ class CommentController extends ActiveController
             if ($ownerUid == $userModel->uid) {
                 //TODO:输入检查
                 try {
-                    if(!empty($parentCommentId)) {
+                    if (!empty($parentCommentId)) {
 
                         $parentCommentModel = Comment::findOne(['comment_id' => $parentCommentId]);
-                        if(!is_null($parentCommentModel)) {
-                            if($parentCommentModel->status != Yii::$app->params['STATUS_DELETED']){
+                        if (!is_null($parentCommentModel)) {
+                            if ($parentCommentModel->status != Yii::$app->params['STATUS_DELETED']) {
                                 $targetUid = $parentCommentModel->owner_uid;
-                            }else{
+                            } else {
                                 throw new ServerErrorHttpException('父级评论被删除');
                             }
-                        }else{
+                        } else {
                             throw new ServerErrorHttpException('父级评论不存在');
                         }
                     }
@@ -481,15 +512,15 @@ class CommentController extends ActiveController
                     }
                     $commentId = $commentModel->comment_id;
                     $storyModel = Story::findOne(['story_id' => $storyId, 'status' => Yii::$app->params['STATUS_ACTIVE']]);
-                    if(!is_null($storyModel)) {
+                    if (!is_null($storyModel)) {
 
                         //消息通知->用户评论故事
                         $authorUid = $storyModel->uid;
-                        if(empty($parentCommentId)) {
+                        if (empty($parentCommentId)) {
                             $messageBody = QueueMessageHelper::commentStory($authorUid, $storyId, $ownerUid, $commentId);
                             $mnsQueue->sendMessage($messageBody, $queueName);
 
-                        }else {
+                        } else {
 
                             //消息通知->回复评论
                             $messageBody = QueueMessageHelper::replyComment($storyId, $targetUid, $parentCommentId, $ownerUid, $commentId);
@@ -506,7 +537,7 @@ class CommentController extends ActiveController
                         }
                     }
 
-                }catch (\Exception $e){
+                } catch (\Exception $e) {
 
                     Yii::error($e->getMessage());
                     $response->statusCode = 400;
@@ -516,29 +547,29 @@ class CommentController extends ActiveController
                 //获取评论内容
                 $commentIdArr = array();
                 $commentIdArr[] = $commentId;
-                if(!empty($parentCommentId)) {
+                if (!empty($parentCommentId)) {
                     $commentIdArr[] = $parentCommentId;
                 }
 
                 $commentContentArr = Comment::find()
                     ->where(['comment_id' => $commentIdArr])
                     ->joinWith([
-                        'user'=> function (ActiveQuery $query)  {
+                        'user' => function (ActiveQuery $query) {
                             $query->andWhere(['user.status' => Yii::$app->params['STATUS_ACTIVE']]);
                         },
                     ])
                     ->asArray()
                     ->all();
-                $commentContentArr = ArrayHelper::index($commentContentArr,'comment_id');
+                $commentContentArr = ArrayHelper::index($commentContentArr, 'comment_id');
 
                 //组织评论数据
                 $commentPairIdArr = array($commentId => $parentCommentId);
-                $commentContent = $this->processCommentHierarchy($commentPairIdArr,$commentContentArr);
+                $commentContent = $this->processCommentHierarchy($commentPairIdArr, $commentContentArr);
 
                 $ret['data'] = $commentContent;
                 $ret['code'] = $response->statusCode;
                 $ret['msg'] = $response->statusText;
-            }else {
+            } else {
                 $ret['code'] = 400;
                 $ret['msg'] = 'uid与token不相符';
             }
