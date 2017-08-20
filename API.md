@@ -1776,32 +1776,32 @@
            版权申明
            http://youwei.xiaoningmeng.net/site/copyright
             
-        38）退出登录
-              api:    user/logout
-              method: get
-              params:
-                    uid: 用户uid
-                    access-token: 授权访问凭证
-              ret: Json数组
-              示例：
-                http://api.youwei.xiaoningmeng.net/user/logout?uid=10154&access-token=hGmzJ_bZPA3a0bmmWAS_hlCGwG9GQHOF
-                http://api.youwei.xiaoningmeng.net/user/logout
-               
-                //成功
-                {
-                  "data": [],
-                  "status": 200,
-                  "message": "OK"
-                }
-            
-                //失败
-                {
-                  "name": "Unauthorized",
-                  "message": "Your request was made with invalid credentials.",
-                  "code": 0,
-                  "status": 401,
-                  "type": "yii\\web\\UnauthorizedHttpException"
-                }
+        38）退出登录[已完成]
+          api:    user/logout
+          method: get
+          params:
+                uid: 用户uid
+                access-token: 授权访问凭证
+          ret: Json数组
+          示例：
+            http://api.youwei.xiaoningmeng.net/user/logout?uid=10154&access-token=hGmzJ_bZPA3a0bmmWAS_hlCGwG9GQHOF
+            http://api.youwei.xiaoningmeng.net/user/logout
+           
+            //成功
+            {
+              "data": [],
+              "status": 200,
+              "message": "OK"
+            }
+        
+            //失败
+            {
+              "name": "Unauthorized",
+              "message": "Your request was made with invalid credentials.",
+              "code": 0,
+              "status": 401,
+              "type": "yii\\web\\UnauthorizedHttpException"
+            }
  ```
  
  
