@@ -101,11 +101,11 @@ class StsController extends ActiveController
 //                echo json_encode($rows);
 //                exit;
 
-                $ret['code'] = $rows['status'];
+                $ret['status'] = $rows['status'];
                 if($rows['status'] == 200) {
-                    $ret['msg'] = "OK";
+                    $ret['message'] = "OK";
                 }else{
-                    $ret['msg'] = "Code : " . $content->Code . " ; " . "Message : " . $content->Message;
+                    $ret['message'] = "Code : " . $content->Code . " ; " . "Message : " . $content->Message;
                 }
 
                 $ret['data']['AccessKeyId'] = $rows['AccessKeyId'];
@@ -114,12 +114,12 @@ class StsController extends ActiveController
                 $ret['data']['SecurityToken'] = $rows['SecurityToken'];
 
             }else {
-                $ret['code'] = 500;
-                $ret['msg'] = $policy ." 文件不存在";
+                $ret['status'] = 500;
+                $ret['message'] = $policy ." 文件不存在";
             }
         }else {
-            $ret['code'] = 500;
-            $ret['msg'] = $configJson ." 文件不存在";
+            $ret['status'] = 500;
+            $ret['message'] = $configJson ." 文件不存在";
         }
         return $ret;
     }

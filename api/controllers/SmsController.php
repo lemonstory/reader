@@ -93,14 +93,17 @@ class SmsController extends ActiveController {
             $data['RequestId'] = $response->RequestId;
             $data['BizId'] = $response->BizId;
             $ret['data'] = $data;
-            $ret['code'] = $response->Code;
-            $ret['msg'] = $response->Message;
+            if(0 == strcmp("OK",$response->Code)) {
+                $ret['status'] = 200;
+            }else {
+                $ret['status'] = $response->Code;
+            }
+            $ret['message'] = $response->Message;
         }else {
-
             $ret['data'] = array();
-            $ret['code'] = 500;
+            $ret['status'] = 500;
             //redis写入失败
-            $ret['msg'] = '系统出现错误';
+            $ret['message'] = '系统出现错误';
         }
         return $ret;
     }
@@ -122,8 +125,12 @@ class SmsController extends ActiveController {
 
         //格式化输出
         $ret = array();
-        $ret['code'] = $response->Code;
-        $ret['msg'] = $response->Message;
+        if(0 == strcmp("OK",$response->Code)) {
+            $ret['status'] = 200;
+        }else {
+            $ret['status'] = $response->Code;
+        }
+        $ret['message'] = $response->Message;
         if(1 == $response->TotalCount) {
 
             $SmsSendDetailDTO = $response->SmsSendDetailDTOs->SmsSendDetailDTO;
@@ -153,12 +160,12 @@ class SmsController extends ActiveController {
         $ret['data'] = array();
         if(!empty($value) &&  $value == $number) {
 
-            $ret['code'] = 200;
-            $ret['msg'] = 'OK';
+            $ret['status'] = 200;
+            $ret['message'] = 'OK';
 
         }else {
-            $ret['code'] = 400;
-            $ret['msg'] = '验证码已过期(或)输入错误';
+            $ret['status'] = 400;
+            $ret['message'] = '验证码已过期(或)输入错误';
         }
         return $ret;
     }

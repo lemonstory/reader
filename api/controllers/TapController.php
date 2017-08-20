@@ -69,15 +69,15 @@ class TapController extends ActiveController
             $messageBody = QueueMessageHelper::tapsIncrease($uid, $storyId, $taps);
             $isSent = $mnsQueue->sendMessage($messageBody, $queueName);
             if($isSent) {
-                $ret['code'] = 200;
-                $ret['msg'] = 'OK';
+                $ret['status'] = 200;
+                $ret['message'] = 'OK';
             }else {
-                $ret['code'] = 200;
-                $ret['msg'] = 'OK';
+                $ret['status'] = 200;
+                $ret['message'] = 'OK';
             }
         }else {
-            $ret['code'] = 400;
-            $ret['msg'] = '参数错误';
+            $ret['status'] = 400;
+            $ret['message'] = '参数错误';
         }
 
         return $ret;

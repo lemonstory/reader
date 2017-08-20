@@ -119,8 +119,8 @@ class CommentController extends ActiveController
         }
 
         $ret['data'] = $data;
-        $ret['code'] = 200;
-        $ret['msg'] = 'OK';
+        $ret['status'] = 200;
+        $ret['message'] = 'OK';
         return $ret;
     }
 
@@ -170,8 +170,8 @@ class CommentController extends ActiveController
         }
 
         $ret['data'] = $data;
-        $ret['code'] = 200;
-        $ret['msg'] = 'OK';
+        $ret['status'] = 200;
+        $ret['message'] = 'OK';
         return $ret;
     }
 
@@ -217,17 +217,17 @@ class CommentController extends ActiveController
                 }
 
                 $ret['data'] = $data;
-                $ret['code'] = $response->statusCode;
-                $ret['msg'] = $response->statusText;
+                $ret['status'] = $response->statusCode;
+                $ret['message'] = $response->statusText;
 
 
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
         return $ret;
     }
@@ -261,9 +261,6 @@ class CommentController extends ActiveController
         $ret['data']['perPage'] = $pre_page;
         $ret['data']['pageCount'] = intval(ceil($ret['data']['totalCount'] / $ret['data']['perPage']));
         $ret['data']['pageCount'] = 1;
-
-//        $likeModel = new Like();
-//        $redis = Yii::$app->redis;
 
         if ($ret['data']['totalCount'] > 0) {
 
@@ -308,15 +305,6 @@ class CommentController extends ActiveController
                 $ret['data']['commentList']['hot'] = $this->processCommentHierarchy($commentHotCommentPairIdArr, $commentHotAllCommentContentArr);
                 //热门评论按照赞数倒序排列
                 ArrayHelper::multisort($ret['data']['commentList']['hot'], 'like_count', SORT_DESC, SORT_NUMERIC);
-
-//                //组装用户是否赞过该评论数据
-//                foreach ($ret['data']['commentList']['hot'] as $key => $hotCommentItem) {
-//                    $hotCommentItem['is_like'] = 0;
-//                    $commentLikeKey = $likeModel->genCommentLikeKey($hotCommentItem['comment_id']);
-//                    $isLike = $redis->getbit($commentLikeKey, $uid);
-//                    $hotCommentItem['is_like'] = intval($isLike);
-//                    $ret['data']['commentList']['hot'][$key] = $hotCommentItem;
-//                }
             }
 
             //最新评论
@@ -353,20 +341,10 @@ class CommentController extends ActiveController
             //组织最新评论数据
             $ret['data']['commentList']['new'] = $this->processCommentHierarchy($commentNewCommentPairIdArr, $commentNewAllCommentContentArr);
 
-
-//            //组装用户是否赞过该评论数据
-//            foreach ($ret['data']['commentList']['new'] as $key => $newCommentItem) {
-//                $newCommentItem['is_like'] = 0;
-//                $commentLikeKey = $likeModel->genCommentLikeKey($newCommentItem['comment_id']);
-//                $isLike = $redis->getbit($commentLikeKey, $uid);
-//                $newCommentItem['is_like'] = intval($isLike);
-//                $ret['data']['commentList']['new'][$key] = $newCommentItem;
-//            }
-
         }
 
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
+        $ret['status'] = $response->statusCode;
+        $ret['message'] = $response->statusText;
         return $ret;
     }
 
@@ -567,15 +545,15 @@ class CommentController extends ActiveController
                 $commentContent = $this->processCommentHierarchy($commentPairIdArr, $commentContentArr);
 
                 $ret['data'] = $commentContent;
-                $ret['code'] = $response->statusCode;
-                $ret['msg'] = $response->statusText;
+                $ret['status'] = $response->statusCode;
+                $ret['message'] = $response->statusText;
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
         return $ret;
     }

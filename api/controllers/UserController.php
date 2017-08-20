@@ -149,16 +149,16 @@ class UserController extends ActiveController
                 $ret['data']['pageCount'] = $pagination->getPageCount();
                 $ret['data']['currentPage'] = $pagination->getPage() + 1;
                 $ret['data']['perPage'] = $pagination->getPageSize();
-                $ret['code'] = $response->statusCode;
-                $ret['msg'] = $response->statusText;
+                $ret['status'] = $response->statusCode;
+                $ret['message'] = $response->statusText;
 
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
 
         return $ret;
@@ -248,8 +248,8 @@ class UserController extends ActiveController
         $ret['data']['pageCount'] = $pagination->getPageCount();
         $ret['data']['currentPage'] = $pagination->getPage() + 1;
         $ret['data']['perPage'] = $pagination->getPageSize();
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
+        $ret['status'] = $response->statusCode;
+        $ret['message'] = $response->statusText;
 
 
         return $ret;
@@ -281,8 +281,8 @@ class UserController extends ActiveController
                 $userCondition = ['uid' => $uid];
                 $userModel = User::findOne($userCondition);
                 $ret['data'] = $this->retUserInfoData($userModel);
-                $ret['code'] = 200;
-                $ret['msg'] = 'OK';
+                $ret['status'] = 200;
+                $ret['message'] = 'OK';
 
             } elseif ($count == 0) {
 
@@ -354,8 +354,8 @@ class UserController extends ActiveController
 
                                 //返回用户信息
                                 $ret['data'] = $this->retUserInfoData($userModel);
-                                $ret['code'] = 200;
-                                $ret['msg'] = 'OK';
+                                $ret['status'] = 200;
+                                $ret['message'] = 'OK';
 
                             } else {
 
@@ -385,20 +385,20 @@ class UserController extends ActiveController
                         //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
                         $transaction->rollBack();
                         Yii::error($e->getMessage());
-                        $ret['code'] = 500;
-                        $ret['msg'] = $e->getMessage();
+                        $ret['status'] = 500;
+                        $ret['message'] = $e->getMessage();
                     }
 
                 } else {
                     $ret['data'] = array();
-                    $ret['code'] = 500;
-                    $ret['msg'] = '调用QQ get_user_info接口获取用户信息失败';
+                    $ret['status'] = 500;
+                    $ret['message'] = '调用QQ get_user_info接口获取用户信息失败';
                 }
 
             } else {
                 $ret['data'] = array();
-                $ret['code'] = 500;
-                $ret['msg'] = '系统错误,多个用户拥有相同的openId';
+                $ret['status'] = 500;
+                $ret['message'] = '系统错误,多个用户拥有相同的openId';
             }
         }
         return $ret;
@@ -427,16 +427,16 @@ class UserController extends ActiveController
                 foreach ($error as $message) {
                     //throw new Exception($attribute.": ".$message);
                     $ret['data'] = array();
-                    $ret['code'] = 400;
-                    $ret['msg'] = $message;
+                    $ret['status'] = 400;
+                    $ret['message'] = $message;
                 }
             }
         } else {
 
             //注册成功返回用户信息
             $ret['data'] = $this->retUserInfoData($userModel);
-            $ret['code'] = 200;
-            $ret['msg'] = 'OK';
+            $ret['status'] = 200;
+            $ret['message'] = 'OK';
         }
 
         return $ret;
@@ -465,23 +465,40 @@ class UserController extends ActiveController
                 //登录成功
                 $userModel = Yii::$app->user->identity;
                 $ret['data'] = $this->retUserInfoData($userModel);
-                $ret['code'] = 200;
+                $ret['status'] = 200;
             } else {
                 //登录失败
                 if ($loginFormModel->hasErrors()) {
                     foreach ($loginFormModel->getErrors() as $attribute => $error) {
                         foreach ($error as $message) {
                             //throw new Exception($attribute.": ".$message);
-                            $ret['code'] = 400;
-                            $ret['msg'] = $message;
+                            $ret['status'] = 400;
+                            $ret['message'] = $message;
                         }
                     }
                 }
             }
         } else {
             //不应该执行到这里
-            $ret['code'] = 500;
-            $ret['msg'] = '系统出现错误';
+            $ret['status'] = 500;
+            $ret['message'] = '系统出现错误';
+        }
+        return $ret;
+    }
+
+    public function actionLogout() {
+
+        $ret = array();
+        $ret['data'] = array();
+        $isLogout = Yii::$app->user->logout(true);
+        if($isLogout) {
+
+            $ret['status'] = 200;
+            $ret['message'] = 'OK';
+        }else {
+
+            $ret['status'] = 500;
+            $ret['message'] = '系统出现错误';
         }
         return $ret;
     }
@@ -505,23 +522,23 @@ class UserController extends ActiveController
                     foreach ($userModel->getErrors() as $attribute => $error) {
                         foreach ($error as $message) {
                             //throw new Exception($attribute.": ".$message);
-                            $ret['code'] = 400;
-                            $ret['msg'] = $message;
+                            $ret['status'] = 400;
+                            $ret['message'] = $message;
                         }
                     }
                 } else {
                     $ret['data'] = $this->retUserInfoData($userModel);
-                    $ret['code'] = 200;
-                    $ret['msg'] = 'OK';
+                    $ret['status'] = 200;
+                    $ret['message'] = 'OK';
                 }
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
 
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
 
         return $ret;
@@ -545,23 +562,23 @@ class UserController extends ActiveController
                     foreach ($userModel->getErrors() as $attribute => $error) {
                         foreach ($error as $message) {
                             //throw new Exception($attribute.": ".$message);
-                            $ret['code'] = 400;
-                            $ret['msg'] = $message;
+                            $ret['status'] = 400;
+                            $ret['message'] = $message;
                         }
                     }
                 } else {
                     $ret['data'] = $this->retUserInfoData($userModel);
-                    $ret['code'] = 200;
-                    $ret['msg'] = 'OK';
+                    $ret['status'] = 200;
+                    $ret['message'] = 'OK';
                 }
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
 
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
 
         return $ret;
@@ -587,23 +604,23 @@ class UserController extends ActiveController
                     foreach ($userModel->getErrors() as $attribute => $error) {
                         foreach ($error as $message) {
                             //throw new Exception($attribute.": ".$message);
-                            $ret['code'] = 400;
-                            $ret['msg'] = $message;
+                            $ret['status'] = 400;
+                            $ret['message'] = $message;
                         }
                     }
                 } else {
                     $ret['data'] = $this->retUserInfoData($userModel);
-                    $ret['code'] = 200;
-                    $ret['msg'] = 'OK';
+                    $ret['status'] = 200;
+                    $ret['message'] = 'OK';
                 }
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
 
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
         return $ret;
     }
@@ -626,12 +643,12 @@ class UserController extends ActiveController
         if (!is_null($userModel)) {
 
             $ret['data'] = $this->retUserInfoData($userModel, true);
-            $ret['code'] = 200;
-            $ret['msg'] = 'OK';
+            $ret['status'] = 200;
+            $ret['message'] = 'OK';
 
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
 
         return $ret;

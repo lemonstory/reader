@@ -66,8 +66,8 @@ class HomeController extends ActiveController
         $ret['data']['currentPage'] = $currentPage;
         $ret['data']['perPage'] = $perPage;
         $ret['data']['storyList'] = array();
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
+        $ret['status'] = $response->statusCode;
+        $ret['message'] = $response->statusText;
 
         $storyIdArr = $redis->zrevrange(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], $start, $stop);
         if(!empty($storyIdArr) && is_array($storyIdArr)) {

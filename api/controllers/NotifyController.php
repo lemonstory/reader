@@ -216,16 +216,16 @@ class NotifyController extends ActiveController
                 $ret['data']['pageCount'] = $pagination->getPageCount();
                 $ret['data']['currentPage'] = $pagination->getPage() + 1;
                 $ret['data']['perPage'] = $pagination->getPageSize();
-                $ret['code'] = $response->statusCode;
-                $ret['msg'] = $response->statusText;
+                $ret['status'] = $response->statusCode;
+                $ret['message'] = $response->statusText;
 
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
         return $ret;
     }

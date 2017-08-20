@@ -43,7 +43,7 @@
         example:http://api.youwei.xiaoningmeng.net/user/storys?uid=1&page=1&pre_page=1&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
         
               {
-                   "code": 200,
+                   "status": 200,
                    "data": {
                        "totalCount": "内容总数量",
                        "pageCount": "总页数",
@@ -80,7 +80,7 @@
                            }
                        ]
                    },
-                   "msg": "OK"
+                   "message": "OK"
               }
                     
      2)创建故事[支持批量][已完成]
@@ -124,11 +124,11 @@
                             "story_id": 45
                         }
                     ],
-                    "code": 200,//200:全部新建成功;206:部分新建成功
-                    "msg": "OK"
+                    "status": 200,//200:全部新建成功;206:部分新建成功
+                    "message": "OK"
                 }
         备注:    
-            1.  code=200:全部新建成功;code=206:部分新建成功
+            1.  status=200:全部新建成功;status=206:部分新建成功
             2.  actor:故事角色的Json串(见上面示例代码)
             3.  tag:故事标签的Json串(见上面示例代码)
                     
@@ -163,11 +163,11 @@
                             "story_id": 45
                         }
                     ],
-                    "code": 200,//200:全部新建成功;206:部分新建成功
-                    "msg": "OK"
+                    "status": 200,//200:全部新建成功;206:部分新建成功
+                    "message": "OK"
                 }
             备注:    
-                1.  code=200:全部修改成功;code=206:部分修改成功
+                1.  status=200:全部修改成功;status=206:部分修改成功
                 2.  actor:故事角色的Json串(见上面示例代码), 如果是新增的角色则没有actor_id字段。
                 3.  tag:故事标签的Json串(见上面示例代码)
                 4.  故事点击量同步也使用该接口.taps在这里是递增量(即：原来故事taps=1,传入taps=3, 故事的taps最终会是4)
@@ -187,7 +187,7 @@
                   chapter_message_content:章节消息内容文件[type=file]
           ret:  Json
                 {
-                    "code": 200,
+                    "status": 200,
                     "data": {
                         "local_story_id": "本地故事id",
                         "story_id": "故事id",
@@ -198,7 +198,7 @@
                         "last_modify_time": "最后修改时间"
                         "message_count": "章节消息数量"
                     },
-                    "msg": "OK"
+                    "message": "OK"
                 }
                 
      5)查看故事详情[已完成]
@@ -262,7 +262,7 @@
                             "signature": "这是签名"
                         }
                     },
-                    "code": 200,
+                    "status": 200,
                     "message": "OK"
                 }
                 备注：location表示角色位置：0：左，1：右
@@ -298,7 +298,7 @@
                             "last_modify_time": "2017-06-13 09:45:29"
                         }
                     ],
-                    "code": 200,
+                    "status": 200,
                     "message": "OK"
                 }
                  
@@ -313,7 +313,7 @@
               ret:    xml
                       <?xml version="1.0" encoding="utf-8"?>
                       <data>
-                          <code>200</code>
+                          <status>200</status>
                           <message>OK</message>
                           <chapter>
                             <story_id>故事Id</story_id>
@@ -410,8 +410,8 @@
                         "currentPage": 1,
                         "perPage": 1
                     },
-                    "code": 200,
-                    "msg": "OK"
+                    "status": 200,
+                    "message": "OK"
                 }
  阅读记录                           
          9)获取阅读记录[已完成]
@@ -456,7 +456,7 @@
                                     }
                                 ]
                             },
-                            "code": 200,
+                            "status": 200,
                             "message": "OK"
                         }
                         
@@ -478,7 +478,7 @@
                       read_story_records[1][last_modify_time]:修改时间
                ret:    Json数组
                              {
-                                 "code": 200,
+                                 "status": 200,
                                  "data": {
                                             [
                                                 {
@@ -500,7 +500,7 @@
                                             ]
                                          },
                                  },
-                                 "msg": "OK"
+                                 "message": "OK"
                              }
                              
          11)获取阅读记录中的图书更新信息[已完成]   
@@ -513,7 +513,7 @@
                example:http://api.youwei.xiaoningmeng.net/user-read-story-record/stories-update?uid=1&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX&story_ids=1,2,3,4,5,6,13
                ret:    Json数组
                          {
-                             "code": 200,
+                             "status": 200,
                              "message": "OK",
                              "data": {
                                  "storyList": [
@@ -644,8 +644,8 @@
                                    }
                                ]
                            },
-                           "code": 200,
-                           "msg": "OK"
+                           "status": 200,
+                           "message": "OK"
                        }
                        
                备注：<em>关键字</em>:em是飘红的字的标签
@@ -678,8 +678,8 @@
                                     }
                                 ]
                             },
-                            "code": 200,
-                            "msg": "OK"
+                            "status": 200,
+                            "message": "OK"
                         }
                         
  标签
@@ -708,8 +708,8 @@
                                     "name": "搞笑"
                                 }
                             ],
-                            "code": 200,
-                            "msg": "OK"
+                            "status": 200,
+                            "message": "OK"
                         }
                
          15)标签下的故事列表[已完成]
@@ -765,8 +765,8 @@
                                 "currentPage": 1,
                                 "perPage": 1
                             },
-                            "code": 200,
-                            "msg": "OK"
+                            "status": 200,
+                            "message": "OK"
                         }
                         
          16)获取oss Token[已完成]
@@ -776,8 +776,8 @@
                 example:http://api.youwei.xiaoningmeng.net/sts/token
                 ret:    Json
                 {
-                    "code": 200,
-                    "msg": "OK",
+                    "status": 200,
+                    "message": "OK",
                     "data": {
                         "AccessKeyId": "STS.GXBYqvZaDhDBRwrwK3TsUe8bA",
                         "AccessKeySecret": "GZZS5o2GZg7geQopb1e5qBnYsVWHNGKbc78VZwVwrse7",
@@ -820,8 +820,8 @@
                                     "count": 0
                                 }
                             ],
-                            "code": 200,
-                            "msg": "OK"
+                            "status": 200,
+                            "message": "OK"
                         }
          18)获取故事的评论(投票)汇总数据[已完成]
                 api:    /comment/story-votes
@@ -850,8 +850,8 @@
                                 "count": 0
                             }
                         ],
-                        "code": 200,
-                        "msg": "OK"
+                        "status": 200,
+                        "message": "OK"
                     }
 
          19)提交消息的评论(投票)数据[已完成]
@@ -866,8 +866,8 @@
                         "data": {
                             "comment_id": 6
                         },
-                        "code": 200,
-                        "msg": "OK"
+                        "status": 200,
+                        "message": "OK"
                     }
          
          20)获取故事的评论内容[已完成]
@@ -1168,8 +1168,8 @@
                             "perPage": "10",
                             "pageCount": 1
                         },
-                        "code": 200,
-                        "msg": "OK"
+                        "status": 200,
+                        "message": "OK"
                     }
                 备注：hot:热门评论,new:最新评论,parent:父级评论,status:parent节点下面的status=0,表示父级评论被删除，is_like:表示用户是否赞过改评论,
                 
@@ -1216,8 +1216,8 @@
                                     }
                                 }
                             ],
-                            "code": 200,
-                            "msg": "OK"
+                            "status": 200,
+                            "message": "OK"
                         }
          
          22)评论点赞[已完成]
@@ -1231,8 +1231,8 @@
                  ret:    Json
                      {
                          "data": [],
-                         "code": 200,
-                         "msg": "OK"
+                         "status": 200,
+                         "message": "OK"
                      }      
                 
          23)取消评论点赞[已完成]
@@ -1246,8 +1246,8 @@
              ret:    Json
                  {
                      "data": [],
-                     "code": 200,
-                     "msg": "OK"
+                     "status": 200,
+                     "message": "OK"
                  }
          
          24）获取用户通知列表[已完成]
@@ -1263,8 +1263,8 @@
                     http://api.youwei.xiaoningmeng.net/notify/index?uid=2&page=1&pre_page=20&access-token=x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX
              ret:   Json
                     {
-                        "code": 200,
-                        "msg": "OK",
+                        "status": 200,
+                        "message": "OK",
                         "data": {
                             "notifyList": [
                                 [
@@ -1356,8 +1356,8 @@
                             "RequestId": "F4A54AD6-B593-482F-951E-0C214DCE4FFA",
                             "BizId": null
                         },
-                        "code": "isv.BUSINESS_LIMIT_CONTROL",
-                        "msg": "触发业务级流控限制"
+                        "status": "isv.BUSINESS_LIMIT_CONTROL",
+                        "message": "触发业务级流控限制"
                     }
                     
                     //成功
@@ -1366,12 +1366,12 @@
                             "RequestId": "C862746D-5B72-43CB-ADBB-BB99B1F3952D",
                             "BizId": "593409302510526665^0"
                         },
-                        "code": "OK",
-                        "msg": "OK"
+                        "status": 200,
+                        "message": "OK"
                     }
                     
                     
-             备注：RequestId：请求ID，BizId：发送回执ID,可根据该ID查询具体的发送状态，code：短信发送状态运营商返回的错误码,
+             备注：RequestId：请求ID，BizId：发送回执ID,可根据该ID查询具体的发送状态，status：短信发送状态运营商返回的错误码,
              触发业务级流控限制: 是指对同一个手机号码发送短信验证码，支持1条/分钟，5条/小时 ，累计10条/天。(发送短信太频繁了)
              短信接口调用错误码文档地址：https://help.aliyun.com/knowledge_detail/57717.html?spm=5176.doc55451.6.576.WT9y6G
           
@@ -1384,9 +1384,11 @@
              example:
                     http://api.youwei.xiaoningmeng.net/sms/query-send-details?mobilePhone=15339188014&bizId=539300602507735533^0
              ret:   Json
+                    
+                    //成功
                     {
-                        "code": "OK",
-                        "msg": "OK",
+                        "status": 200,
+                        "message": "OK",
                         "data": {
                             "SendDate": "2017-08-12 11:15:35",
                             "SendStatus": 3,
@@ -1398,7 +1400,13 @@
                         }
                     }
                     
-           备注：code = OK 且 SendStatus=3, 且 ErrCode = DELIVERED 表示短信已发送成功
+                    //失败
+                    {
+                        "status": "isv.INVALID_PARAMETERS",
+                        "message": "非法参数"
+                    }
+                    
+           备注：code = 200 且 SendStatus=3, 且 ErrCode = DELIVERED 表示短信已发送成功
            
            
          27) 短信验证码校验[已完成]
@@ -1413,15 +1421,15 @@
               //成功
              {
                  "data": [],
-                 "code": 200,
-                 "msg": "OK"
+                 "status": 200,
+                 "message": "OK"
              }
              
              //失败
             {
                 "data": [],
-                "code": 400,
-                "msg": "验证码已过期(或)输入错误"
+                "status": 400,
+                "message": "验证码已过期(或)输入错误"
             }
             
             
@@ -1437,8 +1445,8 @@
                     //失败
                     {
                         "data": [],
-                        "code": 400,
-                        "msg": "手机号已经被使用"
+                        "status": 400,
+                        "message": "手机号已经被使用"
                     }
                     //成功
                     {
@@ -1457,8 +1465,8 @@
                             "last_login_time": "2017-08-12 19:39:04",
                             "last_modify_time": "2017-08-12 19:39:04"
                         },
-                        "code": 200,
-                        "msg": "OK"
+                        "status": 200,
+                        "message": "OK"
                     }
                     
          29) 修改用户名[已完成]
@@ -1475,8 +1483,8 @@
                     //失败
                     {
                         "data": [],
-                        "code": 400,
-                        "msg": "姓名长度限制 4-24个字符"
+                        "status": 400,
+                        "message": "姓名长度限制 4-24个字符"
                     }
                 
                     //成功
@@ -1496,8 +1504,8 @@
                             "last_login_time": null,
                             "last_modify_time": "2017-08-12 19:27:46"
                         },
-                        "code": 200,
-                        "msg": "OK"
+                        "status": 200,
+                        "message": "OK"
                     }
                     备注：用户名长度限制：4-24个字符
          
@@ -1514,8 +1522,8 @@
                    //失败
                    {
                        "data": [],
-                       "code": 400,
-                       "msg": "头像地址不是一个合法的url"
+                       "status": 400,
+                       "message": "头像地址不是一个合法的url"
                    }
                  
                    //成功
@@ -1535,8 +1543,8 @@
                            "last_login_time": null,
                            "last_modify_time": "2017-08-12 19:26:02"
                        },
-                       "code": 200,
-                       "msg": "OK"
+                       "status": 200,
+                       "message": "OK"
                    }
                    
          31）修改个性签名[已完成]
@@ -1566,8 +1574,8 @@
                             "last_login_time": null,
                             "last_modify_time": "2017-08-12 19:13:03"
                         },
-                        "code": 200,
-                        "msg": "OK"
+                        "status": 200,
+                        "message": "OK"
                     }
                     
                     备注：个性签名长度限制 最多100个字符
@@ -1621,8 +1629,8 @@
                   "currentPage": 1,
                   "perPage": 1
               },
-              "code": 200,
-              "msg": "OK"
+              "status": 200,
+              "message": "OK"
           }
           
         33) 获取他人用户信息[已完成]
@@ -1644,15 +1652,15 @@
                  "taps": "0",
                  "status": 1
              },
-             "code": 200,
-             "msg": "OK"
+             "status": 200,
+             "message": "OK"
          }
          
          //错误
          {
              "data": [],
-             "code": 400,
-             "msg": "用户不存在"
+             "status": 400,
+             "message": "用户不存在"
          }
          
          34) 增加用户,故事点击数[已完成]
@@ -1669,15 +1677,15 @@
           //正确
           {
               "data": [],
-              "code": 200,
-              "msg": "OK"
+              "status": 200,
+              "message": "OK"
           }
         
          //错误
          {
              "data": [],
-             "code": 400,
-             "msg": "参数错误"
+             "status": 400,
+             "message": "参数错误"
          }
          
          
@@ -1711,14 +1719,14 @@
                   "last_login_time": null,
                   "last_modify_time": "2017-08-16 14:45:53"
               },
-              "code": 200
+              "status": 200
           }
          
           //错误
           {
               "data": [],
-              "code": 400,
-              "msg": "手机号或密码错误."
+              "status": 400,
+              "message": "手机号或密码错误."
           }
           
         36) QQ联合登录[已完成]
@@ -1755,8 +1763,8 @@
                   "last_login_time": "0000-00-00 00:00:00",
                   "last_modify_time": "2017-08-19 12:08:43"
               },
-              "code": 200,
-              "msg": "OK"
+              "status": 200,
+              "message": "OK"
           }
           
           //失败(QQ connect 输出)
@@ -1768,7 +1776,32 @@
            版权申明
            http://youwei.xiaoningmeng.net/site/copyright
             
-         
+        38）退出登录
+              api:    user/logout
+              method: get
+              params:
+                    uid: 用户uid
+                    access-token: 授权访问凭证
+              ret: Json数组
+              示例：
+                http://api.youwei.xiaoningmeng.net/user/logout?uid=10154&access-token=hGmzJ_bZPA3a0bmmWAS_hlCGwG9GQHOF
+                http://api.youwei.xiaoningmeng.net/user/logout
+               
+                //成功
+                {
+                  "data": [],
+                  "status": 200,
+                  "message": "OK"
+                }
+            
+                //失败
+                {
+                  "name": "Unauthorized",
+                  "message": "Your request was made with invalid credentials.",
+                  "code": 0,
+                  "status": 401,
+                  "type": "yii\\web\\UnauthorizedHttpException"
+                }
  ```
  
  

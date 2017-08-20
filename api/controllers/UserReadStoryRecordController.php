@@ -124,23 +124,23 @@ class UserReadStoryRecordController extends ActiveController
                         $data['storyList'] = $this->composeUserReadStoryRecordData($userReadStoryRecordArr);
                     }
 
-                    $ret['code'] = 200;
+                    $ret['status'] = 200;
                     $ret['message'] = 'OK';
 
                 } else {
 
-                    $ret['code'] = 400;
+                    $ret['status'] = 400;
                     $ret['message'] = 'story_ids输入错误';
                 }
                 $ret['data'] = $data;
 
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
         return $ret;
     }
@@ -201,15 +201,15 @@ class UserReadStoryRecordController extends ActiveController
                 }
 
                 $ret['data'] = $data;
-                $ret['code'] = 200;
+                $ret['status'] = 200;
                 $ret['message'] = 'OK';
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
         return $ret;
     }
@@ -411,16 +411,16 @@ class UserReadStoryRecordController extends ActiveController
                     $response->statusText = '输入参数错误';
                 }
                 $ret['data'] = $data;
-                $ret['code'] = $response->statusCode;
-                $ret['msg'] = $response->statusText;
+                $ret['status'] = $response->statusCode;
+                $ret['message'] = $response->statusText;
 
             } else {
-                $ret['code'] = 400;
-                $ret['msg'] = 'uid与token不相符';
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
             }
         } else {
-            $ret['code'] = 400;
-            $ret['msg'] = '用户不存在';
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
         }
         return $ret;
     }

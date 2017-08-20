@@ -70,8 +70,8 @@ class SearchController extends ActiveController
             $ret['data']['pageCount'] = ceil($searchRet['result']['total'] / $per_page);
             if(0 === strcasecmp($searchRet['status'],"OK")) {
 
-                $ret['code'] = 200;
-                $ret['msg'] = "OK";
+                $ret['status'] = 200;
+                $ret['message'] = "OK";
 
                 foreach ($searchRet['result']['items'] as $item) {
                     $story['story_id'] = $item['fields']['story_id'];
@@ -93,8 +93,8 @@ class SearchController extends ActiveController
                 }
             }else {
 
-                $ret['code'] = $searchRet['errors']['code'];
-                $ret['msg'] = "搜索系统出现错误";
+                $ret['status'] = $searchRet['errors']['code'];
+                $ret['message'] = "搜索系统出现错误";
                 //TODO:记录错误日志
 //                $errorMessage = $searchRet['errors']['message'];
 //                $errorTracer = $searchRet['tracer'];
@@ -128,8 +128,8 @@ class SearchController extends ActiveController
             $ret['data']['pageCount'] = ceil($searchRet['result']['total'] / $per_page);
             if(0 === strcasecmp($searchRet['status'],"OK")) {
 
-                $ret['code'] = 200;
-                $ret['msg'] = "OK";
+                $ret['status'] = 200;
+                $ret['message'] = "OK";
 
                 foreach ($searchRet['result']['items'] as $item) {
 
@@ -144,8 +144,8 @@ class SearchController extends ActiveController
                 }
             }else {
 
-                $ret['code'] = $searchRet['errors']['code'];
-                $ret['msg'] = "搜索系统出现错误";
+                $ret['status'] = $searchRet['errors']['code'];
+                $ret['message'] = "搜索系统出现错误";
                 //TODO:记录错误日志
 //                $errorMessage = $searchRet['errors']['message'];
 //                $errorTracer = $searchRet['tracer'];

@@ -3,7 +3,7 @@
     echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 ?>
 <data>
-    <code>200</code>
+    <status>200</status>
     <message>OK</message>
     <chapter>
         <story_id><?= $storyId; ?></story_id>

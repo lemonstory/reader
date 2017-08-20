@@ -52,8 +52,8 @@ class TagController extends ActiveController
         $tagArr = Tag::find()->select($columns)->where($condition)->orderBy(['number' => SORT_ASC])->asArray()->all();
         $response = Yii::$app->getResponse();
         $ret['data'] = $tagArr;
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
+        $ret['status'] = $response->statusCode;
+        $ret['message'] = $response->statusText;
         return $ret;
     }
 
@@ -158,8 +158,8 @@ class TagController extends ActiveController
         $ret['data']['pageCount'] = $pagination->getPageCount();
         $ret['data']['currentPage'] = $pagination->getPage() + 1;
         $ret['data']['perPage'] = $pagination->getPageSize();
-        $ret['code'] = $response->statusCode;
-        $ret['msg'] = $response->statusText;
+        $ret['status'] = $response->statusCode;
+        $ret['message'] = $response->statusText;
         return $ret;
     }
 
