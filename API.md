@@ -1761,6 +1761,12 @@
           
           //失败(QQ connect 输出)
           <meta charset="UTF-8"><h3>error:</h3>-1<h3>msg  :</h3>client request's parameters are invalid, invalid openid
+          
+        37）用户协议
+           http://youwei.xiaoningmeng.net/site/agreement
+           
+           版权申明
+           http://youwei.xiaoningmeng.net/site/copyright
             
          
  ```

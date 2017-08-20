@@ -84,6 +84,27 @@ class SiteController extends Controller
     }
 
     /**
+     * 用户协议
+     * @return string
+     */
+    public function actionAgreement() {
+
+        $this->layout='@frontend/views/layouts/site.php';
+        return$this->render('agreement');
+    }
+
+    /**
+     * 版权申明
+     * @return string
+     */
+    public function actionCopyright() {
+
+        $this->layout='@frontend/views/layouts/site.php';
+        return$this->render('copyright');
+    }
+
+
+    /**
      * Logs in a user.
      *
      * @return mixed

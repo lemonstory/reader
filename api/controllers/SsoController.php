@@ -9,7 +9,6 @@
 namespace api\controllers;
 
 
-use common\models\Auth;
 use common\models\Oauth;
 use common\models\User;
 use QC;
@@ -42,6 +41,7 @@ class SsoController extends ActiveController
     }
 
     /**
+     * TODO:目前没有使用
      * QQ登录,账号绑定
      * @param $accessToken
      * @param $openId
@@ -50,7 +50,7 @@ class SsoController extends ActiveController
     {
         $clientId = 'qq';
 
-        $auth = Auth::find()->where([
+        $auth = Oauth::find()->where([
             'source' => 'qq',
             'source_id' => $openId,
         ])->one();
@@ -82,7 +82,7 @@ class SsoController extends ActiveController
                     $user->generatePasswordResetToken();
                     $transaction = $user->getDb()->beginTransaction();
                     if ($user->save()) {
-                        $auth = new Auth([
+                        $auth = new Oauth([
                             'user_id' => $user->uid,
                             'source' => $clientId,
                             'source_id' => (string)$openId,
@@ -104,7 +104,7 @@ class SsoController extends ActiveController
             if (!$auth) {
 
                 // 添加验证提供商（向验证表中添加记录）
-                $auth = new Auth([
+                $auth = new Oauth([
                     'user_id' => Yii::$app->user->uid,
                     'source' => $clientId,
                     'source_id' => $openId,
@@ -116,6 +116,7 @@ class SsoController extends ActiveController
 
 
     /**
+     * TODO:目前没有使用
      * 获取QQ开放平台信息
      * @param $accessToken
      * @param $openId
