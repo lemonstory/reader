@@ -38,20 +38,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'headerOptions' => ['style' => 'width:50px'],
                 'value' => function ($m) {
-
                     $ret = "";
-                    //TODO:下面的tag_id是硬编码,需要更改
-                    //'tag_id' => 'bg color'
-                    $bg = [
-                        '1' => 'bg-yellow',
-                        '2' => 'bg-green',
-                        '3' => 'bg-red',
-                    ];
-                    $ret .= "<p >";
+                    if(isset(Yii::$app->params['tagNameBg'][$m->tag_id])) {
+                        $bg = Yii::$app->params['tagNameBg'][$m->tag_id];
+                    }else {
+                        $bg = Yii::$app->params['defaultTagNameBg'];
+                    }
 
+                    $ret .= "<p >";
                         $tagNameUrl = Html::a($m->name,
                             ['tag/view', 'id' => $m->tag_id], ['style' => 'color:#fff']);
-                        $ret .= " <small class=\"label {$bg[$m->tag_id]}\">{$tagNameUrl}</small>";
+                        $ret .= " <small class=\"label {$bg}\">{$tagNameUrl}</small>";
                     $ret .= "</p>";
                     return $ret;
                 },
