@@ -289,6 +289,8 @@ class UserController extends ActiveController
                 include_once Yii::$app->vendorPath . "/qqconnect-server-sdk-php/API/qqConnectAPI.php";
                 $qcObj = new QC($accessToken, $openId);
                 $qqUserInfo = $qcObj->get_user_info();
+//                var_dump($qqUserInfo);
+//                exit;
 
                 //获取用户成功
                 if (is_array($qqUserInfo) && !empty($qqUserInfo) && isset($qqUserInfo['ret']) && 0 == $qqUserInfo['ret']) {
