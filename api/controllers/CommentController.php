@@ -385,7 +385,12 @@ class CommentController extends ActiveController
                     $comment['is_like'] = intval($isLike);
                 }
                 $comment['create_time'] = Carbon::createFromTimestamp($commentContentArr[$commentId]['create_time'])->toDateTimeString();
-                $comment['last_modify_time'] = Carbon::createFromTimestamp($commentContentArr[$commentId]['last_modify_time'])->diffForHumans();
+                $createTimeObj = Carbon::createFromTimestamp($commentContentArr[$commentId]['last_modify_time']);
+                if($createTimeObj->isCurrentYear()) {
+                    $comment['last_modify_time'] = $createTimeObj->diffForHumans();
+                }else {
+                    $comment['last_modify_time'] = $createTimeObj->toDateTimeString();
+                }
 
                 //user
                 $comment['owner_uid'] = $commentContentArr[$commentId]['owner_uid'];

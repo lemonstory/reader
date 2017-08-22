@@ -97,7 +97,14 @@ class NotifyController extends ActiveController
                         $contentArr = \GuzzleHttp\json_decode($content, true);
                         $senders = $notifyModelItem->senders;
                         $count = $notifyModelItem->count;
-                        $createTime = Carbon::createFromTimestamp($notifyModelItem->create_time)->diffForHumans();
+
+                        $createTimeObj = Carbon::createFromTimestamp($notifyModelItem->create_time);
+                        if($createTimeObj->isCurrentYear()) {
+                            $createTime = $createTimeObj->diffForHumans();
+                        }else {
+                            $createTime = $createTimeObj->toDateTimeString();
+                        }
+
 
                         switch ($category) {
 
