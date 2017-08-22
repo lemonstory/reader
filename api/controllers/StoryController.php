@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use api\controllers\MessageParsedown;
+use Carbon\Carbon;
 use common\components\DateTimeHelper;
 use common\components\MnsQueue;
 use common\components\QueueMessageHelper;
@@ -44,6 +45,12 @@ class StoryController extends ActiveController
             ],
         ];
         return $behaviors;
+    }
+
+    public function init()
+    {
+        parent::init();
+        Carbon::setLocale('zh');
     }
 
     public function actions()
@@ -90,14 +97,14 @@ class StoryController extends ActiveController
 
                             //保存故事
                             $storyItem['uid'] = $uid;
-                            $storyItem['create_time'] = DateTimeHelper::inputCheck($storyItem['create_time']);
-                            $storyItem['last_modify_time'] = DateTimeHelper::inputCheck($storyItem['last_modify_time']);
+                            $storyItem['create_time'] = $storyItem['create_time'];
+                            $storyItem['last_modify_time'] = $storyItem['last_modify_time'];
 
                             $storyModel = new Story();
                             $storyModel->loadDefaultValues();
                             $storyModel->setAttributes($storyItem);
-                            $storyModel->create_time = DateTimeHelper::convert($storyModel->create_time, 'datetime');
-                            $storyModel->last_modify_time = DateTimeHelper::convert($storyModel->last_modify_time, 'datetime');
+                            $storyModel->create_time = $storyModel->create_time;
+                            $storyModel->last_modify_time = $storyModel->last_modify_time;
 
                             $storyModel->save();
                             if ($storyModel->hasErrors()) {
@@ -206,8 +213,8 @@ class StoryController extends ActiveController
                             if (!empty($storyItem['taps'])) {
                                 $storyModel->taps = $currentTaps + $storyItem['taps'];
                             }
-                            $storyModel->create_time = DateTimeHelper::convert($storyModel->create_time, 'datetime');
-                            $storyModel->last_modify_time = DateTimeHelper::convert($storyModel->last_modify_time, 'datetime');
+                            $storyModel->create_time = $storyModel->create_time;
+                            $storyModel->last_modify_time = $storyModel->last_modify_time;
                             $storyModel->save();
                             if ($storyModel->hasErrors()) {
 
@@ -432,6 +439,8 @@ class StoryController extends ActiveController
         $data = array();
         if (!empty($storyModel)) {
             $data = $storyModel->getAttributes();
+            $data['create_time'] = Carbon::createFromTimestamp($data['create_time'])->toDateTimeString();
+            $data['last_modify_time'] = Carbon::createFromTimestamp($data['create_time'])->toDateTimeString();
             $storyId = $storyModel->story_id;
 
             //角色信息

@@ -2,6 +2,7 @@
 
 namespace api\controllers;
 
+use Carbon\Carbon;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Story;
@@ -42,6 +43,12 @@ class UserReadStoryRecordController extends ActiveController
             ],
         ];
         return $behaviors;
+    }
+
+    public function init()
+    {
+        parent::init();
+        Carbon::setLocale('zh');
     }
 
     public $columnStoryNames = array(
@@ -328,8 +335,8 @@ class UserReadStoryRecordController extends ActiveController
                 $dataItem['last_message_number'] = $messageNumberArr[$dataItem['last_message_id']];
             }
 
-            $dataItem['create_time'] = $item['create_time'];
-            $dataItem['last_modify_time'] = $item['last_modify_time'];
+            $dataItem['create_time'] = Carbon::createFromTimestamp($item['create_time'])->toDateTimeString();
+            $dataItem['last_modify_time'] = Carbon::createFromTimestamp($item['last_modify_time'])->toDateTimeString();
 
             //合并故事和作者数据
             if (!empty($userInfoList[$item['uid']])) {
@@ -379,8 +386,8 @@ class UserReadStoryRecordController extends ActiveController
                             }
 
                             $readStoryRecordModel->setAttributes($readStoryRecordItem);
-                            $readStoryRecordItem['create_time'] = DateTimeHelper::inputCheck($readStoryRecordItem['create_time']);
-                            $readStoryRecordItem['last_modify_time'] = DateTimeHelper::inputCheck($readStoryRecordItem['last_modify_time']);
+                            $readStoryRecordItem['create_time'] = $readStoryRecordItem['create_time'];
+                            $readStoryRecordItem['last_modify_time'] = $readStoryRecordItem['last_modify_time'];
 
                             $readStoryRecordModel->save();
                             if ($readStoryRecordModel->hasErrors()) {

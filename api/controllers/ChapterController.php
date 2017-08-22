@@ -2,6 +2,7 @@
 
 namespace api\controllers;
 
+use Carbon\Carbon;
 use common\components\MnsQueue;
 use common\components\QueueMessageHelper;
 use common\models\Chapter;
@@ -42,6 +43,12 @@ class ChapterController extends ActiveController
         return $behaviors;
     }
 
+    public function init()
+    {
+        parent::init();
+        Carbon::setLocale('zh');
+    }
+
     public function actions()
     {
         $actions = parent::actions();
@@ -77,10 +84,10 @@ class ChapterController extends ActiveController
                     $input['local_chapter_id'] = Yii::$app->request->post('local_chapter_id');
                     $input['chapter_id'] = Yii::$app->request->post('chapter_id');
                     $input['status'] = Yii::$app->request->post('status');
-                    $input['create_time'] = DateTimeHelper::inputCheck(Yii::$app->request->post('create_time'));
-                    $input['create_time'] = $input['create_time'] = DateTimeHelper::convert($input['create_time'], 'datetime');
-                    $input['last_modify_time'] = DateTimeHelper::inputCheck(Yii::$app->request->post('last_modify_time'));
-                    $input['last_modify_time'] = $input['last_modify_time'] = DateTimeHelper::convert($input['last_modify_time'], 'datetime');
+                    $input['create_time'] = Yii::$app->request->post('create_time');
+                    $input['create_time'] = $input['create_time'] = $input['create_time'];
+                    $input['last_modify_time'] = Yii::$app->request->post('last_modify_time');
+                    $input['last_modify_time'] = $input['last_modify_time'] = $input['last_modify_time'];
                     $data['local_story_id'] = $input['local_story_id'];
                     $data['local_chapter_id'] = $input['local_chapter_id'];
                     $uploadFormModel->file = UploadedFile::getInstanceByName( 'chapter_message_content');
@@ -197,8 +204,8 @@ class ChapterController extends ActiveController
                             $data['story_id'] = $chapterModel->story_id;
                             $data['chapter_id'] = $chapterModel->chapter_id;
                             $data['status'] = $chapterModel->status;
-                            $data['create_time'] = $chapterModel->create_time;
-                            $data['last_modify_time'] = $chapterModel->last_modify_time;
+                            $data['create_time'] = Carbon::createFromTimestamp($chapterModel->create_time)->toDateTimeString();
+                            $data['last_modify_time'] = Carbon::createFromTimestamp($chapterModel->last_modify_time)->toDateTimeString();
                             $data['message_count'] = $messageCount;
 
                             //消息通知->用户发布新章节

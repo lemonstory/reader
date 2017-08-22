@@ -2,6 +2,7 @@
 
 namespace api\controllers;
 
+use Carbon\Carbon;
 use common\components\MnsQueue;
 use common\components\QueueMessageHelper;
 use common\models\UserNotify;
@@ -35,6 +36,12 @@ class NotifyController extends ActiveController
             ],
         ];
         return $behaviors;
+    }
+
+    public function init()
+    {
+        parent::init();
+        Carbon::setLocale('zh');
     }
 
     public function actions()
@@ -90,7 +97,7 @@ class NotifyController extends ActiveController
                         $contentArr = \GuzzleHttp\json_decode($content, true);
                         $senders = $notifyModelItem->senders;
                         $count = $notifyModelItem->count;
-                        $createTime = $notifyModelItem->create_time;
+                        $createTime = Carbon::createFromTimestamp($notifyModelItem->create_time)->diffForHumans();
 
                         switch ($category) {
 

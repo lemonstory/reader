@@ -1410,7 +1410,7 @@
            
            
          27) 短信验证码校验[已完成]
-              api:    user/verify-sms
+              api:    sms/verify-sms
               method: get
               params:
                      mobilePhone:手机号码

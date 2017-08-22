@@ -2,6 +2,7 @@
 
 namespace api\controllers;
 
+use Carbon\Carbon;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Story;
@@ -38,6 +39,12 @@ class SearchController extends ActiveController
 
         // 使用"prepareDataProvider()"方法自定义数据provider
 //        $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
+    }
+
+    public function init()
+    {
+        parent::init();
+        Carbon::setLocale('zh');
     }
 
 
@@ -87,8 +94,8 @@ class SearchController extends ActiveController
                     $story['taps'] = $item['fields']['story_taps'];
                     $story['is_published'] = $item['fields']['story_is_published'];
                     $story['status'] = $item['fields']['story_status'];
-                    $story['create_time'] = $item['fields']['story_create_time'];
-                    $story['last_modify_time'] = $item['fields']['story_last_modify_time'];
+                    $story['create_time'] = Carbon::createFromTimestamp($item['fields']['story_create_time'])->toDateTimeString();
+                    $story['last_modify_time'] = Carbon::createFromTimestamp($item['fields']['story_last_modify_time'])->toDateTimeString();
                     $ret['data']['storyList'][] = $story;
                 }
             }else {
@@ -138,8 +145,8 @@ class SearchController extends ActiveController
                     $story['avatar'] = $item['fields']['user_avatar'];
                     $story['signature'] = $item['fields']['user_signature'];
                     $story['status'] = $item['fields']['user_status'];
-                    $story['create_time'] = $item['fields']['user_create_time'];
-                    $story['last_modify_time'] = $item['fields']['user_last_modify_time'];
+                    $story['create_time'] = Carbon::createFromTimestamp($item['fields']['user_create_time'])->toDateTimeString();
+                    $story['last_modify_time'] = Carbon::createFromTimestamp($item['fields']['user_last_modify_time'])->toDateTimeString();
                     $ret['data']['userList'][] = $story;
                 }
             }else {

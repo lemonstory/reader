@@ -42,16 +42,20 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return 'user';
     }
+
     /**
      * @inheritdoc
      */
     public function behaviors()
     {
         return [
-//            TimestampBehavior::className(),
+            [
+                'class' => TimestampBehavior::className(),
+                'createdAtAttribute' => 'create_time',
+                'updatedAtAttribute' => 'last_modify_time',
+            ],
         ];
     }
-
 
     /**
      * @inheritdoc

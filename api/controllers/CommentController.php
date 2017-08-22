@@ -2,6 +2,7 @@
 
 namespace api\controllers;
 
+use Carbon\Carbon;
 use common\components\MnsQueue;
 use common\components\QueueMessageHelper;
 use common\models\Chapter;
@@ -62,6 +63,7 @@ class CommentController extends ActiveController
             $commentTargetTypeArr = ArrayHelper::index($commentTargetTypeArr, 'alias');
             $this->commentTargetTypeArr = $commentTargetTypeArr;
         }
+        Carbon::setLocale('zh');
     }
 
     public function actions()
@@ -382,8 +384,8 @@ class CommentController extends ActiveController
                     $isLike = $redis->getbit($commentLikeKey, $uid);
                     $comment['is_like'] = intval($isLike);
                 }
-                $comment['create_time'] = $commentContentArr[$commentId]['create_time'];
-                $comment['last_modify_time'] = $commentContentArr[$commentId]['last_modify_time'];
+                $comment['create_time'] = Carbon::createFromTimestamp($commentContentArr[$commentId]['create_time'])->toDateTimeString();
+                $comment['last_modify_time'] = Carbon::createFromTimestamp($commentContentArr[$commentId]['last_modify_time'])->diffForHumans();
 
                 //user
                 $comment['owner_uid'] = $commentContentArr[$commentId]['owner_uid'];
@@ -411,8 +413,8 @@ class CommentController extends ActiveController
                         $comment['create_time'] = $commentContentArr[$commentId]['create_time'];
                         $comment['last_modify_time'] = $commentContentArr[$commentId]['last_modify_time'];
 
-                        $comment['parent']['create_time'] = $commentContentArr[$parentCommentId]['create_time'];
-                        $comment['parent']['last_modify_time'] = $commentContentArr[$parentCommentId]['last_modify_time'];
+                        $comment['parent']['create_time'] = Carbon::createFromTimestamp($commentContentArr[$parentCommentId]['create_time'])->diffForHumans();
+                        $comment['parent']['last_modify_time'] = Carbon::createFromTimestamp($commentContentArr[$parentCommentId]['last_modify_time'])->toDateTimeString();
                         $comment['parent']['status'] = $commentContentArr[$parentCommentId]['status'];
 
                         //user

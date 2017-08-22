@@ -2,6 +2,7 @@
 
 namespace api\controllers;
 
+use Carbon\Carbon;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Story;
@@ -37,6 +38,12 @@ class HomeController extends ActiveController
         // 使用"prepareDataProvider()"方法自定义数据provider
 //        $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
 
+    }
+
+    public function init()
+    {
+        parent::init();
+        Carbon::setLocale('zh');
     }
 
     /**
@@ -97,8 +104,8 @@ class HomeController extends ActiveController
                     $story['message_count'] = $storyItem['message_count'];
                     $story['taps'] = $storyItem['taps'];
                     $story['is_published'] = $storyItem['is_published'];
-                    $story['create_time'] = $storyItem['create_time'];
-                    $story['last_modify_time'] = $storyItem['last_modify_time'];
+                    $story['create_time'] = Carbon::createFromTimestamp($storyItem['create_time'])->toDateTimeString();
+                    $story['last_modify_time'] = Carbon::createFromTimestamp($storyItem['last_modify_time'])->toDateTimeString();
 
                     //actor
                     $actorArr = $storyItem['actors'];

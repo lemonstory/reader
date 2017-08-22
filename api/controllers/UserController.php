@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use api\models\LoginForm;
+use Carbon\Carbon;
 use common\components\DateTimeHelper;
 use common\models\Oauth;
 use common\models\SignupForm;
@@ -42,6 +43,12 @@ class UserController extends ActiveController
             ],
         ];
         return $behaviors;
+    }
+
+    public function init()
+    {
+        parent::init();
+        Carbon::setLocale('zh');
     }
 
     public function actions()
@@ -113,8 +120,8 @@ class UserController extends ActiveController
                     $story['message_count'] = $storyModelItem->message_count;
                     $story['taps'] = $storyModelItem->taps;
                     $story['is_published'] = $storyModelItem->is_published;
-                    $story['create_time'] = $storyModelItem->create_time;
-                    $story['last_modify_time'] = $storyModelItem->last_modify_time;
+                    $story['create_time'] = Carbon::createFromTimestamp($storyModelItem->create_time)->toDateTimeString();
+                    $story['last_modify_time'] = Carbon::createFromTimestamp($storyModelItem->last_modify_time)->toDateTimeString();
 
                     //actor
                     $actorModels = $storyModelItem->actors;
@@ -212,8 +219,8 @@ class UserController extends ActiveController
             $story['message_count'] = $storyModelItem->message_count;
             $story['taps'] = $storyModelItem->taps;
             $story['is_published'] = $storyModelItem->is_published;
-            $story['create_time'] = $storyModelItem->create_time;
-            $story['last_modify_time'] = $storyModelItem->last_modify_time;
+            $story['create_time'] = Carbon::createFromTimestamp($storyModelItem->create_time)->toDateTimeString();
+            $story['last_modify_time'] = Carbon::createFromTimestamp($storyModelItem->last_modify_time)->toDateTimeString();
 
             //actor
             $actorModels = $storyModelItem->actors;

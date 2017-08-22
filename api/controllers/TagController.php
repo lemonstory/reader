@@ -2,6 +2,7 @@
 
 namespace api\controllers;
 
+use Carbon\Carbon;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Story;
@@ -37,6 +38,12 @@ class TagController extends ActiveController
         // 使用"prepareDataProvider()"方法自定义数据provider
 //        $actions['index']['prepareDataProvider'] = [$this, 'prepareDataProvider'];
 
+    }
+
+    public function init()
+    {
+        parent::init();
+        Carbon::setLocale('zh');
     }
 
     /**
@@ -103,8 +110,8 @@ class TagController extends ActiveController
             $story['message_count'] = $storyModelItem->message_count;
             $story['taps'] = $storyModelItem->taps;
             $story['is_published'] = $storyModelItem->is_published;
-            $story['create_time'] = $storyModelItem->create_time;
-            $story['last_modify_time'] = $storyModelItem->last_modify_time;
+            $story['create_time'] = Carbon::createFromTimestamp($storyModelItem->create_time)->toDateTimeString();
+            $story['last_modify_time'] = Carbon::createFromTimestamp($storyModelItem->last_modify_time)->toDateTimeString();
 
             //tag
             $tagModels = $storyModelItem->tags;
