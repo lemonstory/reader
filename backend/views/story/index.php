@@ -56,20 +56,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
                     if(isset($storyTagArr[$m->story_id]) && !empty($storyTagArr[$m->story_id])) {
                         {
-                            //TODO:下面的tag_id是硬编码,需要更改
-                            //'tag_id' => 'bg color'
-                            $bg = [
-                                '1' => 'bg-yellow',
-                                '2' => 'bg-green',
-                                '3' => 'bg-red',
-                            ];
                             $ret .= "<p >";
                             foreach ($storyTagArr[$m->story_id] as $tag) {
 
+                                if(isset(Yii::$app->params['tagNameBg'][$tag['tag_id']])) {
+                                    $bg = Yii::$app->params['tagNameBg'][$tag['tag_id']];
+                                }else {
+                                    $bg = Yii::$app->params['defaultTagNameBg'];
+                                }
                                 $tagNameUrl = Html::a($tag['tag_name'],
                                     ['tag/view', 'id' => $tag['tag_id']], ['style' => 'color:#fff']);
-                                $ret .= " <small class=\"label {$bg[$tag['tag_id']]}\">{$tagNameUrl}</small>";
-
+                                $ret .= " <small class=\"label {$bg}\">{$tagNameUrl}</small>";
                             }
                             $ret .= "</p>";
                         }
