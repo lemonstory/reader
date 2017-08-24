@@ -362,53 +362,89 @@
                ret:    Json数组
                 {
                     "data": {
+                        "totalCount": "243",
+                        "pageCount": 243,
+                        "currentPage": "1",
+                        "perPage": "1",
                         "storyList": [
                             {
-                                "story_id": 45,
-                                "name": "标题2",
-                                "description": "简介1",
-                                "cover": "https://a-ssl.duitang.com/uploads/item/201611/15/20161115141534_ePJAM.thumb.700_0.jpeg",
-                                "uid": 2,
-                                "chapter_count": 0,
-                                "message_count": 0,
-                                "taps": "0",****
-                                "is_published": 1,
-                                "create_time": "2017-06-14 12:32:29",
-                                "last_modify_time": "2017-06-16 17:53:06",
+                                "story_id": "884",
+                                "name": "张艺兴",
+                                "description": "\"顾茫你是我的”“小绵羊你学坏了，不乖了”“是的，我要变成大灰狼吃掉你”",
+                                "cover": {
+                                    "url": "http://youwei-pic.oss-cn-shanghai.aliyuncs.com/cover/2017/07/12/0_1499858655.jpg",
+                                    "width": "640",
+                                    "height": "960",
+                                    "format": "jpg"
+                                },
+                                "uid": "10044",
+                                "chapter_count": "1",
+                                "message_count": "33",
+                                "taps": "0",
+                                "is_published": "1",
+                                "create_time": "2106-02-07 14:28:15",
+                                "last_modify_time": "2106-02-07 14:28:15",
                                 "actor": [
                                     {
-                                        "actor_id": 56,
-                                        "name": "角色姓名-1",
-                                        "avatar": "",
-                                        "number": 1,
-                                        "is_visible": 1
+                                        "actor_id": "500",
+                                        "name": "顾茫",
+                                        "avatar": "http://youwei-avatar.oss-cn-shanghai.aliyuncs.com/actor/500.jpg",
+                                        "number": "1",
+                                        "is_visible": "1"
                                     },
                                     {
-                                        "actor_id": 57,
-                                        "name": "角色姓名-2",
-                                        "avatar": "",
-                                        "number": 2,
-                                        "is_visible": 1
+                                        "actor_id": "501",
+                                        "name": "导演",
+                                        "avatar": "http://youwei-avatar.oss-cn-shanghai.aliyuncs.com/actor/501.jpg",
+                                        "number": "2",
+                                        "is_visible": "1"
+                                    },
+                                    {
+                                        "actor_id": "502",
+                                        "name": "孙红雷",
+                                        "avatar": "http://youwei-avatar.oss-cn-shanghai.aliyuncs.com/actor/502.jpg",
+                                        "number": "3",
+                                        "is_visible": "1"
+                                    },
+                                    {
+                                        "actor_id": "503",
+                                        "name": "小猪",
+                                        "avatar": "http://youwei-avatar.oss-cn-shanghai.aliyuncs.com/actor/503.jpg",
+                                        "number": "4",
+                                        "is_visible": "1"
+                                    },
+                                    {
+                                        "actor_id": "504",
+                                        "name": "黄渤",
+                                        "avatar": "http://youwei-avatar.oss-cn-shanghai.aliyuncs.com/actor/504.jpg",
+                                        "number": "5",
+                                        "is_visible": "1"
+                                    },
+                                    {
+                                        "actor_id": "505",
+                                        "name": "黄磊",
+                                        "avatar": "http://youwei-avatar.oss-cn-shanghai.aliyuncs.com/actor/505.jpg",
+                                        "number": "6",
+                                        "is_visible": "1"
+                                    },
+                                    {
+                                        "actor_id": "506",
+                                        "name": "艺兴",
+                                        "avatar": "http://youwei-avatar.oss-cn-shanghai.aliyuncs.com/actor/506.jpg",
+                                        "number": "7",
+                                        "is_visible": "1"
+                                    },
+                                    {
+                                        "actor_id": "507",
+                                        "name": "神秘人",
+                                        "avatar": "http://youwei-avatar.oss-cn-shanghai.aliyuncs.com/actor/507.jpg",
+                                        "number": "8",
+                                        "is_visible": "1"
                                     }
                                 ],
-                                "tag": [
-                                    {
-                                        "tag_id": 1,
-                                        "name": "言情",
-                                        "number": 1
-                                    },
-                                    {
-                                        "tag_id": 2,
-                                        "name": "悬疑",
-                                        "number": 2
-                                    }
-                                ]
+                                "tag": []
                             }
-                        ],
-                        "totalCount": 25,
-                        "pageCount": 25,
-                        "currentPage": 1,
-                        "perPage": 1
+                        ]
                     },
                     "status": 200,
                     "message": "OK"

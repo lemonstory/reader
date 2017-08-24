@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use Carbon\Carbon;
+use common\components\CoverHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Story;
@@ -98,7 +99,17 @@ class HomeController extends ActiveController
                     $story['story_id'] = $storyItem['story_id'];
                     $story['name'] = $storyItem['name'];
                     $story['description'] = $storyItem['description'];
-                    $story['cover'] = $storyItem['cover'];
+
+                    //获取图片宽高
+                    $coverUrl = $storyItem['cover'];
+                    $coverImageInfo = CoverHelper::imageInfo($coverUrl);
+                    $cover = array();
+                    $cover['url'] = $coverUrl;
+                    $cover['width'] = $coverImageInfo['width'];
+                    $cover['height'] = $coverImageInfo['height'];
+                    $cover['format'] = $coverImageInfo['format'];
+                    $story['cover'] = $cover;
+
                     $story['uid'] = $storyItem['uid'];
                     $story['chapter_count'] = $storyItem['chapter_count'];
                     $story['message_count'] = $storyItem['message_count'];

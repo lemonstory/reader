@@ -73,8 +73,11 @@ return [
     //Redis键名称
     'cacheKeyYouweiStoriesHotRank' => 'youwei_stories_hot_rank',
     'cacheKeyYouweiSmsNumber' => 'youwei_sms_number_%s',
+    'cacheKeyYouweiCoverImageInfo' => 'youwei_cover_image_info_%s',
 
     //短信验证码有效时间10分钟
     'expireSmsNumberTime' => 10 * 60,
+    //图像信息缓存有效期3个月
+    'expireCoverImageInfo' => 60 * 60 * 24 * 30,
 
 ];
