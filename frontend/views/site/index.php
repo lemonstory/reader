@@ -45,7 +45,7 @@
 
                     <div class="content-wrap is-flex direction-vert start-xs between-sm intro">
                         <span class="header-home-1 direction-vert start-xs is-flex">有味读书</span>
-                        <span class="header-home-2 is-flex">度过 每一种可能的生活</span>
+                        <span class="header-home-2 is-flex">用聊天记录 讲有味故事</span>
                         <div class="header-home-qr is-flex"></div>
                         <p class="qrcode">扫描二维码下载</p>
                     </div>
@@ -55,9 +55,11 @@
         <div class="section section-downloads">
             <div class="container-fluid is-limited">
                 <div class="row center-xs between-sm middle-xs" style="max-width: 510px !important;">
+                    <!--                       target="_blank">-->
                     <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"
-                       href=""
-                       target="_blank"><span
+                       href="#" onclick="alert('谢谢您,ios正在开发中。android可以下载(仅供微博的同学审核使用)');"
+
+                       <span
                                 class="icon icon-apple"></span>
                         <div class="content-wrap is-flex direction-vert start-xs">
                             <div class="platform-text">
@@ -69,7 +71,7 @@
                         </div>
                     </a>
                     <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"
-                       href=""
+                       href="http://youwei-static.oss-cn-beijing.aliyuncs.com/apk/youwei-app-release.apk"
                        target="_blank"><span
                                 class="icon icon-android"></span>
                         <div class="content-wrap is-flex direction-vert start-xs">

@@ -401,6 +401,8 @@ class Story extends \yii\db\ActiveRecord
      */
     function hot($Qviews, $Qanswers, $Qscore, $Ascores, $date_ask, $date_active)
     {
+
+//        echo "date_ask = {$date_ask} date_active = {$date_active};  \n";
         $Qage = (time() - strtotime(gmdate("Y-m-d H:i:s", strtotime($date_ask)))) / 3600;
         $Qage = round($Qage, 1);
 //        var_dump($Qage);
@@ -421,8 +423,11 @@ class Story extends \yii\db\ActiveRecord
 //        echo "---------------";
 
 //        var_dump($dividend);
+
+//        echo "Qage = {$Qage} ; Qupdated = {$Qupdated} \n";
         $divisor = pow((($Qage + 1) - ($Qage - $Qupdated) / 2), 1.5);
 //        var_dump($divisor);
+//        echo "dividend = {$dividend} ; divisor = {$divisor} \n";
         return $dividend / $divisor;
     }
 }

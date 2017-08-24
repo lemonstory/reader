@@ -44,8 +44,34 @@ class StoryController extends Controller
     public function actionHot()
     {
         $redis = Yii::$app->redis;
+
+        //从最热列表中删除已不合法的故事
+        $inHotStoryIdArr = $redis->zrevrange(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], 0, -1);
+        $inHotStoryIdArrCount = count($inHotStoryIdArr);
+        if($inHotStoryIdArrCount > 0) {
+
+            $condition = ['status' => Yii::$app->params['STATUS_ACTIVE'],'is_published' => Yii::$app->params['STATUS_PUBLISHED']];
+            $inHotCondition = ['story_id' => $inHotStoryIdArr];
+            $inHotCondition = array_merge($condition,$inHotCondition);
+            $stillInHotStoryArr = Story::find()->select('story_id')->where($inHotCondition)->asArray()->all();
+            $stillInHotStoryArrCount = count($stillInHotStoryArr);
+
+            //存在不合法的数据
+            if($inHotStoryIdArrCount != $stillInHotStoryArrCount) {
+
+                $stillInHotStoryIdArr = ArrayHelper::getColumn($stillInHotStoryArr,'story_id');
+                $invalidHotStoryIdArr =  array_diff($inHotStoryIdArr,$stillInHotStoryIdArr);
+                $invalidHotStoryIdArrCount = count($invalidHotStoryIdArr);
+                if($invalidHotStoryIdArrCount > 0) {
+                    foreach ($invalidHotStoryIdArr as $key => $item) {
+                        $invalidStoryId = intval($item);
+                        $redis->zrem(Yii::$app->params['cacheKeyYouweiStoriesHotRank'],$invalidStoryId);
+                    }
+                }
+            }
+        }
+
         //获取所有的故事
-        $condition = ['status' => Yii::$app->params['STATUS_ACTIVE'],'is_published' => Yii::$app->params['STATUS_PUBLISHED']];
         $storyArr = Story::find()->where($condition)->asArray()->all();
         $storyModel =  new Story();
 
@@ -73,16 +99,32 @@ class StoryController extends Controller
                 }
                 //计算每个故事的排序值
                 //TODO:Qscore,Ascores这两个参数都未做处理
-                $rank = $storyModel->hot($taps,$commentCount,1,0,$item['last_modify_time'],$lastCommentTime);
-                //向Redis中写入Rank
-                try{
-                    $isAdded = $redis->zadd(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], $rank, strval($storyId));
-                    if(strcmp($isAdded,"0") != 0 && strcmp($isAdded,"1") != 0) {
-                        echo "redis 写入失败\n";
+                if($item['last_modify_time'] > time()) {
+                    $dateAsk = date('Y-m-d H:i:s',time());
+                }else {
+                    $dateAsk = date('Y-m-d H:i:s',$item['last_modify_time']);
+                }
+
+                if($lastCommentTime > time()) {
+                    $dateActive = date('Y-m-d H:i:s',time());
+                }else {
+                    $dateActive = date('Y-m-d H:i:s',$lastCommentTime);
+                }
+                $rank = $storyModel->hot($taps,$commentCount,1,0,$dateAsk,$dateActive);
+                if(!is_nan($rank)) {
+                    //向Redis中写入Rank
+                    try{
+                        $isAdded = $redis->zadd(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], $rank, strval($storyId));
+                        if(strcmp($isAdded,"0") != 0 && strcmp($isAdded,"1") != 0) {
+                            echo "redis 写入失败\n";
+                            return 1;
+                        }
+                    }catch (Exception $e) {
+                        echo $e->getMessage();
                         return 1;
                     }
-                }catch (Exception $e) {
-                    echo $e->getMessage();
+                }else {
+                    echo "rank 计算出现错误\n";
                     return 1;
                 }
             }

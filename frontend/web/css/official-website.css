@@ -3668,7 +3668,8 @@ body {
 }
 
 .site-footer.base-footer {
-    background: #ffe411
+    background: #fd6923;
+    color: #ffffff;
 }
 
 .site-footer.base-footer .container-fluid.is-limited {
@@ -3688,7 +3689,7 @@ body {
 }
 
 .site-footer.base-footer a {
-    color: #000
+    color: #fff
 }
 
 .site-footer.base-footer a:hover {
@@ -4339,7 +4340,7 @@ body {
 .header-home-qr {
     height: 146px;
     width: 146px;
-    background: url("http://youwei-pic.oss-cn-shanghai.aliyuncs.com/site/images/qrcode.png") no-repeat;
+    background: url("http://youwei-static.oss-cn-beijing.aliyuncs.com/images/qrcode.png") no-repeat;
     background-size: contain;
     background-size: 146px 146px \9
 }
