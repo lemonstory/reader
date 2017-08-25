@@ -4,6 +4,10 @@ return [
     'supportEmail' => 'support@example.com',
     'user.passwordResetTokenExpire' => 3600,
 
+    //open.weibo.com
+    'weiboAppKey' => '1766319045',
+    'weiboAppSecret' => 'a7494bad5dc01d88774b9c72ecc41bd4',
+
     //aliyun open search
     'accessKeyID' => 'QHzux6QVXjQgfBNM',
     'accessKeySecret' => 'diWfijmBbiGlwle1s9KyAL8BQhB3Qc',
@@ -69,6 +73,14 @@ return [
         3,
         4
     ),
+
+    //用户默认头像列表
+    'userDefaultAvatar' => [
+        'http://youwei-static.oss-cn-beijing.aliyuncs.com/default-avatar/mo1.jpg',
+        'http://youwei-static.oss-cn-beijing.aliyuncs.com/default-avatar/mo2.jpg',
+        'http://youwei-static.oss-cn-beijing.aliyuncs.com/default-avatar/mo3.jpg',
+        'http://youwei-static.oss-cn-beijing.aliyuncs.com/default-avatar/mo4.jpg',
+    ],
 
     //Redis键名称
     'cacheKeyYouweiStoriesHotRank' => 'youwei_stories_hot_rank',

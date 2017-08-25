@@ -25,7 +25,8 @@
         "yiisoft/yii2-redis": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
         "yiisoft/yii2-authclient": "~2.1.0",
-        "nesbot/carbon": "^1.22"
+        "nesbot/carbon": "^1.22",
+        "xiaosier/libweibo": "dev-master"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

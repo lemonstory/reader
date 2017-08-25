@@ -19,12 +19,6 @@ class OauthController extends ActiveController
     public function init()
     {
         parent::init();
-        if(empty($this->likeTargetType)) {
-            $likeTargetTypeArr = Yii::$app->params['LIKE_TARGET_TYPE'];
-            $likeTargetTypeArr = ArrayHelper::index($likeTargetTypeArr,'alias');
-            $this->likeCommentTargetType = intval($likeTargetTypeArr['comment']['value']);
-        }
-
     }
 
     public function actions()
@@ -47,6 +41,18 @@ class OauthController extends ActiveController
         $qc = new QC();
         echo $qc->qq_callback();
         echo $qc->get_openid();
+    }
+
+    //http://open.weibo.com/apps/1766319045/info/advanced
+    //高级设置->OAuth2.0 授权设置->授权回调页
+    public function actionWeiboCallback() {
+       exit("Weibo Callback RUN!");
+    }
+
+    //http://open.weibo.com/apps/1766319045/info/advanced
+    //高级设置->OAuth2.0 授权设置->取消授权回调页
+    public function actionWeiboCallbackCancel() {
+        exit("Weibo Callback Cancel RUN!");
     }
 
 

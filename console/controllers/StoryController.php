@@ -43,6 +43,7 @@ class StoryController extends Controller
 
     public function actionHot()
     {
+        
         $redis = Yii::$app->redis;
 
         //从最热列表中删除已不合法的故事
