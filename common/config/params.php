@@ -39,6 +39,9 @@ return [
     'smsSignName'=> "有味读书",
     'smsTemplateCode'=> "SMS_82705009",
 
+    //微信-个人信息接口
+    'weixinUserInfoApi' => "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s&lang=zh_CN",
+
     //队列-用户通知-名称
     'mnsQueueNotifyName' => "youwei-queue-notify",
     //队列-故事,用户点击数增加-名称

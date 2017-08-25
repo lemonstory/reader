@@ -4,15 +4,14 @@ namespace api\controllers;
 
 use api\models\LoginForm;
 use Carbon\Carbon;
-use common\components\DateTimeHelper;
 use common\models\Oauth;
 use common\models\SignupForm;
 use common\models\Story;
 use common\models\User;
-use DateTime;
+use GuzzleHttp\Client;
+use InvalidArgumentException;
 use QC;
 use SaeTClientV2;
-use SaeTOAuthV2;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveQuery;
@@ -37,7 +36,7 @@ class UserController extends ActiveController
         $behaviors['authenticator'] = [
             'class' => CompositeAuth::className(),
             //部分action需要access-token认证，部分action不需要
-            'except' => ['qq-login', 'weibo-login', 'signup', 'mobile-phone-login', 'others-storys', 'others-info'],
+            'except' => ['qq-login', 'weibo-login', 'weixin-login', 'signup', 'mobile-phone-login', 'others-storys', 'others-info'],
             'authMethods' => [
 //                HttpBasicAuth::className(),
 //                HttpBearerAuth::className(),
@@ -267,25 +266,21 @@ class UserController extends ActiveController
 
     /**
      * QQ登录
+     * @param $accessToken
+     * @param $openId
      * @return array 用户个人信息
      * @see http://wiki.connect.qq.com/get_user_info
      */
-    public function actionQqLogin()
+    public function actionQqLogin($accessToken, $openId)
     {
-
-        $accessToken = Yii::$app->request->get('accessToken', '');
-        $openId = Yii::$app->request->get('openId', '');
-        $userInfo = array();
-
+        $source = "qq";
         if (!empty($accessToken) && !empty($openId)) {
-
-            $oauthCondition = ['source' => 'qq', 'source_id' => $openId];
+            $oauthCondition = ['source' => $source, 'source_id' => $openId];
             $oauthQueryObj = Oauth::find()->where($oauthCondition);
             $count = $oauthQueryObj->count();
             $oauthModel = $oauthQueryObj->one();
             if ($count == 1) {
 
-                //TODO:开发授权用户的accessToken需要存储
                 $uid = $oauthModel->uid;
                 $userCondition = ['uid' => $uid];
                 $userModel = User::findOne($userCondition);
@@ -298,8 +293,6 @@ class UserController extends ActiveController
                 include_once Yii::$app->vendorPath . "/qqconnect-server-sdk-php/API/qqConnectAPI.php";
                 $qcObj = new QC($accessToken, $openId);
                 $qqUserInfo = $qcObj->get_user_info();
-//                var_dump($qqUserInfo);
-//                exit;
 
                 //获取用户成功
                 if (is_array($qqUserInfo) && !empty($qqUserInfo) && isset($qqUserInfo['ret']) && 0 == $qqUserInfo['ret']) {
@@ -315,14 +308,12 @@ class UserController extends ActiveController
                             $avatar = $qqUserInfo['figureurl_qq_1'];
                         }
 
-                        //性别 女=0; 男=1; 未知=2
+                        //性别 男=1; 女=2; 未知=0
                         $gender = 0;
                         if (!empty($qqUserInfo['gender'])) {
                             if (0 == strcmp($qqUserInfo['gender'], "男")) {
                                 $gender = 1;
-                            } else if (0 == strcmp($qqUserInfo['gender'], "女")){
-                                $gender = 0;
-                            }else {
+                            } else if (0 == strcmp($qqUserInfo['gender'], "女")) {
                                 $gender = 2;
                             }
                         }
@@ -359,8 +350,9 @@ class UserController extends ActiveController
                             //Oauth数据表存储
                             $oauthModel = new Oauth();
                             $oauthModel->uid = $uid;
-                            $oauthModel->source = 'qq';
+                            $oauthModel->source = $source;
                             $oauthModel->source_id = $openId;
+                            $oauthModel->access_token = $accessToken;
                             $oauthModel->status = Yii::$app->params['STATUS_ACTIVE'];
 
                             if ($oauthModel->save()) {
@@ -413,6 +405,10 @@ class UserController extends ActiveController
                 $ret['status'] = 500;
                 $ret['message'] = '系统错误,多个用户拥有相同的openId';
             }
+        } else {
+            $ret['data'] = array();
+            $ret['status'] = 400;
+            $ret['message'] = 'accessToken, openId 不能为空';
         }
         return $ret;
     }
@@ -420,23 +416,25 @@ class UserController extends ActiveController
 
     /**
      * 微博登录
-     * @param $access_token
-     * @param $weibo_uid 微博uid
+     * @param $accessToken
+     * @param $weiboUid 微博uid
      * @see https://github.com/xiaosier/libweibo/blob/master/saetv2.ex.class.php
      * @see http://open.weibo.com/wiki/2/users/show
+     * @return mixed
      */
-    public function actionWeiboLogin($access_token,$weibo_uid) {
+    public function actionWeiboLogin($accessToken, $weiboUid)
+    {
 
-        if(!empty($access_token) && !empty($weibo_uid)) {
+        $source = "weibo";
+        if (!empty($accessToken) && !empty($weiboUid)) {
 
-            $sourceId = $weibo_uid;
-            $oauthCondition = ['source' => 'weibo', 'source_id' => $sourceId];
+            $sourceId = $weiboUid;
+            $oauthCondition = ['source' => $source, 'source_id' => $sourceId];
             $oauthQueryObj = Oauth::find()->where($oauthCondition);
             $count = $oauthQueryObj->count();
             $oauthModel = $oauthQueryObj->one();
             if ($count == 1) {
 
-                //TODO:开发授权用户的accessToken需要存储
                 $uid = $oauthModel->uid;
                 $userCondition = ['uid' => $uid];
                 $userModel = User::findOne($userCondition);
@@ -444,11 +442,11 @@ class UserController extends ActiveController
                 $ret['status'] = 200;
                 $ret['message'] = 'OK';
 
-            }elseif ($count == 0) {
+            } elseif ($count == 0) {
 
                 $akey = Yii::$app->params['weiboAppKey'];
                 $skey = Yii::$app->params['weiboAppSecret'];
-                $weiboTcClient = new SaeTClientV2($akey, $skey, $access_token);
+                $weiboTcClient = new SaeTClientV2($akey, $skey, $accessToken);
 //                $weiboTcClient->set_debug(true);
                 $weiboUserInfo = $weiboTcClient->show_user_by_id($sourceId);
 
@@ -467,24 +465,21 @@ class UserController extends ActiveController
                             $key = array_rand(Yii::$app->params['userDefaultAvatar']);
                             $avatar = Yii::$app->params['userDefaultAvatar'][$key];
                         }
-                        //性别 女=0; 男=1; 未知=2
+                        //性别 男=1; 女=2; 未知=0
                         $gender = 0;
                         if (!empty($weiboUserInfo['gender'])) {
                             if (0 == strcmp($weiboUserInfo['gender'], "m")) {
                                 $gender = 1;
-                            } else if (0 == strcmp($weiboUserInfo['gender'], "f")){
-                                $gender = 0;
-                            }else {
+                            } else if (0 == strcmp($weiboUserInfo['gender'], "f")) {
                                 $gender = 2;
                             }
                         }
                         //TODO:省市这里数据存储需要修改
-                        $locationArr = array();
                         $city = "";
                         $province = "";
 
-                        if(0 != strcmp($weiboUserInfo['location'],'其他')) {
-                            $locationArr = explode(" ",$weiboUserInfo['location']);
+                        if (0 != strcmp($weiboUserInfo['location'], '其他')) {
+                            $locationArr = explode(" ", $weiboUserInfo['location']);
                             $province = $locationArr[0];
                             $city = $locationArr[1];
                         }
@@ -511,8 +506,9 @@ class UserController extends ActiveController
                             //Oauth数据表存储
                             $oauthModel = new Oauth();
                             $oauthModel->uid = $uid;
-                            $oauthModel->source = 'weibo';
+                            $oauthModel->source = $source;
                             $oauthModel->source_id = $sourceId;
+                            $oauthModel->access_token = $accessToken;
                             $oauthModel->status = Yii::$app->params['STATUS_ACTIVE'];
 
                             if ($oauthModel->save()) {
@@ -564,6 +560,158 @@ class UserController extends ActiveController
                 $ret['status'] = 500;
                 $ret['message'] = '系统错误,多个用户拥有相同的weibo uid';
             }
+        } else {
+            $ret['data'] = array();
+            $ret['status'] = 400;
+            $ret['message'] = 'accessToken, weiboUid 不能为空';
+        }
+        return $ret;
+    }
+
+
+    /**
+     * 微信登录
+     * @param $accessToken
+     * @param $openId
+     * @return array
+     * @see https://open.weixin.qq.com/cgi-bin/showdocument?action=dir_list&t=resource/res_list&verify=1&id=open1419317853&token=82562aec57e67540f2432779f82ea3ac1aa7a48a&lang=zh_CN
+     */
+    public function actionWeixinLogin($accessToken, $openId)
+    {
+
+        $source = "weixin";
+        if (!empty($accessToken) && !empty($openId)) {
+
+            $oauthCondition = ['source' => $source, 'source_id' => $openId];
+            $oauthQueryObj = Oauth::find()->where($oauthCondition);
+            $count = $oauthQueryObj->count();
+            $oauthModel = $oauthQueryObj->one();
+            if ($count == 1) {
+
+                //TODO:开发授权用户的accessToken需要存储
+                $uid = $oauthModel->uid;
+                $userCondition = ['uid' => $uid];
+                $userModel = User::findOne($userCondition);
+                $ret['data'] = $this->retUserInfoData($userModel);
+                $ret['status'] = 200;
+                $ret['message'] = 'OK';
+
+            } elseif ($count == 0) {
+
+                $client = new Client();
+                $url = sprintf(Yii::$app->params['weixinUserInfoApi'], $accessToken, $openId);
+                $response = $client->request('GET', $url, []);
+                $statusCode = $response->getStatusCode();
+                $body = $response->getBody();
+                $content = $body->getContents();
+                if (200 == $statusCode) {
+                    try {
+                        if (!empty($content)) {
+                            $weixinUserInfo = \GuzzleHttp\json_decode($content, true);
+                            //获取用户成功
+                            if (is_array($weixinUserInfo) && !empty($weixinUserInfo)) {
+                                $transaction = Yii::$app->db->beginTransaction();
+                                try {
+                                    //存储用户信息
+                                    $username = $weixinUserInfo['nickname'];
+                                    if (!empty($weixinUserInfo['headimgurl'])) {
+                                        $avatar = $weixinUserInfo['headimgurl'];
+                                    } else {
+                                        //用户没有微博头像,随机给用户一个头像
+                                        $key = array_rand(Yii::$app->params['userDefaultAvatar']);
+                                        $avatar = Yii::$app->params['userDefaultAvatar'][$key];
+                                    }
+                                    //性别 1为男性，2为女性
+                                    $gender = 0;
+                                    if (!empty($weixinUserInfo['sex'])) {
+                                        $gender = $weixinUserInfo['sex'];
+                                    }
+                                    //TODO:省市这里数据存储需要修改
+                                    $city = $weixinUserInfo['city'];
+                                    $province = $weixinUserInfo['province'];
+                                    $birthday = null;
+                                    $unionId = $weixinUserInfo['unionid'];
+                                    //user数据表存储
+                                    $userModel = new User();
+                                    $userModel->username = $username;
+                                    $userModel->avatar = $avatar;
+                                    $userModel->gender = $gender;
+                                    $userModel->city = $city;
+                                    $userModel->province = $province;
+                                    $userModel->birthday = $birthday;
+                                    $userModel->status = Yii::$app->params['STATUS_ACTIVE'];
+                                    $userModel->register_ip = Yii::$app->request->getUserIP();
+                                    $userModel->register_time = time();
+                                    $userModel->last_login_ip = Yii::$app->request->getUserIP();
+                                    $userModel->last_login_time = time();
+                                    $userModel->generateAuthKey();
+                                    $userModel->generateAccessToken();
+                                    if ($userModel->save(false)) {
+                                        $uid = $userModel->uid;
+                                        //Oauth数据表存储
+                                        $oauthModel = new Oauth();
+                                        $oauthModel->uid = $uid;
+                                        $oauthModel->source = $source;
+                                        $oauthModel->source_id = $openId;
+                                        $oauthModel->union_id = $unionId;
+                                        $oauthModel->access_token = $accessToken;
+                                        $oauthModel->status = Yii::$app->params['STATUS_ACTIVE'];
+                                        if ($oauthModel->save()) {
+                                            //返回用户信息
+                                            $ret['data'] = $this->retUserInfoData($userModel);
+                                            $ret['status'] = 200;
+                                            $ret['message'] = 'OK';
+
+                                        } else {
+                                            //错误处理
+                                            if ($oauthModel->hasErrors()) {
+                                                Yii::error($oauthModel->getErrors());
+                                                throw new ServerErrorHttpException('开放授权信息保存失败');
+                                            }
+                                        }
+                                    } else {
+
+                                        //错误处理
+                                        if ($userModel->hasErrors()) {
+                                            //错误处理
+                                            if ($userModel->hasErrors()) {
+
+                                                Yii::error($userModel->getErrors());
+                                                throw new ServerErrorHttpException('用户信息保存失败');
+                                            }
+                                        }
+                                    }
+                                    $transaction->commit();
+
+                                } catch (\Exception $e) {
+
+                                    //如果抛出错误则进入catch，先callback，然后捕获错误，返回错误
+                                    $transaction->rollBack();
+                                    Yii::error($e->getMessage());
+                                    $ret['status'] = 500;
+                                    $ret['message'] = $e->getMessage();
+                                }
+
+                            } else {
+                                $ret['data'] = array();
+                                $ret['status'] = 500;
+                                $ret['message'] = '调用weixin sns/userinfo接口获取用户信息失败';
+                            }
+                        }
+                    } catch (InvalidArgumentException $e) {
+                        //Json解析失败
+                        Yii::error($e->getMessage());
+                    }
+                }
+            } else {
+                $ret['data'] = array();
+                $ret['status'] = 500;
+                $ret['message'] = '系统错误,多个用户拥有相同的weixin uid';
+            }
+        } else {
+            $ret['data'] = array();
+            $ret['status'] = 400;
+            $ret['message'] = 'accessToken, openId 不能为空';
         }
         return $ret;
     }
@@ -651,16 +799,17 @@ class UserController extends ActiveController
         return $ret;
     }
 
-    public function actionLogout() {
+    public function actionLogout()
+    {
 
         $ret = array();
         $ret['data'] = array();
         $isLogout = Yii::$app->user->logout(true);
-        if($isLogout) {
+        if ($isLogout) {
 
             $ret['status'] = 200;
             $ret['message'] = 'OK';
-        }else {
+        } else {
 
             $ret['status'] = 500;
             $ret['message'] = '系统出现错误';
@@ -845,10 +994,10 @@ class UserController extends ActiveController
             $data['email'] = $userModel->email;
             $data['access_token'] = $userModel->access_token;
             $data['register_ip'] = $userModel->register_ip;
-            $data['register_time'] = $userModel->register_time;
+            $data['register_time'] = date('Y-m-d H:i:s',$userModel->register_time);
             $data['last_login_ip'] = $userModel->last_login_ip;
-            $data['last_login_time'] = $userModel->last_login_time;
-            $data['last_modify_time'] = $userModel->last_modify_time;
+            $data['last_login_time'] = date('Y-m-d H:i:s',$userModel->last_login_time);
+            $data['last_modify_time'] = date('Y-m-d H:i:s',$userModel->last_modify_time);
         }
 
         return $data;

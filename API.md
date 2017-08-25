@@ -1723,9 +1723,6 @@
              "status": 400,
              "message": "参数错误"
          }
-         
-         
-
             
          35) 手机号密码登录[已完成]
           api:    user/mobile-phone-login
@@ -1806,13 +1803,85 @@
           //失败(QQ connect 输出)
           <meta charset="UTF-8"><h3>error:</h3>-1<h3>msg  :</h3>client request's parameters are invalid, invalid openid
           
-        37）用户协议
+        37) 微博联合登录[已完成]
+          api: user/weibo-login
+          method: get
+          params:
+                 accessToken:
+                 weiboUid:
+          ret: Json数组
+          example:
+            http://api.youwei.xiaoningmeng.net/user/weibo-login?accessToken=2.00VHkxvGrQSXvBefa0d3941e0ntMiE&weiboUid=6353286785
+          
+          //成功
+          {
+              "data": {
+                  "uid": 10166,
+                  "username": "崇乐201708",
+                  "avatar": "http://tvax3.sinaimg.cn/crop.0.1.688.688.1024/006VXK7vly8fityafk63sj30j40j6dkr.jpg",
+                  "signature": null,
+                  "taps": "0",
+                  "gender": 1,
+                  "province": "",
+                  "city": "",
+                  "birthday": null,
+                  "status": 1,
+                  "mobile_phone": null,
+                  "email": null,
+                  "access_token": "LQyLgagTcDciNm3-Ck-2cTMyrYhS1XiO",
+                  "register_ip": "127.0.0.1",
+                  "register_time": "2017-08-25 19:01:35",
+                  "last_login_ip": "127.0.0.1",
+                  "last_login_time": "2017-08-25 19:01:35",
+                  "last_modify_time": "2017-08-25 19:01:36"
+              },
+              "status": 200,
+              "message": "OK"
+          }
+          
+        38) 微信联合登录[已完成]
+          api: user/weixin-login
+          method: get
+          params:
+                 accessToken:
+                 openId:
+          ret: Json数组
+          example:
+            http://api.youwei.xiaoningmeng.net/user/weixin-login?accessToken=L8StPrfxhTr9UZVmWuPJHThCH-BxVTrOPURlWgF2eZrhq10nI2wPfbWvT9Lz6ADqXjY39pM5w2YCEZPkmwUnWQ&openId=o3_IGv4-RYO5MsgMl0JA-TRbU6QA
+          
+          //成功
+          {
+              "data": {
+                  "uid": 10167,
+                  "username": "崇乐",
+                  "avatar": "http://wx.qlogo.cn/mmopen/Eql4RlnXnITEQBuc2DIORa0OZiarIsTzHf005ABJ7GoWtkyUk34YtfU3Zu1nnnrFqkCh3GQjuulKfNSZicTNC4adYT0BasVVNu/0",
+                  "signature": null,
+                  "taps": "0",
+                  "gender": 1,
+                  "province": "陕西",
+                  "city": "渭南",
+                  "birthday": null,
+                  "status": 1,
+                  "mobile_phone": null,
+                  "email": null,
+                  "access_token": "dgxnGJNzR3Qtqo7wdw5EME1xQrFH-Swg",
+                  "register_ip": "127.0.0.1",
+                  "register_time": "2017-08-25 19:08:20",
+                  "last_login_ip": "127.0.0.1",
+                  "last_login_time": "2017-08-25 19:08:20",
+                  "last_modify_time": "2017-08-25 19:08:20"
+              },
+              "status": 200,
+              "message": "OK"
+          }
+          
+        39）用户协议
            http://youwei.xiaoningmeng.net/site/agreement
            
            版权申明
            http://youwei.xiaoningmeng.net/site/copyright
             
-        38）退出登录[已完成]
+        40）退出登录[已完成]
           api:    user/logout
           method: get
           params:
