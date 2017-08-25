@@ -582,7 +582,9 @@ class UserController extends ActiveController
         $signupFormModel->mobile_phone = $mobilePhone;
         $signupFormModel->password = $password;
         $signupFormModel->username = "用户_" . rand(1000, 9999);
-
+        //给用户随机分配头像
+        $key = array_rand(Yii::$app->params['userDefaultAvatar']);
+        $signupFormModel->avatar = Yii::$app->params['userDefaultAvatar'][$key];
         $userModel = $signupFormModel->signup();
         $ret = array();
         if (is_null($userModel)) {
@@ -602,7 +604,6 @@ class UserController extends ActiveController
             $ret['status'] = 200;
             $ret['message'] = 'OK';
         }
-
         return $ret;
     }
 

@@ -80,6 +80,8 @@ return [
         'http://youwei-static.oss-cn-beijing.aliyuncs.com/default-avatar/mo2.jpg',
         'http://youwei-static.oss-cn-beijing.aliyuncs.com/default-avatar/mo3.jpg',
         'http://youwei-static.oss-cn-beijing.aliyuncs.com/default-avatar/mo4.jpg',
+        'http://youwei-static.oss-cn-beijing.aliyuncs.com/default-avatar/mo5.jpg',
+        'http://youwei-static.oss-cn-beijing.aliyuncs.com/default-avatar/mo6.jpg',
     ],
 
     //Redis键名称

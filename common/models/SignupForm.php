@@ -13,6 +13,7 @@ class SignupForm extends Model
     public $username;
     public $password;
     public $mobile_phone;
+    public $avatar;
 
 
     /**
@@ -52,6 +53,7 @@ class SignupForm extends Model
         //TODO:用户名默认为:用户_4位随机数
         $user->username = $this->username;
         $user->mobile_phone = $this->mobile_phone;
+        $user->avatar = $this->avatar;
         $user->register_ip = Yii::$app->request->userIP;
         $user->register_time = date('Y-m-d H:i:s',time());
         $user->last_login_ip = Yii::$app->request->userIP;
