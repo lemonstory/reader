@@ -97,4 +97,12 @@ return [
     //图像信息缓存有效期3个月
     'expireCoverImageInfo' => 60 * 60 * 24 * 30,
 
+    //[测试]故事分享地址
+    'storyShareUrl' => [
+        'http://www.baidu.com',
+        'http://www.qq.com',
+        'http://www.163.com',
+        'http://youwei.xiaoningmeng.com',
+    ]
+
 ];

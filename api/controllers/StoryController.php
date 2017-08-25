@@ -330,7 +330,6 @@ class StoryController extends ActiveController
 
     public function actionView($id)
     {
-
         $data = array();
         $storyId = $id;
         $storyCondition = array(
@@ -463,6 +462,9 @@ class StoryController extends ActiveController
             $tagNames = array('tag_id', 'name', 'number');
             $data['tag'] = $storyModel->getTags()->select($tagNames)->andWhere($tagCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
 
+            //故事分享链接
+            $data['share_url'] = $this->getShareUrl($storyId);
+
             //作者信息
             if (isset($storyModel->user) && !empty($storyModel->user)) {
 
@@ -476,6 +478,22 @@ class StoryController extends ActiveController
         }
         return $data;
     }
+
+
+    /**
+     * 获取故事分享的地址
+     * @param $storyId
+     * @return string
+     */
+    public function getShareUrl($storyId) {
+
+        //TODO:上线前要修改
+        $shareUrlArr = Yii::$app->params['storyShareUrl'];
+        $key = array_rand($shareUrlArr);
+        $shareUrl = $shareUrlArr[$key];
+        return $shareUrl;
+    }
+
 }
 
 ?>
