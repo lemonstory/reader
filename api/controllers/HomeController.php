@@ -58,9 +58,6 @@ class HomeController extends ActiveController
         $ret = array();
         $redis = Yii::$app->redis;
         $response = Yii::$app->getResponse();
-//        $storyIdAll = $redis->zrevrange(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], 0, -1);
-//        var_dump($storyIdAll);
-
         $start = ($page - 1) * $pre_page;
         $stop = ($page - 1) * $pre_page + ($pre_page -1);
 

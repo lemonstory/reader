@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use Carbon\Carbon;
+use common\components\CoverHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Story;
@@ -104,7 +105,17 @@ class TagController extends ActiveController
             $story['story_id'] = $storyModelItem->story_id;
             $story['name'] = $storyModelItem->name;
             $story['description'] = $storyModelItem->description;
-            $story['cover'] = $storyModelItem->cover;
+
+            //获取图片宽高
+            $coverUrl = $storyModelItem->cover;
+            $coverImageInfo = CoverHelper::imageInfo($coverUrl);
+            $cover = array();
+            $cover['url'] = $coverUrl;
+            $cover['width'] = $coverImageInfo['width'];
+            $cover['height'] = $coverImageInfo['height'];
+            $cover['format'] = $coverImageInfo['format'];
+            $story['cover'] = $cover;
+
             $story['uid'] = $storyModelItem->uid;
             $story['chapter_count'] = $storyModelItem->chapter_count;
             $story['message_count'] = $storyModelItem->message_count;
