@@ -836,7 +836,7 @@ class UserController extends ActiveController
                     foreach ($userModel->getErrors() as $attribute => $error) {
                         foreach ($error as $message) {
                             //throw new Exception($attribute.": ".$message);
-                            $ret['status'] = 400;
+                            $ret['status'] = 403;
                             $ret['message'] = $message;
                         }
                     }
