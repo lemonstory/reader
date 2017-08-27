@@ -168,8 +168,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $ret;
                 },
             ],
-            'create_time',
-            'last_modify_time',
+            [
+                'attribute' => 'create_time',
+                'format' => ['date', 'php:Y-m-d H:i:s']
+            ],
+            [
+                'attribute' => 'last_modify_time',
+                'format' => ['date', 'php:Y-m-d H:i:s']
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

@@ -102,6 +102,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'register_time',
                 'headerOptions' => ['style' => 'width:50px'],
+                'format' => ['date', 'php:Y-m-d H:i:s'],
             ],
             [
                 'attribute' => 'last_login_ip',
@@ -110,6 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'last_login_time',
                 'headerOptions' => ['style' => 'width:120px'],
+                'format' => ['date', 'php:Y-m-d H:i:s'],
                 'value' => function ($model) {
                     $ret = "";
                     if(!empty($model->last_login_time)) {
@@ -121,6 +123,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'last_modify_time',
                 'headerOptions' => ['style' => 'width:50px'],
+                'format' => ['date', 'php:Y-m-d H:i:s'],
             ],
             ['class' => 'yii\grid\ActionColumn'],
         ],

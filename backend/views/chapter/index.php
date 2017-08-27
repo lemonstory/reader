@@ -133,10 +133,12 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'create_time',
                 'headerOptions' => ['style' => 'width:50px'],
+                'format' => ['date', 'php:Y-m-d H:i:s']
             ],
             [
                 'attribute' => 'last_modify_time',
                 'headerOptions' => ['style' => 'width:50px'],
+                'format' => ['date', 'php:Y-m-d H:i:s']
             ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
