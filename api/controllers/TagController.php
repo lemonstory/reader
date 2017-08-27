@@ -59,6 +59,16 @@ class TagController extends ActiveController
         $columns = array('tag_id','number','name');
         $tagArr = Tag::find()->select($columns)->where($condition)->orderBy(['number' => SORT_ASC])->asArray()->all();
         $response = Yii::$app->getResponse();
+
+        //全部作品tag_id=0且number=0
+        $allTagStorys = array(
+            'tag_id' => 0,
+            'name' => '全部作品',
+            'number' => 0,
+        );
+        $tagArr[] = $allTagStorys;
+        ArrayHelper::multisort($tagArr,'number');
+
         $ret['data'] = $tagArr;
         $ret['status'] = $response->statusCode;
         $ret['message'] = $response->statusText;
@@ -125,8 +135,8 @@ class TagController extends ActiveController
             $story['last_modify_time'] = Carbon::createFromTimestamp($storyModelItem->last_modify_time)->toDateTimeString();
 
             //tag
-            $tagModels = $storyModelItem->tags;
             $tagList = array();
+            $tagModels = $storyModelItem->tags;
             foreach ($tagModels as $tagModelItem) {
                 $tag = array();
                 $tag['tag_id'] = $tagModelItem->tag_id;
