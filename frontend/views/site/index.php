@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>有味读书 - 就想看点好东西</title>
+    <title>有味读书 - 用聊天记录讲有味故事</title>
     <!-- Basic metadata-->
     <meta charset="UTF-8"/>
     <meta itemprop="name" content="有味读书 - "/>
@@ -27,7 +27,7 @@
                     </div>
                 </a>
                 <div class="brand-slogan hidden-xs">
-                    点击世界的有趣
+                    度过每一种可能的生活
                 </div>
             </div>
         </div>
@@ -121,9 +121,9 @@
     <div class="site-footer base-footer">
         <div class="container-fluid is-limited">
             <div class="row between-xs middle-xs">
-                <a class="icp-cert hidden-xs" href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备xxx号-1</a>
+                <a class="icp-cert hidden-xs" href="http://www.miitbeian.gov.cn/" target="_blank">京ICP备15055231号</a>
                 <div class="company-name hidden-xs">
-                    北京凯尔山石科技有限公司
+                    西安行方思远网络科技有限公司
                 </div>
                 <div class="nav-group is-flex space-fill between-xs end-sm">
                     <div class="info-nav is-flex middle-xs">
@@ -134,13 +134,13 @@
                         <a class="text-link link-career" href="/careers">加入有味</a>
                     </div>
                     <div class="sns-nav is-flex middle-xs">
-                        <a class="rich-link link-wechat wechat-qrcode-trigger"
-                           href="https://mp.weixin.qq.com/mp/profile_ext?action=home&amp;__biz=MzI1OTAxMDY5Nw==&amp;scene=124#wechat_redirect"
-                           target="_blank"><span class="icon icon-wechat"></span></a>
-                        <a class="rich-link link-weibo" href="http://weibo.com/jikenow" target="_blank"><span
+<!--                        <a class="rich-link link-wechat wechat-qrcode-trigger"-->
+<!--                           href="https://mp.weixin.qq.com/mp/profile_ext?action=home&amp;__biz=MzI1OTAxMDY5Nw==&amp;scene=124#wechat_redirect"-->
+<!--                           target="_blank"><span class="icon icon-wechat"></span></a>-->
+                        <a class="rich-link link-weibo" href="http://weibo.com/youweiapp" target="_blank"><span
                                     class="icon icon-weibo"></span></a>
-                        <a class="rich-link link-zhihu" href="https://zhuanlan.zhihu.com/jikeapp" target="_blank"><span
-                                    class="icon icon-zhihu"></span></a>
+<!--                        <a class="rich-link link-zhihu" href="https://zhuanlan.zhihu.com/jikeapp" target="_blank"><span-->
+<!--                                    class="icon icon-zhihu"></span></a>-->
                     </div>
                 </div>
             </div>

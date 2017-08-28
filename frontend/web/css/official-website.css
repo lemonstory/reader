@@ -1397,12 +1397,12 @@ body {
 
 .brand-logo {
     display: inline-block;
-    background: url(https://cdn.ruguoapp.com/site/images/icon-round.2d967b6.svg);
+    background: url(http://youwei-static.oss-cn-beijing.aliyuncs.com/images/ic_youwei.svg);
     background-size: cover
 }
 
 .brand-logo-circle {
-    background: url(https://cdn.ruguoapp.com/site/images/icon-circle.32f4fc9.svg);
+    background: url(http://youwei-static.oss-cn-beijing.aliyuncs.com/images/icon-circle.svg);
     background-size: cover
 }
 
@@ -4297,19 +4297,19 @@ body {
 }
 
 .page-home .section-features .img-icon.icon-news {
-    background-image: url(https://cdn.ruguoapp.com/site/images/feature-news@2x.e89e069.png)
+    background-image: url(http://youwei-static.oss-cn-beijing.aliyuncs.com/images/ic_1@2x.png)
 }
 
 .page-home .section-features .img-icon.icon-notification {
-    background-image: url(https://cdn.ruguoapp.com/site/images/feature-notification@2x.d27c89e.png)
+    background-image: url(http://youwei-static.oss-cn-beijing.aliyuncs.com/images/ic_2@2x.png)
 }
 
 .page-home .section-features .img-icon.icon-customize {
-    background-image: url(https://cdn.ruguoapp.com/site/images/feature-customize@2x.6fe23a9.png)
+    background-image: url(http://youwei-static.oss-cn-beijing.aliyuncs.com/images/ic_3@2x.png)
 }
 
 .page-home .section-features .img-icon.icon-filter {
-    background-image: url(https://cdn.ruguoapp.com/site/images/feature-filter@2x.c8c05ae.png)
+    background-image: url(http://youwei-static.oss-cn-beijing.aliyuncs.com/images/ic_4@2x.png)
 }
 
 
