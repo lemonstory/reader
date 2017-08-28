@@ -243,4 +243,38 @@ class NotifyController extends ActiveController
         }
         return $ret;
     }
+
+
+    /**
+     * 检查通知使用有更新
+     * @param $uid
+     * @param $time
+     * @return array
+     */
+    public function actionCheckUpdate($uid,$time) {
+
+        $ret = array();
+        $data['is_updated'] = 0;
+        $ret["code"] = 200;
+        $ret["msg"] = "OK";
+        $ret['data'] = $data;
+        $userModel = Yii::$app->user->identity;
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
+
+                $count = UserNotify::find()
+                    ->where(['and', ['uid' => $uid], ['>', 'create_time', $time]])
+                    ->count();
+                if($count > 0) {
+                    $data['is_updated'] = 1;
+                } else {
+                    $data['is_updated'] = 0;
+                }
+            }
+        } else {
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
+        }
+        return $ret;
+    }
 }

@@ -1907,6 +1907,25 @@
               "status": 401,
               "type": "yii\\web\\UnauthorizedHttpException"
             }
+            
+        42) 通知是否有更新[已完成]
+          api:    notify/check-update
+          method: get
+          params:
+                uid: 用户uid
+                time: 用户上次点击通知按钮时间戳(单位：秒)
+                access-token: 授权访问凭证
+          ret: Json数组
+          示例：
+            api.youwei.xiaoningmeng.net/notify/check-update?uid=10161&access-token=6gS_LP9YBnJRxc2-VLvTOs98k5hxUytF&time=1503914302
+           
+            {
+                "code": 200,
+                "msg": "OK",
+                "data": {
+                    "is_updated": 0
+                }
+            }
  ```
  
  
