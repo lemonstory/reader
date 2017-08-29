@@ -502,6 +502,9 @@ class NotifyController extends Controller
                 $content['senders'][]['avatar'] = $commentUserInfo['avatar'];
             }
 
+            var_dump($storyInfo);
+            var_dump($content);
+
             $content['story_name'] = $storyInfo['name'];
             $content['story_cover'] = $storyInfo['cover'];
             $content['comment_id'] = $commentInfo['comment_id'];
