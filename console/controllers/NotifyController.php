@@ -484,7 +484,6 @@ class NotifyController extends Controller
 
                 //内容处理
                 $content['senders'] = $this->getFutureDataSendersFieldData($notifyInfoModel->content, $commentUserInfo);
-                $content = \GuzzleHttp\json_encode($content);
 
             } else {
 
