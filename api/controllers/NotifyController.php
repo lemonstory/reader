@@ -257,14 +257,14 @@ class NotifyController extends ActiveController
         $data['is_updated'] = 0;
         $ret["code"] = 200;
         $ret["msg"] = "OK";
-        $ret['data'] = $data;
         $userModel = Yii::$app->user->identity;
         if (!is_null($userModel)) {
             if ($uid == $userModel->uid) {
 
                 $count = UserNotify::find()
-                    ->where(['and', ['uid' => $uid], ['>', 'create_time', $time]])
+                    ->where(['and', ['uid' => $uid], ['>', 'create_time', $time], ['is_read' => 0]])
                     ->count();
+                $count = intval($count);
                 if($count > 0) {
                     $data['is_updated'] = 1;
                 } else {
@@ -275,6 +275,7 @@ class NotifyController extends ActiveController
             $ret['status'] = 400;
             $ret['message'] = '用户不存在';
         }
+        $ret['data'] = $data;
         return $ret;
     }
 }
