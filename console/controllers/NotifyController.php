@@ -335,6 +335,8 @@ class NotifyController extends Controller
 
         //故事信息不为空且用户正常
         if(!empty($storyInfo) && !empty($userInfo)) {
+            var_dump($storyInfo);
+            var_dump($userInfo);
             //组合content信息
             $contentParam = array();
             //作者姓名
@@ -355,9 +357,13 @@ class NotifyController extends Controller
                 $rows[] = [$uidItem, 'post_story', $storyId, $content, $uid, $count, $isRead];
             }
 
+            var_dump($columns);
+            var_dump($rows);
+
             //执行批量添加
             try {
                 $ret = Yii::$app->db->createCommand()->batchInsert(UserNotify::tableName(), $columns, $rows)->execute();
+                var_dump($ret);
                 return true;
             } catch (Exception $e) {
                 $error =  "Batchinsert user_notify Failed: " . $e->getMessage();
