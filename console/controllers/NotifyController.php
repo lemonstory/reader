@@ -335,6 +335,7 @@ class NotifyController extends Controller
             ->one();
         var_dump($storyInfo);
 
+
         //故事信息不为空且用户正常
         if(!empty($storyInfo) && !empty($userInfo)) {
 
