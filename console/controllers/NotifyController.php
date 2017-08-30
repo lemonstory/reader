@@ -157,7 +157,6 @@ class NotifyController extends Controller
             //TODO:测试期间先保留数据
 //            $validTime = strtotime("-3 month");
 //            $this->deleteHistoryUserNofity($validTime);
-
         }
         echo "NotifyController -> actionReceiveMessage RUN END\n";
     }
