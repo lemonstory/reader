@@ -348,6 +348,7 @@ class NotifyController extends Controller
             //故事封面
             $contentParam['story_cover'] = $storyInfo['cover'];
             $content = \GuzzleHttp\json_encode($contentParam);
+            var_dump($content);
 
             $columns = ['uid', 'category', 'topic_id', 'content', 'senders', 'count', 'is_read'];
             $rows = array();
@@ -357,13 +358,15 @@ class NotifyController extends Controller
                 $rows[] = [$uidItem, 'post_story', $storyId, $content, $uid, $count, $isRead];
             }
 
-            var_dump($columns);
-            var_dump($rows);
+//            var_dump($columns);
+//            var_dump($rows);
 
             //执行批量添加
             try {
                 $ret = Yii::$app->db->createCommand()->batchInsert(UserNotify::tableName(), $columns, $rows)->execute();
+                echo "####\n";
                 var_dump($ret);
+                echo "####\n";
                 return true;
             } catch (Exception $e) {
                 $error =  "Batchinsert user_notify Failed: " . $e->getMessage();
