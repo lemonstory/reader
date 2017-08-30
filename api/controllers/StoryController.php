@@ -137,12 +137,6 @@ class StoryController extends ActiveController
                                 $dataItem = $this->getStoryInfoWithModel($storyModel);
                                 $dataItem['local_story_id'] = $storyItem['local_story_id'];
                                 $data[] = $dataItem;
-
-                                //消息通知->用户发布新故事
-                                $mnsQueue = new MnsQueue();
-                                $queueName = Yii::$app->params['mnsQueueNotifyName'];
-                                $messageBody = QueueMessageHelper::postStory($uid, $storyId);
-                                $mnsQueue->sendMessage($messageBody, $queueName);
                             }
                         } catch (\Exception $e) {
 
@@ -155,10 +149,24 @@ class StoryController extends ActiveController
                         }
                     }
 
-                    if (count($data) > 0 && $hasError) {
-                        $response->statusCode = 206;
-                        $response->statusText = '成功新建部分故事';
+                    if (count($data) > 0) {
+
+                        foreach ($data as $item) {
+                            $storyId = $item['story_id'];
+                            $uid = $item['uid'];
+                            //消息通知->用户发布新故事
+                            $mnsQueue = new MnsQueue();
+                            $queueName = Yii::$app->params['mnsQueueNotifyName'];
+                            $messageBody = QueueMessageHelper::postStory($uid, $storyId);
+                            $mnsQueue->sendMessage($messageBody, $queueName);
+                        }
+
+                        if($hasError) {
+                            $response->statusCode = 206;
+                            $response->statusText = '成功新建部分故事';
+                        }
                     }
+
                 } else {
                     $response->statusCode = 400;
                     $response->statusText = '参数错误';
