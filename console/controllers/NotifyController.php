@@ -353,12 +353,13 @@ class NotifyController extends Controller
             $content = \GuzzleHttp\json_encode($contentParam);
             var_dump($content);
 
-            $columns = ['uid', 'category', 'topic_id', 'content', 'senders', 'count', 'is_read'];
+            $columns = ['uid', 'category', 'topic_id', 'content', 'senders', 'count', 'is_read','create_time','last_modify_time'];
             $rows = array();
             $count = 1;
             $isRead = 0;
+            $time = time();
             foreach ($uidArr as $uidItem) {
-                $rows[] = [$uidItem, 'post_story', $storyId, $content, $uid, $count, $isRead];
+                $rows[] = [$uidItem, 'post_story', $storyId, $content, $uid, $count, $isRead,$time,$time];
             }
 
 //            var_dump($columns);
@@ -440,12 +441,13 @@ class NotifyController extends Controller
 
             $content = \GuzzleHttp\json_encode($contentParam);
 
-            $columns = ['uid', 'category', 'topic_id', 'content', 'senders', 'count', 'is_read'];
+            $columns = ['uid', 'category', 'topic_id', 'content', 'senders', 'count', 'is_read', 'create_time','last_modify_time'];
             $rows = array();
             $count = 1;
             $isRead = 0;
+            $time = time();
             foreach ($uidArr as $uid) {
-                $rows[] = [$uid, 'post_chapter', $chapterId, $content, $uid, $count, $isRead];
+                $rows[] = [$uid, 'post_chapter', $chapterId, $content, $uid, $count, $isRead, $time, $time];
             }
 
             //执行批量添加
