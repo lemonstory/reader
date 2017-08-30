@@ -367,7 +367,9 @@ class NotifyController extends Controller
 
             //执行批量添加
             try {
-                $ret = Yii::$app->db->createCommand()->batchInsert(UserNotify::tableName(), $columns, $rows)->execute();
+                $commandQuery =  Yii::$app->db->createCommand()->batchInsert(UserNotify::tableName(), $columns, $rows);
+                echo $commandQuery->createCommand()->getRawSql();
+                $ret = $commandQuery->execute();
                 echo "####\n";
                 var_dump($ret);
                 echo "####\n";
