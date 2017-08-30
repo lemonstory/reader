@@ -325,6 +325,7 @@ class NotifyController extends Controller
             ->where(['uid' => $uid,'status' => Yii::$app->params['STATUS_ACTIVE'],])
             ->asArray()
             ->one();
+        var_dump($userInfo);
 
         //取故事信息
         //TODO:需要对用户信息做cache
@@ -332,11 +333,11 @@ class NotifyController extends Controller
             ->where(['story_id' => $storyId,'status' => Yii::$app->params['STATUS_ACTIVE'],])
             ->asArray()
             ->one();
+        var_dump($storyInfo);
 
         //故事信息不为空且用户正常
         if(!empty($storyInfo) && !empty($userInfo)) {
-            var_dump($storyInfo);
-            var_dump($userInfo);
+
             //组合content信息
             $contentParam = array();
             //作者姓名
