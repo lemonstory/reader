@@ -331,10 +331,11 @@ class NotifyController extends Controller
         //取故事信息
         //TODO:需要对用户信息做cache
         $storyInfo = Story::find()
-            ->where(['story_id' => $storyId,'status' => Yii::$app->params['STATUS_ACTIVE'],])
+            ->where(['story_id' => $storyId,'status' => Yii::$app->params['STATUS_ACTIVE'], 'is_published' => Yii::$app->params['STATUS_PUBLISHED']])
             ->asArray()
             ->one();
         var_dump($storyInfo);
+        exit;
 
 
         //故事信息不为空且用户正常
@@ -351,7 +352,6 @@ class NotifyController extends Controller
             //故事封面
             $contentParam['story_cover'] = $storyInfo['cover'];
             $content = \GuzzleHttp\json_encode($contentParam);
-            var_dump($content);
 
             $columns = ['uid', 'category', 'topic_id', 'content', 'senders', 'count', 'is_read','create_time','last_modify_time'];
             $rows = array();
@@ -368,7 +368,7 @@ class NotifyController extends Controller
             //执行批量添加
             try {
                 $commandQuery =  Yii::$app->db->createCommand()->batchInsert(UserNotify::tableName(), $columns, $rows);
-                echo $commandQuery->getRawSql();
+//                echo $commandQuery->getRawSql();
                 $ret = $commandQuery->execute();
                 echo "####\n";
                 var_dump($ret);
