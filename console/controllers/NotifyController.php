@@ -42,6 +42,15 @@ class NotifyController extends Controller
 
     public function actionReceiveMessage()
     {
+        //单进程-进程锁处理
+        $lock_file = dirname(__FILE__) . "/notify-receive-message.lock";
+        $lock_file_handle = fopen($lock_file, 'w');
+        if ($lock_file_handle === false)
+            die("Can not create lock file {$lock_file}\n");
+        if (!flock($lock_file_handle, LOCK_EX + LOCK_NB)) {
+            die(date("Y-m-d H:i:s") . " [notify/receive-message] Process already exists.\n");
+        }
+
         //接收消息
         $mnsQueue = new MnsQueue();
         $queueName = Yii::$app->params['mnsQueueNotifyName'];
