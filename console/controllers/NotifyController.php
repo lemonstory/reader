@@ -330,10 +330,9 @@ class NotifyController extends Controller
 
         //取故事信息
         //TODO:需要对用户信息做cache
-        $storyInfo = Story::find()
-            ->where(['story_id' => $storyId, 'uid' => $uid,  'status' => Yii::$app->params['STATUS_ACTIVE'], 'is_published' => Yii::$app->params['STATUS_PUBLISHED']])
-            ->asArray()
-            ->one();
+        $storyQuery = Story::find()->where(['story_id' => $storyId, 'uid' => $uid,  'status' => Yii::$app->params['STATUS_ACTIVE'], 'is_published' => Yii::$app->params['STATUS_PUBLISHED']]);
+        echo $storyQuery->createCommand()->getRawSql();
+        $storyInfo= $storyQuery->asArray()->one();
         var_dump($storyInfo);
         exit;
 
