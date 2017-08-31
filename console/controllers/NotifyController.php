@@ -309,6 +309,7 @@ class NotifyController extends Controller
     public function receivePostStory($uid, $storyId)
     {
 
+        echo "receivePostStory : uid={$uid}, storyId={$storyId}\n";
         //TODO:获取关注$uid的用户列表,前期用户规模比较小全量分发
         $uidArr = User::find()
             ->select('uid')
@@ -327,11 +328,11 @@ class NotifyController extends Controller
 
         //取故事信息
         //TODO:需要对用户信息做cache
-        $storyQuery = Story::find()->where(['story_id' => $storyId, 'uid' => $uid,  'status' => Yii::$app->params['STATUS_ACTIVE'], 'is_published' => Yii::$app->params['STATUS_PUBLISHED']]);
-        echo $storyQuery->createCommand()->getRawSql()." : ". time();
-        $storyInfo= $storyQuery->asArray()->one();
+        $storyInfo = Story::find()
+            ->where(['story_id' => $storyId, 'uid' => $uid,  'status' => Yii::$app->params['STATUS_ACTIVE'], 'is_published' => Yii::$app->params['STATUS_PUBLISHED']])
+            ->asArray()
+            ->one();
         var_dump($storyInfo);
-
 
         //故事信息不为空且用户正常
         if(!empty($storyInfo) && !empty($userInfo)) {

@@ -150,10 +150,9 @@ class StoryController extends ActiveController
                     }
 
                     if (count($data) > 0) {
-
                         foreach ($data as $item) {
                             $storyId = $item['story_id'];
-                            $uid = $item['uid'];
+                            $uid = $item['user']['uid'];
                             //消息通知->用户发布新故事
                             $mnsQueue = new MnsQueue();
                             $queueName = Yii::$app->params['mnsQueueNotifyName'];
