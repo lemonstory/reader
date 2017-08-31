@@ -154,9 +154,8 @@ class NotifyController extends Controller
             }
 
             //删除历史数据,保留最近三个月的通知数据
-            //TODO:测试期间先保留数据
-//            $validTime = strtotime("-3 month");
-//            $this->deleteHistoryUserNofity($validTime);
+            $validTime = strtotime("-3 month");
+            $this->deleteHistoryUserNofity($validTime);
         }
         echo "NotifyController -> actionReceiveMessage RUN END\n";
     }
@@ -310,8 +309,6 @@ class NotifyController extends Controller
     public function receivePostStory($uid, $storyId)
     {
 
-        echo "receivePostStory uid = {$uid}, storyId = {$storyId}\n";
-
         //TODO:获取关注$uid的用户列表,前期用户规模比较小全量分发
         $uidArr = User::find()
             ->select('uid')
@@ -326,17 +323,12 @@ class NotifyController extends Controller
             ->where(['uid' => $uid,'status' => Yii::$app->params['STATUS_ACTIVE'],])
             ->asArray()
             ->one();
-        var_dump($userInfo);
 
         //取故事信息
         //TODO:需要对用户信息做cache
         $storyQuery = Story::find()->where(['story_id' => $storyId, 'uid' => $uid,  'status' => Yii::$app->params['STATUS_ACTIVE'], 'is_published' => Yii::$app->params['STATUS_PUBLISHED']]);
-        echo $storyQuery->createCommand()->getRawSql()." : ". time();
+//        echo $storyQuery->createCommand()->getRawSql()." : ". time();
         $storyInfo= $storyQuery->asArray()->one();
-        var_dump($storyInfo);
-        exit;
-
-
         //故事信息不为空且用户正常
         if(!empty($storyInfo) && !empty($userInfo)) {
 
@@ -361,17 +353,11 @@ class NotifyController extends Controller
                 $rows[] = [$uidItem, 'post_story', $storyId, $content, $uid, $count, $isRead,$time,$time];
             }
 
-//            var_dump($columns);
-//            var_dump($rows);
-
             //执行批量添加
             try {
                 $commandQuery =  Yii::$app->db->createCommand()->batchInsert(UserNotify::tableName(), $columns, $rows);
 //                echo $commandQuery->getRawSql();
                 $ret = $commandQuery->execute();
-                echo "####\n";
-                var_dump($ret);
-                echo "####\n";
                 return true;
             } catch (Exception $e) {
                 $error =  "Batchinsert user_notify Failed: " . $e->getMessage();
