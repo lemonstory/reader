@@ -211,6 +211,13 @@ class StoryController extends ActiveController
                             $storyModel = Story::findOne($storyItem['story_id']);
                             if(!empty($storyModel)) {
 
+                                //检查故事发布状态
+                                $isUpdatePublished = false;
+                                $isPublished = $storyModel->is_published;
+                                if($isPublished == Yii::$app->params['STATUS_UNPUBLISHED'] && $storyItem['is_published'] == Yii::$app->params['STATUS_PUBLISHED']) {
+                                    $isUpdatePublished = true;
+                                }
+
                                 $currentTaps = $storyModel->taps;
                                 $storyModel->setAttributes($storyItem);
                                 //点击数递增
@@ -287,6 +294,16 @@ class StoryController extends ActiveController
                                         }
                                     }
                                 }
+
+                                //修改故事发布状态,发送通知
+                                //消息通知->用户发布新故事
+                                if($isUpdatePublished) {
+                                    $mnsQueue = new MnsQueue();
+                                    $queueName = Yii::$app->params['mnsQueueNotifyName'];
+                                    $messageBody = QueueMessageHelper::postStory($storyModel->uid, $storyModel->story_id);
+                                    $mnsQueue->sendMessage($messageBody, $queueName);
+                                }
+
                             }else {
                                 throw new ServerErrorHttpException('故事信息为空');
                             }
