@@ -100,7 +100,6 @@ class StoryController extends ActiveController
                             $storyModel = new Story();
                             $storyModel->loadDefaultValues();
                             $storyModel->setAttributes($storyItem);
-
                             $storyModel->save();
                             if ($storyModel->hasErrors()) {
                                 Yii::error($storyModel->getErrors());
@@ -130,6 +129,12 @@ class StoryController extends ActiveController
                                 $tagAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryTagRelation::tableName(), $tagColumns, $tagRows)->execute();
                             }
 
+                            //消息通知->用户发布新故事
+                            $mnsQueue = new MnsQueue();
+                            $queueName = Yii::$app->params['mnsQueueNotifyName'];
+                            $messageBody = QueueMessageHelper::postStory($uid, $storyId);
+                            $mnsQueue->sendMessage($messageBody, $queueName);
+
                             $transaction->commit();
 
                             if ($storyId > 0 && $actorAffectedRows >= 0 && $tagAffectedRows >= 0) {
@@ -149,21 +154,10 @@ class StoryController extends ActiveController
                         }
                     }
 
-                    if (count($data) > 0) {
-                        foreach ($data as $item) {
-                            $storyId = $item['story_id'];
-                            $uid = $item['user']['uid'];
-                            //消息通知->用户发布新故事
-                            $mnsQueue = new MnsQueue();
-                            $queueName = Yii::$app->params['mnsQueueNotifyName'];
-                            $messageBody = QueueMessageHelper::postStory($uid, $storyId);
-                            $mnsQueue->sendMessage($messageBody, $queueName);
-                        }
+                    if (count($data) > 0 && $hasError) {
 
-                        if($hasError) {
-                            $response->statusCode = 206;
-                            $response->statusText = '成功新建部分故事';
-                        }
+                        $response->statusCode = 206;
+                        $response->statusText = '成功新建部分故事';
                     }
 
                 } else {
@@ -209,12 +203,12 @@ class StoryController extends ActiveController
                         try {
                             //保存故事
                             $storyModel = Story::findOne($storyItem['story_id']);
-                            if(!empty($storyModel)) {
+                            if (!empty($storyModel)) {
 
                                 //检查故事发布状态
                                 $isUpdatePublished = false;
                                 $isPublished = $storyModel->is_published;
-                                if($isPublished == Yii::$app->params['STATUS_UNPUBLISHED'] && $storyItem['is_published'] == Yii::$app->params['STATUS_PUBLISHED']) {
+                                if ($isPublished == Yii::$app->params['STATUS_UNPUBLISHED'] && $storyItem['is_published'] == Yii::$app->params['STATUS_PUBLISHED']) {
                                     $isUpdatePublished = true;
                                 }
 
@@ -233,14 +227,14 @@ class StoryController extends ActiveController
                                 $storyId = $storyModel->story_id;
 
                                 //删除故事则阅读记录也一并删除
-                                if($storyItem['status'] == Yii::$app->params['STATUS_DELETED']) {
+                                if ($storyItem['status'] == Yii::$app->params['STATUS_DELETED']) {
                                     $userReadStoryRecordCondition = array(
                                         'uid' => $uid,
                                         'story_id' => $storyId,
                                     );
                                     $userReadStoryRecordModel = UserReadStoryRecord::find()->where($userReadStoryRecordCondition)->one();
                                     $userReadStoryRecordModel->status = Yii::$app->params['STATUS_DELETED'];
-                                    $userReadStoryRecordModel->save(false,['status']);
+                                    $userReadStoryRecordModel->save(false, ['status']);
                                     if ($userReadStoryRecordModel->hasErrors()) {
                                         Yii::error($userReadStoryRecordModel->getErrors());
                                         throw new ServerErrorHttpException('阅读记录删除失败');
@@ -297,14 +291,14 @@ class StoryController extends ActiveController
 
                                 //修改故事发布状态,发送通知
                                 //消息通知->用户发布新故事
-                                if($isUpdatePublished) {
+                                if ($isUpdatePublished) {
                                     $mnsQueue = new MnsQueue();
                                     $queueName = Yii::$app->params['mnsQueueNotifyName'];
                                     $messageBody = QueueMessageHelper::postStory($storyModel->uid, $storyModel->story_id);
                                     $mnsQueue->sendMessage($messageBody, $queueName);
                                 }
 
-                            }else {
+                            } else {
                                 throw new ServerErrorHttpException('故事信息为空');
                             }
                             $transaction->commit();
@@ -398,7 +392,7 @@ class StoryController extends ActiveController
             $chapterNames = array('chapter_id', 'name', 'background', 'message_count', 'number', 'is_published', 'create_time', 'last_modify_time');
             $data = $storyModel->getChapters()->select($chapterNames)->andWhere($chapterCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
 
-            if(is_array($data) && !empty($data)) {
+            if (is_array($data) && !empty($data)) {
                 foreach ($data as $key => $item) {
                     //格式化时间
                     $data[$key]['create_time'] = Carbon::createFromTimestamp($data[$key]['create_time'])->toDateTimeString();
@@ -509,7 +503,8 @@ class StoryController extends ActiveController
      * @param $storyId
      * @return string
      */
-    public function getShareUrl($storyId) {
+    public function getShareUrl($storyId)
+    {
 
         //TODO:上线前要修改
         $shareUrlArr = Yii::$app->params['storyShareUrl'];

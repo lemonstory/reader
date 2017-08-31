@@ -42,7 +42,6 @@ class NotifyController extends Controller
 
     public function actionReceiveMessage()
     {
-        echo "NotifyController -> actionReceiveMessage RUN START\n";
         //单进程-进程锁处理
         $lock_file = dirname(__FILE__) . "/notify-receive-message.lock";
         $lock_file_handle = fopen($lock_file, 'w');
@@ -67,14 +66,12 @@ class NotifyController extends Controller
 
                     //我发布故事
                     case "post_story":
-                        echo "actionReceiveMessage case post_story START\n";
                         $uid = $messageBody['data']['uid'];
                         $storyId = $messageBody['data']['story_id'];
                         $ret = $this->receivePostStory($uid, $storyId);
                         if($ret) {
                             $mnsQueue->deleteMessage($receiptHandle,$queueName);
                         }
-                        echo "actionReceiveMessage case post_story END\n";
                         break;
 
                     //我发布章节
@@ -157,7 +154,6 @@ class NotifyController extends Controller
             $validTime = strtotime("-3 month");
             $this->deleteHistoryUserNofity($validTime);
         }
-        echo "NotifyController -> actionReceiveMessage RUN END\n";
     }
 
     public function actionSendTest()
@@ -309,7 +305,6 @@ class NotifyController extends Controller
     public function receivePostStory($uid, $storyId)
     {
 
-        echo "receivePostStory : uid={$uid}, storyId={$storyId}\n";
         //TODO:获取关注$uid的用户列表,前期用户规模比较小全量分发
         $uidArr = User::find()
             ->select('uid')
@@ -324,7 +319,6 @@ class NotifyController extends Controller
             ->where(['uid' => $uid,'status' => Yii::$app->params['STATUS_ACTIVE'],])
             ->asArray()
             ->one();
-        var_dump($userInfo);
 
         //取故事信息
         //TODO:需要对用户信息做cache
@@ -332,7 +326,6 @@ class NotifyController extends Controller
             ->where(['story_id' => $storyId, 'uid' => $uid, 'status' => Yii::$app->params['STATUS_ACTIVE'], 'is_published' => Yii::$app->params['STATUS_PUBLISHED']])
             ->asArray()
             ->one();
-        var_dump($storyInfo);
 
         //故事信息不为空且用户正常
         if(!empty($storyInfo) && !empty($userInfo)) {
@@ -521,9 +514,6 @@ class NotifyController extends Controller
                 $content['senders'][]['username'] = $commentUserInfo['username'];
                 $content['senders'][]['avatar'] = $commentUserInfo['avatar'];
             }
-
-            var_dump($storyInfo);
-            var_dump($content);
 
             $content['story_name'] = $storyInfo['name'];
             $content['story_cover'] = $storyInfo['cover'];
