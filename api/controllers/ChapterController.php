@@ -248,6 +248,7 @@ class ChapterController extends ActiveController
                             //删除章节
                             echo "删除章节 GO!";
                             $chapterId = $chapterModel->chapter_id;
+                            var_dump($chapterModel->getAttributes());
                             $chapterModel->save();
                             if ($chapterModel->hasErrors()) {
                                 foreach ($chapterModel->getErrors() as $attribute => $error) {
