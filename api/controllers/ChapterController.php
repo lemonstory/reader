@@ -91,6 +91,26 @@ class ChapterController extends ActiveController
                     $data['local_story_id'] = $input['local_story_id'];
                     $data['local_chapter_id'] = $input['local_chapter_id'];
 
+                    if (!empty($input['story_id']) && !empty($input['chapter_id'])) {
+                        $chapterCondition = array(
+                            'chapter_id' => $input['chapter_id'],
+                            'story_id' => $input['story_id'],
+                            'status' => Yii::$app->params['STATUS_ACTIVE'],
+                        );
+                        $chapterModel = Chapter::findOne($chapterCondition);
+                    }
+
+                    if ($chapterModel === null) {
+                        $chapterModel = new Chapter();
+                        $chapterModel->loadDefaultValues();
+                    }
+
+                    foreach ($chapterModel->attributes as $attName => $attValue) {
+                        if (!empty($input[$attName])) {
+                            $chapterModel[$attName] = $input[$attName];
+                        }
+                    }
+
                     if ($input['status'] != Yii::$app->params['STATUS_DELETED']) {
                         $uploadFormModel->file = UploadedFile::getInstanceByName('chapter_message_content');
 
@@ -102,26 +122,6 @@ class ChapterController extends ActiveController
                             $uploadFormModel->file->saveAs($file);
                             $transaction = Yii::$app->db->beginTransaction();
                             try {
-
-                                if (!empty($input['story_id']) && !empty($input['chapter_id'])) {
-                                    $chapterCondition = array(
-                                        'chapter_id' => $input['chapter_id'],
-                                        'story_id' => $input['story_id'],
-                                        'status' => Yii::$app->params['STATUS_ACTIVE'],
-                                    );
-                                    $chapterModel = Chapter::findOne($chapterCondition);
-                                }
-
-                                if ($chapterModel === null) {
-                                    $chapterModel = new Chapter();
-                                    $chapterModel->loadDefaultValues();
-                                }
-
-                                foreach ($chapterModel->attributes as $attName => $attValue) {
-                                    if (!empty($input[$attName])) {
-                                        $chapterModel[$attName] = $input[$attName];
-                                    }
-                                }
 
                                 //处理章节消息内容
                                 $messageCount = 0;
