@@ -109,6 +109,9 @@ class ChapterController extends ActiveController
 
                         if (!empty($chapterModel)) {
 
+                            var_dump($chapterModel);
+                            var_dump($chapterModel->attributes);
+
                             //删除或修改章节,去掉create_time的处理
                             if ($input['status'] != Yii::$app->params['STATUS_DELETED'] || $input['status'] == Yii::$app->params['STATUS_UPDATED']) {
                                 unset($input['create_time']);
