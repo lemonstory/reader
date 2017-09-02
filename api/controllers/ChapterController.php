@@ -92,6 +92,8 @@ class ChapterController extends ActiveController
                     $data['local_story_id'] = $input['local_story_id'];
                     $data['local_chapter_id'] = $input['local_chapter_id'];
 
+                    var_dump($input);
+
                     //chapterModel初始化
                     if (!empty($input['story_id']) && !empty($input['chapter_id'])) {
                         $chapterCondition = array(
@@ -244,14 +246,13 @@ class ChapterController extends ActiveController
                         } else {
 
                             //删除章节
+                            echo "删除章节 GO!";
                             $chapterId = $chapterModel->chapter_id;
                             $chapterModel->save();
                             if ($chapterModel->hasErrors()) {
                                 foreach ($chapterModel->getErrors() as $attribute => $error) {
                                     foreach ($error as $message) {
-//                                            throw new ServerErrorHttpException($attribute . ": " . $message);
-                                        $response->statusCode = 400;
-                                        $response->statusText = $message;
+                                            throw new ServerErrorHttpException($attribute . ": " . $message);
                                     }
                                 }
                             }
