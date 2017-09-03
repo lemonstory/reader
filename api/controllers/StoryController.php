@@ -113,6 +113,7 @@ class StoryController extends ActiveController
                             if (isset($storyItem['actor']) && !empty($storyItem['actor'])) {
                                 $actorJson = $storyItem['actor'];
                                 $actorRows = $this->parseActorJson($actorJson, $storyId);
+
                                 //TODO:角色信息格式输入检查
                                 $actorColumns = ['actor_id', 'story_id', 'name', 'avatar', 'number', 'is_visible','location'];
                                 $actorAffectedRows = Yii::$app->db->createCommand()->batchInsert(StoryActor::tableName(), $actorColumns, $actorRows)->execute();
@@ -425,8 +426,8 @@ class StoryController extends ActiveController
                 $actorRow['name'] = $actorItem['name'];
                 $actorRow['avatar'] = $actorItem['avatar'];
                 $actorRow['number'] = $actorItem['number'];
-                $actorRow['location'] = $actorItem['location'];
                 $actorRow['is_visible'] = isset($actorItem['is_visible']) ? $actorItem['is_visible'] : 1;
+                $actorRow['location'] = $actorItem['location'];
                 $actorRows[] = $actorRow;
             }
         }
