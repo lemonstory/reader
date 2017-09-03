@@ -47,11 +47,12 @@ class StoryController extends Controller
         $redis = Yii::$app->redis;
 
         //从最热列表中删除已不合法的故事
+        //例如: 有故事被后台审核人员已经删除
         $inHotStoryIdArr = $redis->zrevrange(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], 0, -1);
         $inHotStoryIdArrCount = count($inHotStoryIdArr);
+        $condition = ['status' => Yii::$app->params['STATUS_ACTIVE'],'is_published' => Yii::$app->params['STATUS_PUBLISHED']];
         if($inHotStoryIdArrCount > 0) {
 
-            $condition = ['status' => Yii::$app->params['STATUS_ACTIVE'],'is_published' => Yii::$app->params['STATUS_PUBLISHED']];
             $inHotCondition = ['story_id' => $inHotStoryIdArr];
             $inHotCondition = array_merge($condition,$inHotCondition);
             $stillInHotStoryArr = Story::find()->select('story_id')->where($inHotCondition)->asArray()->all();
