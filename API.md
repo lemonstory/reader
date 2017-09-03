@@ -181,7 +181,7 @@
                   story_id:故事id
                   local_chapter_id:本地章节id
                   chapter_id:章节id
-                  status:新建,修改,删除
+                  status:1=新建,2=修改,3=删除
                   create_time:创建时间
                   last_modify_time:最后修改时间
                   chapter_message_content:章节消息内容文件[type=file]
