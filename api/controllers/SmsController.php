@@ -1,6 +1,7 @@
 <?php
 namespace api\controllers;
 
+use common\models\User;
 use Yii;
 use yii\rest\ActiveController;
 use common\components\Sms;
@@ -70,40 +71,51 @@ class SmsController extends ActiveController {
      */
     public function actionSendSms($mobilePhone)
     {
-        $sms = new Sms();
-        $signName = Yii::$app->params['smsSignName'];
-        $templateCode = Yii::$app->params['smsTemplateCode'];
-        $number = rand(1000,9999);
-        $templateParam = array('number' => $number);
-        //redis存储
-        $redis = Yii::$app->redis;
-        $key = sprintf(Yii::$app->params['cacheKeyYouweiSmsNumber'],$mobilePhone);
-        $seconds = Yii::$app->params['expireSmsNumberTime'];
-        $value = $number;
-        $isSet = $redis->setex($key, $seconds, $value);
-        if($isSet) {
-            //外部流水扩展字段
-            $outId = "";
-            //$response -> stdClass Object ( [Message] => OK [RequestId] => ACA1E730-8BDC-4C47-9F63-E9311F9BC992 [BizId] => 179315102107980174^0 [Code] => OK )
-            $response = $sms->sendSms($signName,$templateCode,$mobilePhone,$templateParam,$outId);
+        //检测手机号是否已注册
+        $mobilePhone = trim($mobilePhone);
+        $userCondition = ['mobile_phone' => $mobilePhone];
+        $count = (int)User::find()->where($userCondition)->count();
+        if(0 == $count) {
+            $sms = new Sms();
+            $signName = Yii::$app->params['smsSignName'];
+            $templateCode = Yii::$app->params['smsTemplateCode'];
+            $number = rand(1000,9999);
+            $templateParam = array('number' => $number);
+            //redis存储
+            $redis = Yii::$app->redis;
+            $key = sprintf(Yii::$app->params['cacheKeyYouweiSmsNumber'],$mobilePhone);
+            $seconds = Yii::$app->params['expireSmsNumberTime'];
+            $value = $number;
+            $isSet = $redis->setex($key, $seconds, $value);
+            if($isSet) {
+                //外部流水扩展字段
+                $outId = "";
+                //$response -> stdClass Object ( [Message] => OK [RequestId] => ACA1E730-8BDC-4C47-9F63-E9311F9BC992 [BizId] => 179315102107980174^0 [Code] => OK )
+                $response = $sms->sendSms($signName,$templateCode,$mobilePhone,$templateParam,$outId);
 
-            //格式化输出
-            $ret = array();
-            $data = array();
-            $data['RequestId'] = $response->RequestId;
-            $data['BizId'] = $response->BizId;
-            $ret['data'] = $data;
-            if(0 == strcmp("OK",$response->Code)) {
-                $ret['status'] = 200;
+                //格式化输出
+                $ret = array();
+                $data = array();
+                $data['RequestId'] = $response->RequestId;
+                $data['BizId'] = $response->BizId;
+                $ret['data'] = $data;
+                if(0 == strcmp("OK",$response->Code)) {
+                    $ret['status'] = 200;
+                }else {
+                    $ret['status'] = $response->Code;
+                }
+                $ret['message'] = $response->Message;
             }else {
-                $ret['status'] = $response->Code;
+                $ret['data'] = array();
+                $ret['status'] = 500;
+                //redis写入失败
+                $ret['message'] = '系统出现错误';
             }
-            $ret['message'] = $response->Message;
         }else {
+
             $ret['data'] = array();
-            $ret['status'] = 500;
-            //redis写入失败
-            $ret['message'] = '系统出现错误';
+            $ret['status'] = 400;
+            $ret['message'] = '该手机号已经被注册';
         }
         return $ret;
     }
