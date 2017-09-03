@@ -10,6 +10,7 @@
 return [
     'STATUS_DELETED'       => 0,   //删除
     'STATUS_ACTIVE'        => 1,   //正常
+    'STATUS_UPDATED'       => 2,   //修改
 
     'STATUS_PUBLISHED'     => 1,   //已发布
     'STATUS_UNPUBLISHED'   => 0,   //未发布

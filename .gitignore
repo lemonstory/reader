@@ -35,4 +35,4 @@ phpunit.phar
 /.vagrant
 
 API.md
-oauth.php
+/upload.sh
