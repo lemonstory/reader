@@ -91,7 +91,7 @@ class UploadForm extends Model
     {
         if (!empty($bucket) && !empty($object)) {
 
-            $configJson = Yii::$app->vendorPath . '/sts-server/config.json';
+            $configJson = Yii::$app->vendorPath . '/aliyun-sts-server/config.json';
             $configObj = json_decode(file_get_contents($configJson));
             $accessKeyId = $configObj->AccessKeyID;
             $accessKeySecret = $configObj->AccessKeySecret;
