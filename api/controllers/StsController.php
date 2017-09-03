@@ -34,7 +34,7 @@ class StsController extends ActiveController
      */
     public function actionToken() {
 
-        include_once Yii::$app->vendorPath.'/sts-server/aliyun-php-sdk-core/Config.php';
+        include_once Yii::$app->vendorPath.'/aliyun-sts-server/aliyun-php-sdk-core/Config.php';
         function read_file($fname)
         {
             $content = '';
@@ -53,7 +53,7 @@ class StsController extends ActiveController
 
         //配置文件说明
         //https://help.aliyun.com/document_detail/31920.html?spm=5176.product31815.6.623.KYJRp1
-        $configJson = Yii::$app->vendorPath.'/sts-server/config.json';
+        $configJson = Yii::$app->vendorPath.'/aliyun-sts-server/config.json';
         $content = read_file($configJson);
         if(0 !== $content) {
 
@@ -63,7 +63,7 @@ class StsController extends ActiveController
             $roleArn = $myjsonarray->RoleArn;
             $tokenExpire = $myjsonarray->TokenExpireTime;
 
-            $policyFile = Yii::$app->vendorPath.'/sts-server/'.$myjsonarray->PolicyFile;
+            $policyFile = Yii::$app->vendorPath.'/aliyun-sts-server/'.$myjsonarray->PolicyFile;
             $policy = read_file($policyFile);
             if(0 !== $policy) {
                 $iClientProfile = DefaultProfile::getProfile("cn-hangzhou", $accessKeyID, $accessKeySecret);
