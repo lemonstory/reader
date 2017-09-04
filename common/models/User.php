@@ -91,7 +91,8 @@ class User extends ActiveRecord implements IdentityInterface
             ['mobile_phone', 'unique', 'targetClass' => '\common\models\User', 'message' => '手机号已被使用'],
 
             //头像验证规则
-            ['avatar', 'url', 'defaultScheme' => 'http','message' => '头像地址不是一个合法的url'],
+            //TODO:后台修改头像无法上传,暂时先注释掉
+//            ['avatar', 'url', 'defaultScheme' => 'http','message' => '头像地址不是一个合法的url'],
         ];
     }
 
