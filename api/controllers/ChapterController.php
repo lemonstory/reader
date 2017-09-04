@@ -75,6 +75,7 @@ class ChapterController extends ActiveController
         $data = array();
         $uploadFormModel = new UploadForm();
         $ret['data'] = array();
+        $isNew = false;
 
         if (!is_null($userModel)) {
             if ($uid == $userModel->uid) {
@@ -103,6 +104,7 @@ class ChapterController extends ActiveController
                             );
                             $chapterModel = Chapter::findOne($chapterCondition);
                         } else {
+                            $isNew = true;
                             $chapterModel = new Chapter();
                             $chapterModel->loadDefaultValues();
                         }
@@ -126,9 +128,19 @@ class ChapterController extends ActiveController
                                 $chapterModel->status = Yii::$app->params['STATUS_ACTIVE'];
                             }
 
+                            //新建章节且客户端未设置章节序号时
+                            if($isNew && empty($chapterModel->number)) {
+
+                                $latestChapterModel = Chapter::find()->orderBy('number DESC')->one();
+                                if(!is_null($latestChapterModel)) {
+                                    $chapterModel->number = $latestChapterModel->number + 1;
+                                }else {
+                                    $chapterModel->number = 1;
+                                }
+                            }
+
                             //章节故事Id
                             $storyId = $chapterModel->story_id;
-
                             //创建(或)修改故事章节
                             try {
 
