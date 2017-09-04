@@ -115,9 +115,15 @@ class ChapterController extends ActiveController
                             }
 
                             foreach ($chapterModel->attributes as $attName => $attValue) {
+
                                 if (isset($input[$attName])) {
                                     $chapterModel[$attName] = $input[$attName];
                                 }
+                            }
+
+                            //修改章节时,章节的状态值为正常
+                            if($input['status'] == Yii::$app->params['STATUS_UPDATED']) {
+                                $chapterModel->status = Yii::$app->params['STATUS_ACTIVE'];
                             }
 
                             //章节故事Id

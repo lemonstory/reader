@@ -319,8 +319,8 @@ class StoryController extends ActiveController
                             $hasError = true;
                             $transaction->rollBack();
                             Yii::error($e->getMessage());
-                            print_r($e->getMessage());
-                    print_r($e->getTrace());
+                            //print_r($e->getMessage());
+                            //print_r($e->getTrace());
                             $response->statusCode = 400;
                             $response->statusText = '编辑故事失败';
                         }
@@ -390,11 +390,10 @@ class StoryController extends ActiveController
             //章节信息
             $chapterCondition = array(
                 'story_id' => $storyId,
-                'status' => Yii::$app->params['STATUS_ACTIVE']
+                'status' => [Yii::$app->params['STATUS_ACTIVE'],Yii::$app->params['STATUS_UPDATED']],
             );
             $chapterNames = array('chapter_id', 'name', 'background', 'message_count', 'number', 'is_published', 'create_time', 'last_modify_time');
             $data = $storyModel->getChapters()->select($chapterNames)->andWhere($chapterCondition)->orderBy(['number' => SORT_ASC])->asArray()->all();
-
             if (is_array($data) && !empty($data)) {
                 foreach ($data as $key => $item) {
                     //格式化时间
