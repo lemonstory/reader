@@ -91,8 +91,7 @@ class TagController extends ActiveController
                     $query->andWhere(['tag.tag_id' => $tag_id,'tag.status' => Yii::$app->params['STATUS_ACTIVE']]);
                 },
             ])
-
-            ->where(['story.status' => Yii::$app->params['STATUS_ACTIVE']])
+            ->where(['story.status' => Yii::$app->params['STATUS_ACTIVE'], 'story.is_published' => Yii::$app->params['STATUS_PUBLISHED']])
             ->offset($offset)
             ->limit($pre_page)
             ->orderBy(['story.last_modify_time' => SORT_DESC]);
