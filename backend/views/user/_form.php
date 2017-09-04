@@ -22,6 +22,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'mobile_phone')->textInput(['maxlength' => true])->textInput(['disabled' => true]) ?>
     <?php
+        $avatar = "";
         if(!empty($model->avatar)) {
             $avatar =  Html::img($model->avatar, ['class' => 'profile-user-img img-circle', 'width' => 90]);
         }
