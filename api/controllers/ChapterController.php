@@ -130,8 +130,11 @@ class ChapterController extends ActiveController
 
                             //新建章节且客户端未设置章节序号时
                             if($isNew && empty($chapterModel->number)) {
-
-                                $latestChapterModel = Chapter::find()->orderBy('number DESC')->one();
+                                $storyCondition = array(
+                                    'story_id' => $input['story_id'],
+                                    'status' => Yii::$app->params['STATUS_ACTIVE'],
+                                );
+                                $latestChapterModel = Chapter::find()->where($storyCondition)->orderBy('number DESC')->one();
                                 if(!is_null($latestChapterModel)) {
                                     $chapterModel->number = $latestChapterModel->number + 1;
                                 }else {
