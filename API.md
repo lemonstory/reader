@@ -1926,6 +1926,62 @@
                     "is_updated": 0
                 }
             }
+            
+        43）微信支付-统一下单[待测试]
+          api:    wxpay/generate-pay-order
+          method: get
+          params:
+                deviceId:终端设备号
+                totalFee:订单总金额，单位为分
+                body:商品描述交易字段格式根据不同的应用场景按照以下格式：APP——需传入应用市场上的APP名字-实际商品名称，天天爱消除-游戏充值。
+                uid: 用户uid
+                access-token: 授权访问凭证
+          ret: Json数组
+          示例：
+            http://api.youwei.xiaoningmeng.net/wxpay/generate-pay-order?deviceId=1111&totalFee=222
+            {
+                "status": 200,
+                "message": "OK",
+                "data": {
+                    "appId": "wx23f40d0badebdb9a",
+                    "partnerId": "1488212012",
+                    "prepayId": "wx201709041359116244fb4f370930743555",
+                    "nonceStr": "fEHiGcrhCgtlTXgF",
+                    "timeStamp": 1504504751,
+                    "package": "Sign=WXPay",
+                    "sign": "FDD3351FC318A50E10B1D8874C7AA053"
+                }
+            }
+          备注：
+            参考文档：https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_1
+            
+        44）微信支付-查询订单[待测试]
+          api:    wxpay/order-query
+          method: get
+          params:
+                transactionId: 微信订单号
+                outTradeNo: 商户订单号
+                uid: 用户uid
+                access-token: 授权访问凭证
+          ret: Json数组
+          示例：
+            http://api.youwei.xiaoningmeng.net/wxpay/order-query?transactionId=1111&outTradeNo=222
+            //失败
+            {
+                "status": 200,
+                "message": "OK",
+                "data": {
+                    "appId": "wx23f40d0badebdb9a",
+                    "mch_id": "1488212012",
+                    "nonceStr": "DqLBFmnVmyAOmxLO",
+                    "sign": "88ED768657FB054105DB1D67D3A41D1E",
+                    "result_code": "FAIL",
+                    "err_code": "PARAM_ERROR",
+                    "err_code_des": "订单号非法"
+                }
+            }
+          备注：参考文档 https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2&index=4
+        
  ```
  
  
