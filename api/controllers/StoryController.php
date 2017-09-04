@@ -16,6 +16,7 @@ use Yii;
 use yii\db\ActiveQuery;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
+use yii\helpers\ArrayHelper;
 use yii\helpers\BaseJson;
 use yii\rest\ActiveController;
 use yii\web\ServerErrorHttpException;
@@ -294,7 +295,8 @@ class StoryController extends ActiveController
 
                                 //修改故事发布状态,发送通知
                                 //消息通知->用户发布新故事
-                                if ($isUpdatePublished) {
+                                $isTestUser = ArrayHelper::isIn($storyModel->uid,Yii::$app->params['testAcountUid']);
+                                if ($isUpdatePublished && !$isTestUser) {
                                     $mnsQueue = new MnsQueue();
                                     $queueName = Yii::$app->params['mnsQueueNotifyName'];
                                     $messageBody = QueueMessageHelper::postStory($storyModel->uid, $storyModel->story_id);
