@@ -234,11 +234,13 @@ class StoryController extends ActiveController
                                         'story_id' => $storyId,
                                     );
                                     $userReadStoryRecordModel = UserReadStoryRecord::find()->where($userReadStoryRecordCondition)->one();
-                                    $userReadStoryRecordModel->status = Yii::$app->params['STATUS_DELETED'];
-                                    $userReadStoryRecordModel->save(false, ['status']);
-                                    if ($userReadStoryRecordModel->hasErrors()) {
-                                        Yii::error($userReadStoryRecordModel->getErrors());
-                                        throw new ServerErrorHttpException('阅读记录删除失败');
+                                    if(!is_null($userReadStoryRecordModel)) {
+                                        $userReadStoryRecordModel->status = Yii::$app->params['STATUS_DELETED'];
+                                        $userReadStoryRecordModel->save(false, ['status']);
+                                        if ($userReadStoryRecordModel->hasErrors()) {
+                                            Yii::error($userReadStoryRecordModel->getErrors());
+                                            throw new ServerErrorHttpException('阅读记录删除失败');
+                                        }
                                     }
                                 }
 
@@ -317,8 +319,8 @@ class StoryController extends ActiveController
                             $hasError = true;
                             $transaction->rollBack();
                             Yii::error($e->getMessage());
-//                            print_r($e->getMessage());
-//                    print_r($e->getTrace());
+                            print_r($e->getMessage());
+                    print_r($e->getTrace());
                             $response->statusCode = 400;
                             $response->statusText = '编辑故事失败';
                         }
