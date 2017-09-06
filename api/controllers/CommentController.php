@@ -267,7 +267,7 @@ class CommentController extends ActiveController
         if ($ret['data']['totalCount'] > 0) {
 
             //第一页返回热门评论
-            if ($ret['data']['currentPage'] == 1) {
+            if ($ret['data']['currentPage'] == 1 && $ret['data']['totalCount'] >= $ret['data']['commentTotalMinCount']) {
                 $ret['data']['commentList']['hot'] = array();
                 $commentHotCondition = ['>', 'comment.like_count', 0];
                 //热门评论
@@ -276,7 +276,7 @@ class CommentController extends ActiveController
                     ->where($commentCondition)
                     ->andWhere($commentHotCondition)
                     ->orderBy(['comment.like_count' => SORT_DESC])
-                    ->limit(Yii::$app->params['COMMENT_HOT_MAX_COUNT'])
+                    ->limit(Yii::$app->params['commentHotMaxCount'])
                     ->asArray()
                     ->all();
 
