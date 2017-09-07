@@ -1505,7 +1505,7 @@
                         "message": "OK"
                     }
                     
-         29) 修改用户名[已完成]
+         29) 修改用户名[已停用]
              api:    user/update-avatar
              method: get
              params:
@@ -1545,7 +1545,7 @@
                     }
                     备注：用户名长度限制：4-24个字符
          
-         30）修改用户头像[已完成]
+         30）修改用户头像[已停用]
              api:    user/update-avatar
              method: get
              params:
@@ -1583,7 +1583,7 @@
                        "message": "OK"
                    }
                    
-         31）修改个性签名[已完成]
+         31）修改个性签名[已停用]
              api:    user/update-signature
              method: get
              params:
@@ -1615,8 +1615,41 @@
                     }
                     
                     备注：个性签名长度限制 最多100个字符
+                    
+         33) 修改用户信息(用户名,签名,头像)[已完成]
          
-         32）获取他人已发布的故事信息[已完成]
+              api:    user/update-user-info?uid=xxx&access-token=yyy
+              method: post
+              params:
+                     signature:个性签名(个性签名长度限制 最多100个字符)
+                     avatar:头像
+                     username:用户名(用户名长度限制：4-24个字符)
+              example:
+                    
+              ret:   Json
+                   
+                     //成功
+                     {
+                         "data": {
+                             "uid": 10148,
+                             "username": "用户_8321",
+                             "mobile_phone": "18600024914",
+                             "email": null,
+                             "avatar": null,
+                             "signature": "444444444",
+                             "access_token": "x8YVH0VzifPGp5PkHCsZ2ufmVENFWbsX",
+                             "status": 1,
+                             "register_ip": "",
+                             "register_time": "2017-08-12 18:42:46",
+                             "last_login_ip": "",
+                             "last_login_time": null,
+                             "last_modify_time": "2017-08-12 19:13:03"
+                         },
+                         "status": 200,
+                         "message": "OK"
+                     }
+         
+         34）获取他人已发布的故事信息[已完成]
           api:    user/others-storys
           method: GET
           params:
@@ -1669,7 +1702,7 @@
               "message": "OK"
           }
           
-        33) 获取他人用户信息[已完成]
+        35) 获取他人用户信息[已完成]
          api:    user/others-info
          method: GET
          params:
@@ -1699,7 +1732,7 @@
              "message": "用户不存在"
          }
          
-         34) 增加用户,故事点击数[已完成]
+         36) 增加用户,故事点击数[已完成]
           api:    tap/taps-increase
           method: GET
           params:
@@ -1724,7 +1757,7 @@
              "message": "参数错误"
          }
             
-         35) 手机号密码登录[已完成]
+         37) 手机号密码登录[已完成]
           api:    user/mobile-phone-login
           method: POST
           params:
@@ -1762,7 +1795,7 @@
               "message": "手机号或密码错误."
           }
           
-        36) QQ联合登录[已完成]
+        38) QQ联合登录[已完成]
         
           api:    user/qq-login
           method: get
@@ -1803,7 +1836,7 @@
           //失败(QQ connect 输出)
           <meta charset="UTF-8"><h3>error:</h3>-1<h3>msg  :</h3>client request's parameters are invalid, invalid openid
           
-        37) 微博联合登录[已完成]
+        39) 微博联合登录[已完成]
           api: user/weibo-login
           method: get
           params:
@@ -1839,7 +1872,7 @@
               "message": "OK"
           }
           
-        38) 微信联合登录[已完成]
+        40) 微信联合登录[已完成]
           api: user/weixin-login
           method: get
           params:
@@ -1875,13 +1908,13 @@
               "message": "OK"
           }
           
-        39）用户协议
+        41）用户协议
            http://youwei.xiaoningmeng.net/site/agreement
            
            版权申明
            http://youwei.xiaoningmeng.net/site/copyright
             
-        40）退出登录[已完成]
+        42）退出登录[已完成]
           api:    user/logout
           method: get
           params:
@@ -1908,7 +1941,7 @@
               "type": "yii\\web\\UnauthorizedHttpException"
             }
             
-        42) 通知是否有更新[已完成]
+        43) 通知是否有更新[已完成]
           api:    notify/check-update
           method: get
           params:
@@ -1927,7 +1960,7 @@
                 }
             }
             
-        43）微信支付-统一下单[待测试]
+        44）微信支付-统一下单[待测试]
           api:    wxpay/generate-pay-order
           method: get
           params:
@@ -1955,7 +1988,7 @@
           备注：
             参考文档：https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_1
             
-        44）微信支付-查询订单[待测试]
+        45）微信支付-查询订单[待测试]
           api:    wxpay/order-query
           method: get
           params:

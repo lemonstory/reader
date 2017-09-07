@@ -941,6 +941,71 @@ class UserController extends ActiveController
     }
 
     /**
+     * 修改用户信息(用户名,签名,头像)
+     * @param $uid
+     * @return mixed
+     */
+    public function actionUpdateUserInfo($uid) {
+
+        $userModel = Yii::$app->user->identity;
+        $signature = Yii::$app->request->post("signature",'');
+        $avatar = Yii::$app->request->post("avatar",'');
+        $username = Yii::$app->request->post("username",'');
+        $ret['data'] = array();
+
+        if (!is_null($userModel)) {
+            if ($uid == $userModel->uid) {
+
+                if(!empty($signature) || !empty($avatar) || !empty($username)) {
+
+                    $attributeNames = array();
+                    if(!empty($signature)) {
+                        $userModel->signature = $signature;
+                        $attributeNames[] = 'signature';
+                    }
+
+                    if(!empty($avatar)) {
+                        $userModel->avatar = $avatar;
+                        $attributeNames[] = 'avatar';
+                    }
+
+                    if(!empty($username)) {
+                        $userModel->username = $username;
+                        $attributeNames[] = 'username';
+                    }
+
+                    if (!$userModel->save(true, $attributeNames)) {
+                        foreach ($userModel->getErrors() as $attribute => $error) {
+                            foreach ($error as $message) {
+                                //throw new Exception($attribute.": ".$message);
+                                $ret['status'] = 400;
+                                $ret['message'] = $message;
+                            }
+                        }
+                    } else {
+                        $ret['data'] = $this->retUserInfoData($userModel);
+                        $ret['status'] = 200;
+                        $ret['message'] = 'OK';
+                    }
+                }else {
+                    $ret['status'] = 400;
+                    $ret['message'] = '用户名,头像,个性签名 均为空';
+                }
+
+            } else {
+                $ret['status'] = 400;
+                $ret['message'] = 'uid与token不相符';
+            }
+
+        } else {
+            $ret['status'] = 400;
+            $ret['message'] = '用户不存在';
+        }
+        return $ret;
+    }
+
+
+    /**
      * 获取他人的用户信息
      * @param $uid
      * @return mixed
