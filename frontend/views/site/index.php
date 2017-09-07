@@ -57,7 +57,7 @@
                 <div class="row center-xs between-sm middle-xs" style="max-width: 510px !important;">
                     <!--                       target="_blank">-->
                     <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"
-                       href="#" onclick="alert('谢谢您,ios正在开发中。android可以下载(仅供微博的同学审核使用)');"
+                       href="#" onclick="alert('谢谢您,ios正在开发中。安卓(android)版可以下载.');"
 
                        <span
                                 class="icon icon-apple"></span>
