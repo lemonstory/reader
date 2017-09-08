@@ -296,6 +296,7 @@ class StoryController extends ActiveController
                                 //修改故事发布状态,发送通知
                                 //消息通知->用户发布新故事
                                 $isTestUser = ArrayHelper::isIn($storyModel->uid,Yii::$app->params['testAcountUid']);
+
                                 if ($isUpdatePublished && !$isTestUser) {
                                     $mnsQueue = new MnsQueue();
                                     $queueName = Yii::$app->params['mnsQueueNotifyName'];

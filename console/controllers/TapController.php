@@ -71,8 +71,9 @@ class TapController extends Controller
                         $uid = $messageBody['data']['uid'];
                         $storyId = $messageBody['data']['story_id'];
                         $taps = $messageBody['data']['taps'];
-                        $ret = $this->receiveTapsIncrease($uid, $storyId, $taps);
+                        $ret = $this->receiveTapsIncrease($uid, $storyId, $taps,$receiptHandle);
                         if($ret) {
+                            //删除消息
                             $mnsQueue->deleteMessage($receiptHandle,$queueName);
                         }
                         break;
@@ -90,27 +91,29 @@ class TapController extends Controller
      */
     public function receiveTapsIncrease($uid,$storyId,$taps) {
 
-        $userCondition = array(
-            'uid' => $uid,
-        );
-        $userModel = User::find()->where($userCondition)->one();
+        $userModel = null;
+        if(!empty($uid)) {
+            $userCondition = array(
+                'uid' => $uid,
+            );
+            $userModel = User::find()->where($userCondition)->one();
+        }
 
         $storyCondition = array(
             'story_id' => $storyId,
         );
         $storyModel = Story::find()->where($storyCondition)->one();
-        if(!is_null($userModel) && !is_null($storyModel) && !empty($taps)) {
+        if(!is_null($storyModel) && !empty($taps)) {
             $transaction = Yii::$app->db->beginTransaction();
             try {
-
-                $userModel->taps = $userModel->taps + $taps;
-                $isUserSaved = $userModel->save(false,['taps']);
-                if(!$isUserSaved) {
-                    //TODO:这里应该把getErrors抛出去,在外部接收然后在记录
-                    Yii::error($userModel->getErrors());
-                    throw new Exception('增加用户点击数保存失败');
+                if(!is_null($userModel)) {
+                    $userModel->taps = $userModel->taps + $taps;
+                    $isUserSaved = $userModel->save(false,['taps']);
+                    if(!$isUserSaved) {
+                        Yii::error($userModel->getErrors());
+                        throw new Exception('增加用户点击数保存失败');
+                    }
                 }
-
                 $storyModel->taps = $storyModel->taps + $taps;
                 $isStorySaved = $storyModel->save(false,['taps']);
                 if(!$isStorySaved) {

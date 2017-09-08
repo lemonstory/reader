@@ -55,7 +55,7 @@ class TapController extends ActiveController
 
     /**
      * 增加用户,故事点击数
-     * @param $uid
+     * @param $uid 游客时,uid为空
      * @param $storyId
      * @param $taps
      * @return mixed
@@ -63,7 +63,7 @@ class TapController extends ActiveController
     public function actionTapsIncrease($uid,$storyId,$taps) {
 
         $ret['data'] = array();
-        if(!empty($uid) && !empty($storyId) && !empty($taps)) {
+        if(!empty($storyId) && !empty($taps)) {
             $mnsQueue = new MnsQueue();
             $queueName = Yii::$app->params['mnsQueueTapsIncreaseName'];
             $messageBody = QueueMessageHelper::tapsIncrease($uid, $storyId, $taps);
