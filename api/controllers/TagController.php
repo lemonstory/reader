@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use Carbon\Carbon;
+use common\components\CountHelper;
 use common\components\CoverHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
@@ -77,6 +78,9 @@ class TagController extends ActiveController
 
     /**
      * 标签下的故事列表
+     * @param $tag_id
+     * @param $page
+     * @param $pre_page
      * @return mixed
      */
     public function actionStorys($tag_id,$page,$pre_page) {
@@ -91,7 +95,7 @@ class TagController extends ActiveController
                     $query->andWhere(['tag.tag_id' => $tag_id,'tag.status' => Yii::$app->params['STATUS_ACTIVE']]);
                 },
             ])
-            ->where(['story.status' => Yii::$app->params['STATUS_ACTIVE'], 'story.is_published' => Yii::$app->params['STATUS_PUBLISHED']])
+            ->where(['and',['story.status' => Yii::$app->params['STATUS_ACTIVE']], ['story.is_published' => Yii::$app->params['STATUS_PUBLISHED']], ['>' , 'story.message_count' , Yii::$app->params['tagStoryMinMessageCount']]])
             ->offset($offset)
             ->limit($pre_page)
             ->orderBy(['story.last_modify_time' => SORT_DESC]);
@@ -128,7 +132,7 @@ class TagController extends ActiveController
             $story['uid'] = $storyModelItem->uid;
             $story['chapter_count'] = $storyModelItem->chapter_count;
             $story['message_count'] = $storyModelItem->message_count;
-            $story['taps'] = $storyModelItem->taps;
+            $story['taps'] = CountHelper::humanize($storyModelItem->taps);
             $story['is_published'] = $storyModelItem->is_published;
             $story['create_time'] = Carbon::createFromTimestamp($storyModelItem->create_time)->toDateTimeString();
             $story['last_modify_time'] = Carbon::createFromTimestamp($storyModelItem->last_modify_time)->toDateTimeString();

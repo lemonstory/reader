@@ -55,10 +55,10 @@ class SignupForm extends Model
         $user->mobile_phone = $this->mobile_phone;
         $user->avatar = $this->avatar;
         $user->register_ip = Yii::$app->request->userIP;
-        $user->register_time = date('Y-m-d H:i:s',time());
+        $user->register_time = time();
         $user->last_login_ip = Yii::$app->request->userIP;
-        $user->last_login_time = date('Y-m-d H:i:s',time());
-        $user->last_modify_time = date('Y-m-d H:i:s',time());
+        $user->last_login_time = time();
+        $user->last_modify_time = time();
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateAccessToken();

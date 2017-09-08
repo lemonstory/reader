@@ -184,6 +184,7 @@
                   status:1=新建,2=修改,3=删除
                   create_time:创建时间
                   last_modify_time:最后修改时间
+                  background: 章节背景图
                   chapter_message_content:章节消息内容文件[type=file]
           ret:  Json
                 {
@@ -1648,6 +1649,7 @@
                          "status": 200,
                          "message": "OK"
                      }
+              备注：status=403 Toast返回的message
          
          34）获取他人已发布的故事信息[已完成]
           api:    user/others-storys

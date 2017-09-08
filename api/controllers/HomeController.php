@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use Carbon\Carbon;
+use common\components\CountHelper;
 use common\components\CoverHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
@@ -110,7 +111,7 @@ class HomeController extends ActiveController
                     $story['uid'] = $storyItem['uid'];
                     $story['chapter_count'] = $storyItem['chapter_count'];
                     $story['message_count'] = $storyItem['message_count'];
-                    $story['taps'] = $storyItem['taps'];
+                    $story['taps'] = CountHelper::humanize($storyItem['taps']);
                     $story['is_published'] = $storyItem['is_published'];
                     $story['create_time'] = Carbon::createFromTimestamp($storyItem['create_time'])->toDateTimeString();
                     $story['last_modify_time'] = Carbon::createFromTimestamp($storyItem['last_modify_time'])->toDateTimeString();

@@ -4,6 +4,7 @@ namespace api\controllers;
 
 use api\models\LoginForm;
 use Carbon\Carbon;
+use common\components\CountHelper;
 use common\models\Oauth;
 use common\models\SignupForm;
 use common\models\Story;
@@ -119,7 +120,7 @@ class UserController extends ActiveController
                     $story['uid'] = $storyModelItem->uid;
                     $story['chapter_count'] = $storyModelItem->chapter_count;
                     $story['message_count'] = $storyModelItem->message_count;
-                    $story['taps'] = $storyModelItem->taps;
+                    $story['taps'] = CountHelper::humanize($storyModelItem->taps);
                     $story['is_published'] = $storyModelItem->is_published;
                     $story['create_time'] = Carbon::createFromTimestamp($storyModelItem->create_time)->toDateTimeString();
                     $story['last_modify_time'] = Carbon::createFromTimestamp($storyModelItem->last_modify_time)->toDateTimeString();
@@ -219,7 +220,7 @@ class UserController extends ActiveController
             $story['uid'] = $storyModelItem->uid;
             $story['chapter_count'] = $storyModelItem->chapter_count;
             $story['message_count'] = $storyModelItem->message_count;
-            $story['taps'] = $storyModelItem->taps;
+            $story['taps'] = CountHelper::humanize($storyModelItem->taps);
             $story['is_published'] = $storyModelItem->is_published;
             $story['create_time'] = Carbon::createFromTimestamp($storyModelItem->create_time)->toDateTimeString();
             $story['last_modify_time'] = Carbon::createFromTimestamp($storyModelItem->last_modify_time)->toDateTimeString();
@@ -285,6 +286,9 @@ class UserController extends ActiveController
                 $uid = $oauthModel->uid;
                 $userCondition = ['uid' => $uid];
                 $userModel = User::findOne($userCondition);
+                $userModel->last_login_ip = Yii::$app->request->getUserIP();
+                $userModel->last_login_time = time();
+                $userModel->save();
                 $ret['data'] = $this->retUserInfoData($userModel);
                 $ret['status'] = 200;
                 $ret['message'] = 'OK';
@@ -439,6 +443,9 @@ class UserController extends ActiveController
                 $uid = $oauthModel->uid;
                 $userCondition = ['uid' => $uid];
                 $userModel = User::findOne($userCondition);
+                $userModel->last_login_ip = Yii::$app->request->getUserIP();
+                $userModel->last_login_time = time();
+                $userModel->save();
                 $ret['data'] = $this->retUserInfoData($userModel);
                 $ret['status'] = 200;
                 $ret['message'] = 'OK';
@@ -593,6 +600,9 @@ class UserController extends ActiveController
                 $uid = $oauthModel->uid;
                 $userCondition = ['uid' => $uid];
                 $userModel = User::findOne($userCondition);
+                $userModel->last_login_ip = Yii::$app->request->getUserIP();
+                $userModel->last_login_time = time();
+                $userModel->save();
                 $ret['data'] = $this->retUserInfoData($userModel);
                 $ret['status'] = 200;
                 $ret['message'] = 'OK';
@@ -730,7 +740,7 @@ class UserController extends ActiveController
         $signupFormModel = new SignupForm();
         $signupFormModel->mobile_phone = $mobilePhone;
         $signupFormModel->password = $password;
-        $signupFormModel->username = "用户_" . rand(1000, 9999);
+        $signupFormModel->username = "有味读书用户_" . rand(1000, 9999);
         //给用户随机分配头像
         $key = array_rand(Yii::$app->params['userDefaultAvatar']);
         $signupFormModel->avatar = Yii::$app->params['userDefaultAvatar'][$key];
@@ -747,7 +757,6 @@ class UserController extends ActiveController
                 }
             }
         } else {
-
             //注册成功返回用户信息
             $ret['data'] = $this->retUserInfoData($userModel);
             $ret['status'] = 200;
@@ -978,7 +987,7 @@ class UserController extends ActiveController
                         foreach ($userModel->getErrors() as $attribute => $error) {
                             foreach ($error as $message) {
                                 //throw new Exception($attribute.": ".$message);
-                                $ret['status'] = 400;
+                                $ret['status'] = 403;
                                 $ret['message'] = $message;
                             }
                         }
@@ -1048,7 +1057,7 @@ class UserController extends ActiveController
         $data['username'] = $userModel->username;
         $data['avatar'] = $userModel->avatar;
         $data['signature'] = $userModel->signature;
-        $data['taps'] = $userModel->taps;
+        $data['taps'] = CountHelper::humanize($userModel->taps);
         $data['gender'] = $userModel->gender;
         $data['province'] = $userModel->province;
         $data['city'] = $userModel->city;

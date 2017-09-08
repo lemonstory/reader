@@ -3,6 +3,7 @@
 namespace api\controllers;
 
 use Carbon\Carbon;
+use common\components\CountHelper;
 use common\models\Chapter;
 use common\models\ChapterMessageContent;
 use common\models\Story;
@@ -91,7 +92,7 @@ class SearchController extends ActiveController
                     $story['uid'] = $item['fields']['story_uid'];
                     $story['chapter_count'] = $item['fields']['story_chapter_count'];
                     $story['message_count'] = $item['fields']['story_message_count'];
-                    $story['taps'] = $item['fields']['story_taps'];
+                    $story['taps'] = CountHelper::humanize($item['fields']['story_taps']);
                     $story['is_published'] = $item['fields']['story_is_published'];
                     $story['status'] = $item['fields']['story_status'];
                     $story['create_time'] = Carbon::createFromTimestamp($item['fields']['story_create_time'])->toDateTimeString();

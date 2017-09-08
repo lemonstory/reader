@@ -50,7 +50,12 @@ class StoryController extends Controller
         //例如: 有故事被后台审核人员已经删除
         $inHotStoryIdArr = $redis->zrevrange(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], 0, -1);
         $inHotStoryIdArrCount = count($inHotStoryIdArr);
-        $condition = ['status' => Yii::$app->params['STATUS_ACTIVE'],'is_published' => Yii::$app->params['STATUS_PUBLISHED']];
+        $condition  = ['and',
+                        ['story.status' => Yii::$app->params['STATUS_ACTIVE']],
+                        ['story.is_published' => Yii::$app->params['STATUS_PUBLISHED']],
+                        ['>' , 'story.message_count' , Yii::$app->params['homeStoryMinMessageCount']],
+                        ['>' , 'story.taps' , Yii::$app->params['homeStoryMinTapsCount']],
+                    ];
         if($inHotStoryIdArrCount > 0) {
 
             $inHotCondition = ['story_id' => $inHotStoryIdArr];
