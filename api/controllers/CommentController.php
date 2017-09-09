@@ -415,8 +415,8 @@ class CommentController extends ActiveController
                             $isLike = $redis->getbit($commentLikeKey, $uid);
                             $comment['parent']['is_like'] = intval($isLike);
                         }
-                        $comment['create_time'] = $commentContentArr[$commentId]['create_time'];
-                        $comment['last_modify_time'] = $commentContentArr[$commentId]['last_modify_time'];
+                        $comment['create_time'] = Carbon::createFromTimestamp($commentContentArr[$commentId]['create_time'])->diffForHumans();
+                        $comment['last_modify_time'] = Carbon::createFromTimestamp($commentContentArr[$commentId]['last_modify_time'])->toDateTimeString();
 
                         $comment['parent']['create_time'] = Carbon::createFromTimestamp($commentContentArr[$parentCommentId]['create_time'])->diffForHumans();
                         $comment['parent']['last_modify_time'] = Carbon::createFromTimestamp($commentContentArr[$parentCommentId]['last_modify_time'])->toDateTimeString();
