@@ -71,7 +71,7 @@
                         </div>
                     </a>
                     <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"
-                       href="http://youwei-static.oss-cn-beijing.aliyuncs.com/apk/app-XiaoMi-release.apk"
+                       href="http://youwei-static.oss-cn-beijing.aliyuncs.com/apk/youwei-v1.0.1-release.apk"
                        target="_blank"><span
                                 class="icon icon-android"></span>
                         <div class="content-wrap is-flex direction-vert start-xs">
