@@ -2016,6 +2016,64 @@
                 }
             }
           备注：参考文档 https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2&index=4
+          
+          
+        46）QQ支付-统一下单[待测试]
+          api:    qpay/generate-pay-order
+          method: get
+          params:
+                deviceId:终端设备号
+                totalFee:订单总金额，单位为分
+                body:商品描述交易字段格式根据不同的应用场景按照以下格式：APP——需传入应用市场上的APP名字-实际商品名称，天天爱消除-游戏充值。
+                uid: 用户uid
+                access-token: 授权访问凭证
+          ret: Json数组
+          示例：
+            http:/http://api.youwei.xiaoningmeng.net/qpay/generate-pay-order?deviceId=111&totalFee=1&uid=10000&access-token=O2fwD_e9bufnpu4ATg6O_j3VvBZF_yGl
+              {
+                  "status": 200,
+                  "message": "SUCCESS",
+                  "data": {
+                      "appId": "101405801",
+                      "nonce": "de2840a4b508662919ca0dd77205dea2",
+                      "timeStamp": 1505124037,
+                      "pubAcc": "",
+                      "pubAccHint": "",
+                      "bargainorId": "1488219851",
+                      "tokenId": "5Veaa6eb88f25ccbb1cef696beebba0a",
+                      "sig": "ZGY2NDQ3MjNlYjJjYTc4ZTkzZmM1Y2NjOTVmYmQ0ZmIyYzg1OGY3ZQ==",
+                      "sigType": "HMAC-SHA1"
+                  }
+              }
+          备注：
+            参考文档：https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=58
+            
+        47）QQ支付-查询订单[待测试]
+          api:    qpay/order-query
+          method: get
+          params:
+                transactionId: 微信订单号
+                outTradeNo: 商户订单号
+                uid: 用户uid
+                access-token: 授权访问凭证
+          ret: Json数组
+          示例：
+            http://api.youwei.xiaoningmeng.net/qpay/order-query?transactionId=1488219851&outTradeNo=111&uid=10000&access-token=O2fwD_e9bufnpu4ATg6O_j3VvBZF_yGl
+            //失败
+            {
+                "status": 200,
+                "message": "SUCCESS",
+                "data": {
+                    "appId": "101405801",
+                    "mch_id": "1488219851",
+                    "sign": "F55F79FC18B345BBFA15848D9FAFDAFB",
+                    "result_code": "FAIL",
+                    "err_code": "ORDERNOTEXIST",
+                    "err_code_des": "ORDERNOTEXIST",
+                    "nonceStr": "fa709bc3ec9d9abd3d9c86e50d27787e"
+                }
+            }
+          备注：参考文档 https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2&index=4
         
  ```
  
