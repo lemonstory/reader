@@ -3,18 +3,14 @@
 namespace api\controllers;
 
 use Carbon\Carbon;
-use common\components\MnsQueue;
-use common\components\QueueMessageHelper;
 use GuzzleHttp\Client;
-use SimpleXMLElement;
 use Yii;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\QueryParamAuth;
 use yii\helpers\ArrayHelper;
 use yii\rest\ActiveController;
-use yii\web\UrlManager;
 
-class WxpayController extends ActiveController
+class QpayController extends ActiveController
 {
     public $modelClass = 'common\models\User';
     public $serializer = [
@@ -61,7 +57,7 @@ class WxpayController extends ActiveController
     /**
      * 请求生成支付订单
      *
-     * @see https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_1#
+     * @see https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=58
      * @param $deviceId 终端设备号(门店号或收银设备ID)，默认请传"WEB"
      * @param $totalFee 订单总金额，单位为分
      * @param string $body 商品描述交易字段格式根据不同的应用场景按照以下格式：APP——需传入应用市场上的APP名字-实际商品名称，天天爱消除-游戏充值。
@@ -70,22 +66,16 @@ class WxpayController extends ActiveController
     public function actionGeneratePayOrder($deviceId,$totalFee,$body="有味读书-会员充值") {
 
         //应用ID
-        $params['appid'] = Yii::$app->params['weixinAppId'];
+        $params['appid'] = Yii::$app->params['qqAppId'];
 
         //商户号
-        $params['mch_id'] = Yii::$app->params['weixinMchId'];
-
-        //设备号
-        $params['device_info'] = $deviceId;
+        $params['mch_id'] = Yii::$app->params['qqMchId'];
 
         //随机字符串(随机字符串，不长于32位)
         $params['nonce_str'] = Yii::$app->security->generateRandomString(6);
 
         //商品描述
         $params['body'] = $body;
-
-        //商品详情
-        $params['detail'] = "";
 
         //附加数据
         $params['attach'] = "";
@@ -108,32 +98,33 @@ class WxpayController extends ActiveController
         //交易结束时间(最短失效时间间隔必须大于5分钟)
         $params['time_expire'] = Carbon::now()->addMinutes(Yii::$app->params['weixinTimeExpire'])->format("YmdHis");
 
-        //订单优惠标记
-        $params['goods_tag'] = "";
-
-        //通知地址
-        $params['notify_url'] = Yii::$app->urlManager->createAbsoluteUrl('wxpay/pay-notify');;
-
-        //交易类型
-        $params['trade_type'] = "APP";
-
         //支付方式限制
         $params['limit_pay'] = "";
 
-        //场景信息
-        $params['scene_info'] = "";
+        //代扣签约序列号(商户侧记录的用户代扣协议序列号，支付中开通代扣必)
+        $params['contract_code'] = "";
 
-        //签名类型
-        $params['sign_type'] = "MD5";
+        //QQ钱包活动标识
+        $params['promotion_tag'] = "";
 
-        //签名
+        //支付场景
+        $params['trade_type'] = "APP";
+
+        //通知地址
+        $params['notify_url'] = Yii::$app->urlManager->createAbsoluteUrl('qpay/pay-notify');
+
+        //设备号
+        $params['device_info'] = $deviceId;
+
+        //签名(签名类型：md5)
+        //https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=57
         $params['sign'] = $this->generateSign($params);
         $xml = $this->paramsToXml($params);
 
         //POST提交
         $client = new Client();
         $response = $client->post(
-            Yii::$app->params['weixinUnifiedorderUrl'],
+            Yii::$app->params['qqUnifiedorderUrl'],
             array(
                 'body' => $xml
             )
@@ -145,23 +136,18 @@ class WxpayController extends ActiveController
 
             $body = $response->getBody();
             $stringBody = (string) $body;
-
 //            <xml>
-//                <return_code><![CDATA[FAIL]]></return_code>
-//                <return_msg><![CDATA[签名错误]]></return_msg>
-//            </xml>
-//
-//            <xml>
-//                <return_code><![CDATA[SUCCESS]]></return_code>
-//                <return_msg><![CDATA[OK]]></return_msg>
-//                <appid><![CDATA[wx23f40d0badebdb9a]]></appid>
-//                <mch_id><![CDATA[1488212012]]></mch_id>
-//                <device_info><![CDATA[1111]]></device_info>
-//                <nonce_str><![CDATA[H3gY3HULT7tYf83Y]]></nonce_str>
-//                <sign><![CDATA[A20DB45B9891B4FB8D4F7D97CA86501A]]></sign>
-//                <result_code><![CDATA[SUCCESS]]></result_code>
-//                <prepay_id><![CDATA[wx201709032138589ee8dab0030453506984]]></prepay_id>
-//                <trade_type><![CDATA[APP]]></trade_type>
+//            <return_code><![CDATA[SUCCESS]]></return_code>
+//            <return_msg><![CDATA[SUCCESS]]></return_msg>
+//            <retcode><![CDATA[0]]></retcode>
+//            <retmsg><![CDATA[ok]]></retmsg>
+//            <appid><![CDATA[101405801]]></appid>
+//            <mch_id><![CDATA[1488219851]]></mch_id>
+//            <nonce_str><![CDATA[4cab398176dfb3c4fff996b5d7365c33]]></nonce_str>
+//            <prepay_id><![CDATA[6V62a6ef387814905f21fb6dbbacb381]]></prepay_id>
+//            <result_code><![CDATA[SUCCESS]]></result_code>
+//            <sign><![CDATA[08D61D9B0358E9FC91013A2521C27227]]></sign>
+//            <trade_type><![CDATA[APP]]></trade_type>
 //            </xml>
 
             $resObj = simplexml_load_string($stringBody,'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS);
@@ -169,21 +155,35 @@ class WxpayController extends ActiveController
 
                 if(0 == strcmp("SUCCESS", $resObj->return_code)) {
 
-                    //https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=8_5
-                    //商户服务器生成支付订单，先调用【统一下单API】生成预付单，获取到prepay_id后将参数再次签名传输给APP发起支付。以下是调起微信支付的关键代码：
-                    //参与签名的字段名为appId，partnerId，prepayId，nonceStr，timeStamp，package
+                    //https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=165
                     $resParams['appId'] = (string)$resObj->appid;
-                    $resParams['partnerId'] = (string)$resObj->mch_id;
-                    $resParams['prepayId'] = (string)$resObj->prepay_id;
-                    $resParams['nonceStr'] = (string)$resObj->nonce_str;
+                    $resParams['nonce'] = (string)$resObj->nonce_str;
                     $resParams['timeStamp'] = time();
-                    $resParams['package'] = "Sign=WXPay";
-                    //二次签名
-                    $resParams['sign'] = $this->generateSign($resParams);
 
-                    $ret['status'] = 200;
-                    $ret['message'] = (string)$resObj->return_msg;
-                    $ret['data'] = $resParams;
+                    //手Q公众帐号，暂时未对外开放申请。
+                    //注：所有参与签名的参数，如果value为空, 生成格式如“pubAcc=”
+                    $resParams['pubAcc'] = "";
+                    $resParams['pubAccHint'] = "";
+                    $resParams['bargainorId'] = (string)$resObj->mch_id;
+
+                    if(0 == strcmp("SUCCESS", $resObj->result_code)) {
+                        //prepay_id:QQ钱包的预支付会话标识，用于后续接口调用中使用，该值有效期为2小时
+                        $resParams['tokenId'] = (string)$resObj->prepay_id;
+
+                        //数字签名
+                        //sig,sigType不参与签名
+                        $resParams['sig'] = $this->generateDigitalSign($resParams);
+                        $resParams['sigType'] = "HMAC-SHA1"; //不参与签名
+
+                        $ret['status'] = 200;
+                        $ret['message'] = (string)$resObj->return_msg;
+                        $ret['data'] = $resParams;
+                    }else {
+
+                        $ret['status'] = 500;
+                        $ret['message'] = (string)$resObj->retmsg;
+                        $ret['data'] = array();
+                    }
 
                 }else {
 
@@ -210,53 +210,51 @@ class WxpayController extends ActiveController
 
     /**
      * 支付结果通知(接收微信支付异步通知回调地址,通知url必须为直接可访问的url)
-     * @see https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_7&index=3
+     * 支付完成后，QQ钱包会把相关支付结果和用户信息发送给商户，商户需要接收处理，并返回应答，如果QQ钱包收到商户的应答不是成功或超时，QQ钱包则认为通知失败，会通过一定的策略定期重新发起通知，尽可能提高通知的成功率，但QQ钱包不保证通知最终能成功。
+     * @see https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=59
      */
     public function actionPayNotify() {
 
-//        $body = Yii::$app->request->getRawBody();
+//        $xml = Yii::$app->request->getRawBody();
         $xml = <<<EOF
 <xml>
-  <appid><![CDATA[wx2421b1c4370ec43b]]></appid>
-  <attach><![CDATA[支付测试]]></attach>
-  <bank_type><![CDATA[CFT]]></bank_type>
-  <fee_type><![CDATA[CNY]]></fee_type>
-  <is_subscribe><![CDATA[Y]]></is_subscribe>
-  <mch_id><![CDATA[10000100]]></mch_id>
-  <nonce_str><![CDATA[5d2b6c2a8db53831f7eda20af46e531c]]></nonce_str>
-  <openid><![CDATA[oUpF8uMEb4qRXf22hE3X68TekukE]]></openid>
-  <out_trade_no><![CDATA[1409811653]]></out_trade_no>
-  <result_code><![CDATA[SUCCESS]]></result_code>
-  <return_code><![CDATA[SUCCESS]]></return_code>
-  <sign><![CDATA[B552ED6B279343CB493C5DD0D78AB241]]></sign>
-  <sub_mch_id><![CDATA[10000100]]></sub_mch_id>
-  <time_end><![CDATA[20140903131540]]></time_end>
-  <total_fee>1</total_fee>
-  <trade_type><![CDATA[JSAPI]]></trade_type>
-  <transaction_id><![CDATA[1004400740201409030005092168]]></transaction_id>
+    <appid><![CDATA[1104606907]]></appid>
+    <attach><![CDATA[ATTACHEND=&END]]></attach>
+    <bank_type><![CDATA[BALANCE]]></bank_type> 
+    <cash_fee><![CDATA[1]]></cash_fee>
+    <device_info><![CDATA[WP00000001]]></device_info>
+    <fee_type><![CDATA[CNY]]></fee_type>
+    <mch_id><![CDATA[1900000109]]></mch_id>
+    <nonce_str><![CDATA[7b14db232445d79c5c86d22bbd8898d3]]></nonce_str>
+    <openid><![CDATA[D60EFFA28D0698EF57CFC9118C149E94]]></openid>
+    <out_trade_no><![CDATA[20161025_qpay_unified_order_A]]></out_trade_no>
+    <sign><![CDATA[DE4335434F33C065C449E261DCE08BCF]]></sign>
+    <time_end><![CDATA[20161025094946]]></time_end>
+    <total_fee><![CDATA[1]]></total_fee>
+    <trade_state><![CDATA[SUCCESS]]></trade_state>
+    <trade_type><![CDATA[NATIVE]]></trade_type>
+    <transaction_id><![CDATA[1900000109471610251307259064]]></transaction_id>
 </xml>
+
 
 EOF;
         $postObj = simplexml_load_string($xml,'SimpleXMLElement', LIBXML_NOCDATA | LIBXML_NOBLANKS);
         $postParams['appid'] = (string) $postObj->appid;
         $postParams['attach'] = (string) $postObj->attach;
         $postParams['bank_type'] = (string) $postObj->bank_type;
+        $postParams['cash_fee'] = (string) $postObj->cash_fee;
+        $postParams['device_info'] = (string) $postObj->device_info;
         $postParams['fee_type'] = (string) $postObj->fee_type;
-        $postParams['is_subscribe'] = (string) $postObj->is_subscribe;
         $postParams['mch_id'] = (string) $postObj->mch_id;
         $postParams['nonce_str'] = (string) $postObj->nonce_str;
         $postParams['openid'] = (string) $postObj->openid;
         $postParams['out_trade_no'] = (string) $postObj->out_trade_no;
-        $postParams['result_code'] = (string) $postObj->result_code;
-        $postParams['sub_mch_id'] = (string) $postObj->sub_mch_id;
         $postParams['time_end'] = (string) $postObj->time_end;
         $postParams['total_fee'] = (string) $postObj->total_fee;
+        $postParams['trade_state'] = (string) $postObj->trade_state;
         $postParams['trade_type'] = (string) $postObj->trade_type;
         $postParams['transaction_id'] = (string) $postObj->transaction_id;
-        $postParams['return_code'] = (string) $postObj->return_code;
-
-//        var_dump($postParams);
-
+        //var_dump($postParams);
         $generatePostSign = $this->generateSign($postParams);
         $postSign = (string) $postObj->sign;
 
@@ -264,7 +262,7 @@ EOF;
         //TODO:校验返回的订单金额是否与商户侧的订单金额一致
         if(0 == strcmp($generatePostSign,$postSign)) {
             $resParams['return_code'] = "SUCCESS";
-            $resParams['return_msg'] = "OK";
+            $resParams['return_msg'] = "";
 
         }else {
 
@@ -281,8 +279,8 @@ EOF;
 
     /**
      * 查询订单
-     * @see https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2&index=4
-     * @param $transactionId 微信订单号
+     * @see https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=60
+     * @param $transactionId QQ钱包订单号
      * @param string $outTradeNo 商户订单号
      * @return array
      */
@@ -290,10 +288,10 @@ EOF;
 
         if(!empty($transactionId) && !empty($outTradeNo)) {
 
-            $params['appid'] = Yii::$app->params['weixinAppId'];
-            $params['mch_id'] = Yii::$app->params['weixinMchId'];
+            $params['appid'] = Yii::$app->params['qqAppId'];
+            $params['mch_id'] = Yii::$app->params['qqMchId'];
             //二选一
-            //微信的订单号，优先使用
+            //QQ钱包订单号，优先使用
             if(!empty($transactionId)) {
                 $params['transaction_id'] = $transactionId;
             }else {
@@ -306,7 +304,7 @@ EOF;
             //POST提交
             $client = new Client();
             $response = $client->post(
-                Yii::$app->params['weixinOrderQueryUrl'],
+                Yii::$app->params['qqOrderQueryUrl'],
                 array(
                     'body' => $xml
                 )
@@ -325,40 +323,30 @@ EOF;
 
                         $resParams['appId'] = (string)$resObj->appid;
                         $resParams['mch_id'] = (string)$resObj->mch_id;
-                        $resParams['nonceStr'] = (string)$resObj->nonce_str;
                         $resParams['sign'] = (string)$resObj->sign;
                         $resParams['result_code'] = (string)$resObj->result_code;
                         $resParams['err_code'] = (string)$resObj->err_code;
                         $resParams['err_code_des'] = (string)$resObj->err_code_des;
+                        $resParams['nonceStr'] = (string)$resObj->nonce_str;
 
                         if(0 == strcmp("SUCCESS", $resParams['result_code'])) {
 
                             $resParams['device_info'] = (string)$resObj->device_info;
-                            $resParams['openid'] = (string)$resObj->openid;
-                            $resParams['is_subscribe'] = (string)$resObj->is_subscribe;
                             $resParams['trade_type'] = (string)$resObj->trade_type;
                             $resParams['trade_state'] = (string)$resObj->trade_state;
                             $resParams['bank_type'] = (string)$resObj->bank_type;
-                            $resParams['total_fee'] = (string)$resObj->total_fee;
-
                             $resParams['fee_type'] = (string)$resObj->fee_type;
+                            $resParams['total_fee'] = (string)$resObj->total_fee;
                             $resParams['cash_fee'] = (string)$resObj->cash_fee;
-                            $resParams['cash_fee_type'] = (string)$resObj->cash_fee_type;
-                            $resParams['settlement_total_fee'] = (string)$resObj->settlement_total_fee;
                             $resParams['coupon_fee'] = (string)$resObj->coupon_fee;
-                            $resParams['coupon_count'] = (string)$resObj->coupon_count;
-                            //TODO:里面有$符
-//                            $resParams['coupon_id_$n'] = (string)$resObj->coupon_id_$n;
-//                            $resParams['coupon_type_$n'] = (string)$resObj->coupon_type_$n;
-//                            $resParams['coupon_fee_$n'] = (string)$resObj->coupon_fee_$n;
-
                             $resParams['transaction_id'] = (string)$resObj->transaction_id;
                             $resParams['out_trade_no'] = (string)$resObj->out_trade_no;
                             $resParams['attach'] = (string)$resObj->attach;
                             $resParams['time_end'] = (string)$resObj->time_end;
                             $resParams['trade_state_desc'] = (string)$resObj->trade_state_desc;
+                            $resParams['openid'] = (string)$resObj->openid;
                         }
-                        //结果返回至App(将微信返回的数据全部返回至客户端)
+                        //结果返回至App(将QQ支付返回的数据全部返回至客户端)
                         //TODO:服务器存储的数据修改
                         $ret['status'] = 200;
                         $ret['message'] = (string)$resObj->return_msg;
@@ -394,8 +382,8 @@ EOF;
 
 
     /**
-     * 生成签名
-     * @see https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=4_3
+     * 生成签名 - 商户后台与QQ钱包支付后台的签名机制
+     * @see https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=57
      * @param $params
      * @return string
      */
@@ -406,18 +394,52 @@ EOF;
         //如果参数的值为空不参与签名；
         ArrayHelper::removeValue($params,"");
         $paramsStr = urldecode(http_build_query($params));
-        $weixinKeyValue = Yii::$app->params['weixinKey'];
+        $qqKeyValue = Yii::$app->params['qqKey'];
         //在string后加入KEY
-        $stringSignTemp = $paramsStr."&key=".$weixinKeyValue;
+        $stringSignTemp = $paramsStr."&key=".$qqKeyValue;
         $hashMd5 = md5($stringSignTemp);
         $sign = strtoupper($hashMd5);
+        return $sign;
+    }
+
+
+    /**
+     * 密钥构造 - 数字签名需要
+     * @see https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=165
+     * @return string
+     */
+    public function generateSecretKey() {
+
+        $secretKey = Yii::$app->params['qqAppKey']."&";
+        return $secretKey;
+    }
+
+
+    /**
+     * 数字签名-生成签名值方法
+     * 商户App调用QQ钱包支付时签名机制
+     * @see https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=165
+     * @param $params
+     * @return string
+     */
+    public function generateDigitalSign($params) {
+
+        //将需要参与签名的所有参数按key进行字典升序排列
+        ksort($params);
+        //将第1步中排序后的参数(key=value)用&拼接起来
+        $paramsStr = urldecode(http_build_query($params));
+
+        //密钥
+        $secretKey = $this->generateSecretKey();
+        $hash = hash_hmac("sha1",$paramsStr,$secretKey);
+        $sign = base64_encode($hash);
         return $sign;
     }
 
     /**
      * 生成商户订单号
      * 当前系统时间加随机4位序列生成订单号
-     * @see https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=4_2
+     * @see https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=56
      * @return string
      */
     public function generateOutTradeNo(){
