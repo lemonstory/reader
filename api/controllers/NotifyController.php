@@ -173,6 +173,7 @@ class NotifyController extends ActiveController
                                 $dataItem['parent_comment_content'] = $contentArr['parent_comment_content'];
                                 $dataItem['comment_id'] = $contentArr['comment_id'];
                                 $dataItem['comment_content'] = $contentArr['comment_content'];
+                                $dataItem['story_id'] = $contentArr['story_id'];
                                 $dataItem['create_time'] = $createTime;
                                 $notifyList[] = $dataItem;
                                 break;
@@ -200,6 +201,7 @@ class NotifyController extends ActiveController
                                 $dataItem['count'] = $count;
                                 $dataItem['comment_id'] = $topicId;
                                 $dataItem['comment_content'] = $contentArr['comment_content'];
+                                $dataItem['story_id'] = $contentArr['story_id'];
                                 $dataItem['create_time'] = $createTime;
                                 $notifyList[] = $dataItem;
                                 break;
@@ -213,6 +215,7 @@ class NotifyController extends ActiveController
                                 $dataItem['count'] = $count;
                                 $dataItem['comment_id'] = $topicId;
                                 $dataItem['comment_content'] = $contentArr['comment_content'];
+                                $dataItem['story_id'] = $contentArr['story_id'];
                                 $dataItem['create_time'] = $createTime;
                                 $notifyList[] = $dataItem;
                                 break;

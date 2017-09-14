@@ -127,10 +127,11 @@ class NotifyController extends Controller
                     //用户对评论点赞
                     case "like_comment":
 
+                        $storyId = $messageBody['data']['story_id'];
                         $commentUid = $messageBody['data']['comment_uid'];
                         $commentId = $messageBody['data']['comment_id'];
                         $likeUid = $messageBody['data']['like_uid'];
-                        $ret = $this->receiveLikeComment($commentUid, $commentId, $likeUid);
+                        $ret = $this->receiveLikeComment($storyId, $commentUid, $commentId, $likeUid);
                         if($ret) {
                             $mnsQueue->deleteMessage($receiptHandle,$queueName);
                         }
@@ -139,10 +140,11 @@ class NotifyController extends Controller
                     //用户对回复点赞
                     case "like_reply":
 
+                        $storyId = $messageBody['data']['story_id'];
                         $replyUid = $messageBody['data']['reply_uid'];
                         $replyId = $messageBody['data']['reply_id'];
                         $likeUid = $messageBody['data']['like_uid'];
-                        $ret = $this->receiveLikeReply($replyUid, $replyId, $likeUid);
+                        $ret = $this->receiveLikeReply($storyId,$replyUid, $replyId, $likeUid);
                         if($ret) {
                             $mnsQueue->deleteMessage($receiptHandle,$queueName);
                         }
@@ -551,6 +553,14 @@ class NotifyController extends Controller
     {
 
         $content = array();
+
+        //取故事信息
+        //TODO:需要对用户信息做cache
+        $storyInfo = Story::find()
+            ->where(['story_id' => $storyId,'status' => Yii::$app->params['STATUS_ACTIVE']])
+            ->asArray()
+            ->one();
+
         //取回复者用户信息
         //TODO:需要对用户信息做cache
         $replyUserInfo = User::find()
@@ -567,7 +577,7 @@ class NotifyController extends Controller
 
         $commentAndReplyInfo = ArrayHelper::index($commentAndReplyInfo,'comment_id');
 
-        if(!empty($replyUserInfo) && !empty($commentAndReplyInfo) && count($commentAndReplyInfo) == 2) {
+        if(!empty($storyInfo) && !empty($replyUserInfo) && !empty($commentAndReplyInfo) && count($commentAndReplyInfo) == 2) {
 
             $parentCommentContent = $commentAndReplyInfo[$commentId]['content'];
             $replyCommentContent = $commentAndReplyInfo[$replyId]['content'];
@@ -609,11 +619,15 @@ class NotifyController extends Controller
             //当发送者只有一个时:消息中含回复内容
             //当发送者大于一个时:消息中不含回复内容
             if (count($content['senders']) == 1) {
+                //故事id
+                $content['story_id'] = $storyInfo['story_id'];
                 //回复id
                 $content['comment_id'] = $replyId;
                 //回复内容
                 $content['comment_content'] = $replyCommentContent;
             }else {
+                //故事id
+                $content['story_id'] = $storyInfo['story_id'];
                 //回复id
                 $content['comment_id'] = "";
                 //回复内容
@@ -723,15 +737,23 @@ class NotifyController extends Controller
 
     /**
      * 接收通知-用户对评论点赞
+     * @param $storyId
      * @param $commentUid
      * @param $commentId
      * @param $likeUid
      * @return bool|void
      */
-    public function receiveLikeComment($commentUid, $commentId, $likeUid)
+    public function receiveLikeComment($storyId, $commentUid, $commentId, $likeUid)
     {
-
         $content = array();
+
+        //取故事信息
+        //TODO:需要对用户信息做cache
+        $storyInfo = Story::find()
+            ->where(['story_id' => $storyId,'status' => Yii::$app->params['STATUS_ACTIVE']])
+            ->asArray()
+            ->one();
+
         //获取点赞用户信息
         //TODO:需要对用户信息做cache
         $likeUserInfo = User::find()
@@ -746,7 +768,7 @@ class NotifyController extends Controller
             ->asArray()
             ->one();
 
-        if(!empty($likeUserInfo) && !empty($commentInfo)) {
+        if(!empty($storyInfo) && !empty($likeUserInfo) && !empty($commentInfo)) {
 
             //根据uid=$commentUid,category=点赞评论,topic_id=$commentId取出uid(我)的通知信息
             $notifyInfoModel = UserNotify::find()
@@ -782,6 +804,7 @@ class NotifyController extends Controller
             }
             //评论内容
             $content['comment_content'] = $commentInfo['content'];
+            $content['story_id'] = $storyInfo['story_id'];
             $content = \GuzzleHttp\json_encode($content);
             //数据保存
             $notifyInfoModel->uid = $commentUid;
@@ -804,15 +827,24 @@ class NotifyController extends Controller
 
     /**
      * 接收通知-用户对回复点赞
+     * @param $storyId
      * @param $replyUid
      * @param $replyId
      * @param $likeUid
      * @return bool|void
      */
-    public function receiveLikeReply($replyUid, $replyId, $likeUid)
+    public function receiveLikeReply($storyId, $replyUid, $replyId, $likeUid)
     {
 
         $content = array();
+
+        //取故事信息
+        //TODO:需要对用户信息做cache
+        $storyInfo = Story::find()
+            ->where(['story_id' => $storyId,'status' => Yii::$app->params['STATUS_ACTIVE']])
+            ->asArray()
+            ->one();
+
         //获取点赞用户信息
         //TODO:需要对用户信息做cache
         $likeUserInfo = User::find()
@@ -827,7 +859,7 @@ class NotifyController extends Controller
             ->asArray()
             ->one();
 
-        if(!empty($likeUserInfo) && !empty($replyInfo)) {
+        if(!empty($storyInfo) && !empty($likeUserInfo) && !empty($replyInfo)) {
 
             //根据uid=$commentUid,category=点赞评论,topic_id=$commentId取出uid(我)的通知信息
             $notifyInfoModel = UserNotify::find()
@@ -864,6 +896,7 @@ class NotifyController extends Controller
             }
             //回复内容
             $content['comment_content'] = $replyInfo['content'];
+            $content['story_id'] = $storyInfo['story_id'];
             $content = \GuzzleHttp\json_encode($content);
             //数据保存
             $notifyInfoModel->uid = $replyUid;

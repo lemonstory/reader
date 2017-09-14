@@ -108,15 +108,17 @@ class QueueMessageHelper extends Component
 
     /**
      * 用户对评论点赞
+     * @param $storyId 故事id
      * @param $commentUid 评论者Uid
      * @param $commentId 评论id
      * @param $likeUid 点赞用户Uid
      * @return string
      */
-    public static function likeComment($commentUid,$commentId,$likeUid) {
+    public static function likeComment($storyId,$commentUid,$commentId,$likeUid) {
 
         $message = array();
         $message['action'] = "like_comment";
+        $message['data']['story_id'] = $storyId;
         $message['data']['comment_uid'] = $commentUid;
         $message['data']['comment_id'] = $commentId;
         $message['data']['like_uid'] = $likeUid;
@@ -126,15 +128,17 @@ class QueueMessageHelper extends Component
 
     /**
      * 用户对回复点赞
+     * @param $storyId 故事id
      * @param $replyUid 回复者Uid
      * @param $replyId 新回复id
      * @param $likeUid 点赞用户Uid
      * @return string
      */
-    public static function likeReply($replyUid,$replyId,$likeUid) {
+    public static function likeReply($storyId,$replyUid,$replyId,$likeUid) {
 
         $message = array();
         $message['action'] = "like_reply";
+        $message['data']['story_id'] = $storyId;
         $message['data']['reply_uid'] = $replyUid;
         $message['data']['reply_id'] = $replyId;
         $message['data']['like_uid'] = $likeUid;

@@ -75,9 +75,10 @@ class LikeController extends ActiveController
 
 
     //评论点赞
-    public function actionCommentLike($comment_id, $uid)
+    public function actionCommentLike($story_id, $comment_id, $uid)
     {
         $response = Yii::$app->getResponse();
+        $storyId = Yii::$app->getRequest()->get('story_id', null);
         $commentId = Yii::$app->getRequest()->get('comment_id', null);
         $ownerUid = Yii::$app->getRequest()->get('uid', null);
         $data = array();
@@ -130,12 +131,12 @@ class LikeController extends ActiveController
                         if(empty($commentModel->parent_comment_id)) {
 
                             //消息通知->用户对评论点赞
-                            $messageBody = QueueMessageHelper::likeComment($commentUid, $commentId, $ownerUid);
+                            $messageBody = QueueMessageHelper::likeComment($storyId,$commentUid, $commentId, $ownerUid);
                             $mnsQueue->sendMessage($messageBody, $queueName);
                         }else {
 
                             //消息通知->用户对回复点赞
-                            $messageBody = QueueMessageHelper::likeReply($commentUid, $commentId, $ownerUid);
+                            $messageBody = QueueMessageHelper::likeReply($storyId,$commentUid, $commentId, $ownerUid);
                             $mnsQueue->sendMessage($messageBody, $queueName);
                         }
 
@@ -170,7 +171,7 @@ class LikeController extends ActiveController
     }
 
 
-    public function actionCommentDislike($comment_id, $uid)
+    public function actionCommentDislike($story_id,$comment_id, $uid)
     {
 
         $response = Yii::$app->getResponse();
