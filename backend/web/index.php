@@ -3,6 +3,8 @@ defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'dev');
 
 require(__DIR__ . '/../../vendor/autoload.php');
+require(__DIR__ . '/../../vendor/OpenSearch/Autoloader/Autoloader.php');
+require(__DIR__ . '/../../vendor/alipay-sdk-php/AopSdk.php');
 //阿里云oss
 //https://help.aliyun.com/document_detail/32099.html?spm=5176.doc31886.6.762.P4dhRb
 require(__DIR__ . '/../../vendor/aliyuncs/oss-sdk-php/autoload.php');
