@@ -273,7 +273,7 @@ EOF;
         //获取uid
         $uid = 0;
         $attachQueryStr = urldecode($postParams['attach']);
-        if(!empty($attachQueryStr)) {
+        if (!empty($attachQueryStr)) {
             parse_str($attachQueryStr, $attach);
             $uid = $attach['uid'];
         }
@@ -484,7 +484,10 @@ EOF;
 
                             } else {
 
-                                $ret['status'] = 200;
+                                //TODO:服务器端处理错误
+                                //TODO:见下面文档中 错误码
+                                //  https://qpay.qq.com/qpaywiki/showdocument.php?pid=38&docid=61
+                                $ret['status'] = 500;
                                 $ret['message'] = (string)$resObj->err_code_des;
                                 $ret['data'] = $resParams;
                             }
