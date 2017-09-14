@@ -214,6 +214,7 @@ class StoryController extends ActiveController
                             $itemName = isset($storyItem['name']) ? $storyItem['name'] : '';
                             $itemActor = isset($storyItem['actor']) ? $storyItem['actor'] : '';
                             $itemDescription = isset($storyItem['description']) ? $storyItem['description'] : '';
+                            $itemStatus = isset($storyItem['status']) ? $storyItem['status'] : Yii::$app->params['STATUS_ACTIVE'];
                             $itemLastModifyTime = time();
                             if (!empty($itemStoryId)) {
                                 //保存故事
@@ -232,6 +233,7 @@ class StoryController extends ActiveController
                                     $storyModel->name = $itemName;
                                     $storyModel->description = $itemDescription;
                                     $storyModel->last_modify_time = $itemLastModifyTime;
+                                    $storyModel->status = $itemStatus;
                                     $storyModel->save();
                                     if ($storyModel->hasErrors()) {
 
