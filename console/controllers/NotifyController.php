@@ -432,8 +432,8 @@ class NotifyController extends Controller
             $count = 1;
             $isRead = 0;
             $time = time();
-            foreach ($uidArr as $uid) {
-                $rows[] = [$uid, 'post_chapter', $chapterId, $content, $uid, $count, $isRead, $time, $time];
+            foreach ($uidArr as $uidItem) {
+                $rows[] = [$uidItem, 'post_chapter', $chapterId, $content, $uid, $count, $isRead, $time, $time];
             }
 
             //执行批量添加
