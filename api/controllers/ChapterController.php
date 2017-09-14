@@ -239,8 +239,11 @@ class ChapterController extends ActiveController
                                             }
                                         }
 
+                                        //章节状态是新增加
+                                        //故事状态是已发布
+                                        //TODO:后续还可以增加章节状态
                                         //消息通知->用户发布新章节
-                                        if ($input['status'] == Yii::$app->params['STATUS_ACTIVE']) {
+                                        if ($input['status'] == Yii::$app->params['STATUS_ACTIVE'] && $storyModel->is_published == Yii::$app->params['STATUS_PUBLISHED']) {
 
                                             $mnsQueue = new MnsQueue();
                                             $queueName = Yii::$app->params['mnsQueueNotifyName'];
