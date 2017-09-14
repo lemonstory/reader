@@ -1261,6 +1261,7 @@
                  api:    /like/comment-like
                  method: get
                  params:
+                        story_id: 故事id
                         comment_id:评论id
                         uid:用户uid
                         access-token:登录用户授权凭证
@@ -1276,6 +1277,7 @@
              api:    /like/comment-dislike
              method: get
              params:
+                    story_id: 故事id
                     comment_id:评论id
                     uid:用户uid
                     access-token:登录用户授权凭证
