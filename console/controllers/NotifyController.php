@@ -426,7 +426,10 @@ class NotifyController extends Controller
                 $contentParam['chapter_name'] = "第".$chapterInfo['number']."章";
             }
 
+            var_dump($contentParam);
+
             $content = \GuzzleHttp\json_encode($contentParam);
+            var_dump($content);
 
             $columns = ['uid', 'category', 'topic_id', 'content', 'senders', 'count', 'is_read', 'create_time','last_modify_time'];
             $rows = array();
