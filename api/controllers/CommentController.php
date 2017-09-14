@@ -267,7 +267,7 @@ class CommentController extends ActiveController
         if ($ret['data']['totalCount'] > 0) {
 
             //第一页返回热门评论
-            if ($ret['data']['currentPage'] == 1 && $ret['data']['totalCount'] >= $ret['data']['commentTotalMinCount']) {
+            if ($ret['data']['currentPage'] == 1 && $ret['data']['totalCount'] >= Yii::$app->params['commentTotalMinCount']) {
                 $ret['data']['commentList']['hot'] = array();
                 $commentHotCondition = ['>', 'comment.like_count', 0];
                 //热门评论
