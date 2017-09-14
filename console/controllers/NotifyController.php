@@ -403,7 +403,9 @@ class NotifyController extends Controller
             ->asArray()
             ->one();
 
-        if(!empty($storyInfo) && !empty($chapterInfo) && !empty($userInfo['status'])) {
+        if(!empty($storyInfo) && !empty($chapterInfo) && !empty($userInfo)) {
+
+            var_dump($storyInfo);
 
             //组合content信息
             $contentParam = array();
