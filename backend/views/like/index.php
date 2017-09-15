@@ -35,8 +35,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 $avatar = '';
                 $ret = '';
                 if(!empty($userArr[$uid])) {
-                    $name = $userArr[$uid]['name'];
-                    $avatar = $userArr[$uid]['avatar'];
+                    $name = isset($userArr[$uid]['name']) ? $userArr[$uid]['name'] : "";
+                    $avatar = isset($userArr[$uid]['avatar']) ? $userArr[$uid]['avatar'] : "";
                     if(!empty($avatar)) {
                         $img = Html::img($avatar,
                             ['class' => 'img-circle img-bordered-sm', 'style' => 'width: 40px;height: 40px;margin: 0 auto;display: block;','alt' => "评论者"]
@@ -64,8 +64,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 $avatar = '';
                 $ret = '';
                 if(!empty($userArr[$uid])) {
-                    $name = $userArr[$uid]['name'];
-                    $avatar = $userArr[$uid]['avatar'];
+                    $name = isset($userArr[$uid]['name']) ? $userArr[$uid]['name'] : "";
+                    $avatar = isset($userArr[$uid]['avatar']) ? $userArr[$uid]['avatar'] : "";
                     if(!empty($avatar)) {
                         $img = Html::img($avatar,
                             ['class' => 'img-circle img-bordered-sm', 'style' => 'width: 40px;height: 40px;margin: 0 auto;display: block;','alt' => "评论者"]
