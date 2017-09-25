@@ -968,10 +968,9 @@ class UserController extends ActiveController
                 if(!empty($signature) || !empty($avatar) || !empty($username)) {
 
                     $attributeNames = array();
-                    if(!empty($signature)) {
-                        $userModel->signature = $signature;
-                        $attributeNames[] = 'signature';
-                    }
+                    $userModel->signature = $signature;
+                    $attributeNames[] = 'signature';
+
 
                     if(!empty($avatar)) {
                         $userModel->avatar = $avatar;
