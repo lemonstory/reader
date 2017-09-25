@@ -258,8 +258,8 @@ class NotifyController extends ActiveController
 
         $ret = array();
         $data['is_updated'] = 0;
-        $ret["code"] = 200;
-        $ret["msg"] = "OK";
+        $ret["status"] = 200;
+        $ret["message"] = "OK";
         $userModel = Yii::$app->user->identity;
         if (!is_null($userModel)) {
             if ($uid == $userModel->uid) {
