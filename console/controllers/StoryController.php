@@ -58,8 +58,14 @@ class StoryController extends Controller
                     ];
         if($inHotStoryIdArrCount > 0) {
 
-            $inHotCondition = ['story_id' => $inHotStoryIdArr];
-            $inHotCondition = array_merge($condition,$inHotCondition);
+            $inHotCondition  = ['and',
+                ['story.status' => Yii::$app->params['STATUS_ACTIVE']],
+                ['story.is_published' => Yii::$app->params['STATUS_PUBLISHED']],
+                ['>' , 'story.message_count' , Yii::$app->params['homeStoryMinMessageCount']],
+                ['>' , 'story.taps' , Yii::$app->params['homeStoryMinTapsCount']],
+                ['story.story_id' => $inHotStoryIdArr],
+            ];
+
             $stillInHotStoryArr = Story::find()->select('story_id')->where($inHotCondition)->asArray()->all();
             $stillInHotStoryArrCount = count($stillInHotStoryArr);
 
