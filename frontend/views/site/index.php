@@ -14,6 +14,18 @@
     <link rel="shortcut icon" href="/favicon.ico"/>
     <!-- Styles-->
     <link rel="stylesheet" href="/css/official-website.css"/>
+    <!--百度统计 start-->
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?db5c42f87417ac33017d1393aeba9922";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <!--百度统计 end-->
+
 </head>
 <body class="page page-home device-computer">
 <div class="site-layout base-layout">
