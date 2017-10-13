@@ -32,7 +32,8 @@
         var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1; //android终端
         var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
         if(isAndroid) {
-            window.location.href="http://youwei-static.oss-cn-beijing.aliyuncs.com/apk/youwei-v1.0.5-release.apk";
+//            window.location.href="http://youwei-static.oss-cn-beijing.aliyuncs.com/apk/youwei-v1.0.5-release.apk";
+            window.location.href="http://shouji.baidu.com/software/22491477.html";
         }
     </script>
 
