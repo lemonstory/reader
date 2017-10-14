@@ -74,8 +74,13 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $this->layout='@frontend/views/layouts/site.php';
-        return $this->render('index');
+        $requestFromStory = Yii::$app->request->get('from',0);
+        if($requestFromStory == 1) {
+            $this->layout='@frontend/views/layouts/site.php';
+            return $this->render('index');
+        }else {
+            header('Location: http://www.youweiapp.com/story/view?story_id=808&chapter_id=985');
+        }
     }
 
     /**
