@@ -76,8 +76,9 @@ class SiteController extends Controller
     {
         $requestFromStory = Yii::$app->request->get('from',0);
         if($requestFromStory == 1) {
-            $this->layout='@frontend/views/layouts/site.php';
-            return $this->render('index');
+//            $this->layout='@frontend/views/layouts/site.php';
+//            return $this->render('index');
+            header('Location: http://youwei-static.oss-cn-beijing.aliyuncs.com/apk/youwei-v1.0.5-release.apk');
         }else {
             header('Location: http://www.youweiapp.com/story/view?story_id=808&chapter_id=985');
         }
