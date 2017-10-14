@@ -67,20 +67,19 @@
             <div class="container-fluid is-limited">
                 <div class="row center-xs between-sm middle-xs" style="max-width: 510px !important;">
                     <!--                       target="_blank">-->
-                    <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"
-                       href="#" onclick="alert('谢谢您,ios正在开发中。安卓(android)版可以下载.');"
-
-                       <span
-                                class="icon icon-apple"></span>
-                        <div class="content-wrap is-flex direction-vert start-xs">
-                            <div class="platform-text">
-                                App Store
-                            </div>
-                            <div class="download-text">
-                                下载
-                            </div>
-                        </div>
-                    </a>
+<!--                    <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"-->
+<!--                       href="#" onclick="alert('谢谢您,ios正在开发中。安卓(android)版可以下载.');"-->
+<!---->
+<!--                       <span class="icon icon-apple"></span>-->
+<!--                        <div class="content-wrap is-flex direction-vert start-xs">-->
+<!--                            <div class="platform-text">-->
+<!--                                App Store-->
+<!--                            </div>-->
+<!--                            <div class="download-text">-->
+<!--                                下载-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </a>-->
                     <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"
                        href="http://youwei-static.oss-cn-beijing.aliyuncs.com/apk/youwei-v1.0.5-release.apk"
                        target="_blank"><span
