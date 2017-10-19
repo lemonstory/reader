@@ -72,7 +72,7 @@ class SearchController extends ActiveController
         $ret['data']['storyList'] = array();
         if(!empty($keyword)) {
             $start = ($page - 1) * $per_page;
-            $query = "story:'" . $keyword . "' OR sws_story:'" . $keyword . "'";
+            $query = "(story:'" . $keyword . "' OR sws_story:'" . $keyword . "') AND story_status:'".Yii::$app->params['STATUS_ACTIVE']."' AND story_is_published:'".Yii::$app->params['STATUS_PUBLISHED']."'";
             $searchRet = $this->getOpenSearchRet($query,$start,$per_page);
             $ret['data']['totalCount'] = $searchRet['result']['total'];
             $ret['data']['pageCount'] = ceil($searchRet['result']['total'] / $per_page);
