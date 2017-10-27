@@ -5,7 +5,7 @@
     <meta name="renderer" content="webkit">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta name="format-detection" content="telephone=no">
-    <title>校草室友爱上我</title>
+    <title>有味读书</title>
     <link rel="stylesheet" href="http://youwei.xiaoningmeng.net/css/collection.css">
     <link rel="stylesheet" href="http://youwei.xiaoningmeng.net/css/webbase.css">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
