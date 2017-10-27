@@ -147,7 +147,7 @@
 <!--            </div>-->
         </div>
         <div class="recommend-story-box">
-            <h6 class="recommend-story-hd">继续阅读，看接下来会发生什么…<a href="http://www.youweiapp.com" style="height: 60px;line-height: 60px;color: #222222;    background: #fff;border: 2px solid #222222;    border-radius: 5px;    font-size: 14px;    padding: 0 10px;    text-decoration: none;">立即下载</a></h6>
+            <h6 class="recommend-story-hd">继续阅读，看接下来会发生什么…<a href="http://a.app.qq.com/o/simple.jsp?pkgname=net.xiaoningmeng.youwei" style="height: 60px;line-height: 60px;color: #222222;    background: #fff;border: 2px solid #222222;    border-radius: 5px;    font-size: 14px;    padding: 0 10px;    text-decoration: none;">立即下载</a></h6>
 
 <!--            <div class="recommend-story-bd">-->
 <!---->
