@@ -106,6 +106,22 @@ class SiteController extends Controller
 
 
     /**
+     * 推广链接
+     */
+    public function actionGexing() {
+
+        $urlArr = [
+            'http://www.youweiapp.com/story/view?story_id=630&chapter_id=807',
+            'http://www.youweiapp.com/story/view?story_id=908&chapter_id=1084',
+            'http://www.youweiapp.com/story/view?story_id=713&chapter_id=891'];
+        $key = array_rand($urlArr,1);
+        $url = $urlArr[$key];
+        return $this->redirect($url);
+    }
+
+
+
+    /**
      * Logs in a user.
      *
      * @return mixed
