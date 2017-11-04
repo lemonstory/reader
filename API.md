@@ -2076,6 +2076,23 @@
                 }
             }
           备注：参考文档 https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2&index=4
+          
+          48）举报
+          api:    report/send
+                    method: get
+                    params:
+                          target_type: int 举报对象类型(1=举报人, 2=举报评论, 3=举报故事)
+                          target_id: int 举报对象id
+                          reason:int (1:垃圾广告营销,2:恶意攻击谩骂，3: 淫秽色情信息, 4: 违法有害信息 5：其他)
+                          uid:int  用户uid
+                          access-token:string  授权访问凭证
+                    ret: Json数组
+          {
+              "status": 200,
+              "message": "SUCCESS",
+              "data": {}
+          }
+          备注：登录或者未登录都可以举报
         
  ```
  
