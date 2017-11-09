@@ -116,7 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
 //             'text:ntext',
             [
                 'attribute' => 'voice_over',
-                'contentOptions' => ['style' => 'width:150px; white-space: normal;font-style:italic;font-size: 80%;color: #777;'],
+                'contentOptions' => ['class' => 'text-muted text-center','style' => 'width:150px; white-space: normal;font-size: 80%;color: #777;'],
                 'value' => function ($model) {
                     $ret = "";
                     if(!empty($model->voice_over)) {
