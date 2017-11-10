@@ -1,4 +1,5 @@
 <?php
+
 namespace frontend\controllers;
 
 use frontend\models\SignupForm;
@@ -60,9 +61,10 @@ class SiteController extends Controller
         ];
     }
 
-    public function actionError() {
+    public function actionError()
+    {
 
-        $this->layout='@frontend/views/layouts/site.php';
+        $this->layout = '@frontend/views/layouts/site.php';
         return $this->render('error');
     }
 
@@ -74,47 +76,45 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $requestFromStory = Yii::$app->request->get('from',0);
-        if($requestFromStory == 1) {
-//            $this->layout='@frontend/views/layouts/site.php';
-//            return $this->render('index');
-            header('Location: http://youwei-static.oss-cn-beijing.aliyuncs.com/apk/youwei-v1.0.5-release.apk');
-        }else {
-            header('Location: http://www.youweiapp.com/story/view?story_id=808&chapter_id=985');
-        }
+        $this->layout = '@frontend/views/layouts/site.php';
+        return $this->render('index');
+
     }
 
     /**
      * 用户协议
      * @return string
      */
-    public function actionAgreement() {
+    public function actionAgreement()
+    {
 
-        $this->layout='@frontend/views/layouts/site.php';
-        return$this->render('agreement');
+        $this->layout = '@frontend/views/layouts/site.php';
+        return $this->render('agreement');
     }
 
     /**
      * 版权申明
      * @return string
      */
-    public function actionCopyright() {
+    public function actionCopyright()
+    {
 
-        $this->layout='@frontend/views/layouts/site.php';
-        return$this->render('copyright');
+        $this->layout = '@frontend/views/layouts/site.php';
+        return $this->render('copyright');
     }
 
 
     /**
      * 推广链接
      */
-    public function actionGexing() {
+    public function actionGexing()
+    {
 
         $urlArr = [
             'http://www.youweiapp.com/story/view?story_id=630&chapter_id=807',
             'http://www.youweiapp.com/story/view?story_id=908&chapter_id=1084',
             'http://www.youweiapp.com/story/view?story_id=713&chapter_id=891'];
-        $key = array_rand($urlArr,1);
+        $key = array_rand($urlArr, 1);
         $url = $urlArr[$key];
         return $this->redirect($url);
     }
