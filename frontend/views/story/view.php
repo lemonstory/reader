@@ -181,7 +181,7 @@
 
 <script>
     var Crucio = {
-        appDownloadUrl: 'http://www.youweiapp.com?from=1'
+        appDownloadUrl: 'http://a.app.qq.com/o/simple.jsp?pkgname=net.xiaoningmeng.youwei'
     };
 </script>
 <script src="http://youwei-static.oss-cn-beijing.aliyuncs.com/js/jquery.js"></script>
