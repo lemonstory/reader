@@ -23,6 +23,8 @@ use yii\helpers\StringHelper;
  * @property integer $comment_count
  * @property string $taps
  * @property integer $is_published
+ * @property integer $is_serialized
+ * @property integer $is_pay
  * @property integer $status
  * @property string $create_time
  * @property string $last_modify_time
@@ -61,7 +63,7 @@ class Story extends \yii\db\ActiveRecord
     {
         return [
             [['uid'], 'required'],
-            [['uid', 'chapter_count', 'message_count', 'taps', 'comment_count', 'is_published', 'status'], 'integer'],
+            [['uid', 'chapter_count', 'message_count', 'taps', 'comment_count', 'is_published', 'is_serialized', 'is_pay', 'status'], 'integer'],
             [['create_time', 'last_modify_time'], 'safe'],
             [['name'], 'string', 'max' => 150],
             [['sub_name'], 'string', 'max' => 300],
@@ -87,6 +89,8 @@ class Story extends \yii\db\ActiveRecord
             'comment_count' => Yii::t('app', '评论数量'),
             'taps' => Yii::t('app', '点击数'),
             'is_published' => Yii::t('app', '是否发布'),
+            'is_serialized' => Yii::t('app', '是否连载中'),
+            'is_pay' => Yii::t('app', '是否收费'),
             'status' => Yii::t('app', '状态'),
             'create_time' => Yii::t('app', '创建时间'),
             'last_modify_time' => Yii::t('app', '最后修改时间'),

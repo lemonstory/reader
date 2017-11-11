@@ -37,6 +37,10 @@ use yii\widgets\ActiveForm;
 
     <?php // echo $form->field($model, 'is_published') ?>
 
+    <?php // echo $form->field($model, 'is_serialized') ?>
+
+    <?php // echo $form->field($model, 'is_pay') ?>
+
     <?php // echo $form->field($model, 'status') ?>
 
     <?php // echo $form->field($model, 'create_time') ?>

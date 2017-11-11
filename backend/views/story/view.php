@@ -39,9 +39,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'comment_count',
             'taps',
             'is_published',
+            'is_serialized',
+            'is_pay',
             'status',
-            'create_time',
-            'last_modify_time',
+            'create_time:datetime',
+            'last_modify_time:datetime',
         ],
     ]) ?>
 

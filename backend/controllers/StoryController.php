@@ -68,63 +68,9 @@ class StoryController extends Controller
         $searchModel = new StorySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        //批量获取标签
-        $models = $dataProvider->getModels();
-        $storyIdArr = array();
-        $storyUidArr = array();
-        if (!empty($models)) {
-
-            foreach ($models as $model) {
-                $storyIdArr[] = $model->story_id;
-                $storyUidArr[] = $model->uid;
-            }
-        }
-
-        $storyTagRelationCondition = array(
-            'story_id' => $storyIdArr,
-            'status' => Yii::$app->params['STATUS_ACTIVE'],
-        );
-        $storyTagidArr = StoryTagRelation::find()->where($storyTagRelationCondition)->asArray()->all();
-        $storyTagidArr = ArrayHelper::index($storyTagidArr, null, 'story_id');
-
-        $tagCondition = array(
-            'status' => Yii::$app->params['STATUS_ACTIVE'],
-        );
-        $tagArr = Tag::find($tagCondition)->asArray()->all();
-        $tagArr = ArrayHelper::index($tagArr, 'tag_id');
-
-        $storyTagArr = array();
-        if (!empty($storyTagidArr) && !empty($tagArr)) {
-
-            foreach ($storyTagidArr as $storyId => $storyTagRelArr) {
-                if (!empty($storyTagRelArr)) {
-                    foreach ($storyTagRelArr as $key => $storyTagRelItem) {
-
-                        if (isset($tagArr[$storyTagRelItem['tag_id']]['name'])) {
-                            $storyTagRelItem['tag_name'] = $tagArr[$storyTagRelItem['tag_id']]['name'];
-                        } else {
-                            $storyTagRelItem['tag_name'] = '';
-                        }
-                        $storyTagArr[$storyId][$key] = $storyTagRelItem;
-                    }
-                }
-            }
-        }
-
-        //批量获取作者
-        $userCondition = array(
-            'uid' => $storyUidArr,
-            'status' => Yii::$app->params['STATUS_ACTIVE'],
-        );
-
-        $storyUserArr = User::find()->where($userCondition)->asArray()->all();
-        $storyUserArr = ArrayHelper::index($storyUserArr, 'uid');
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'storyTagArr' => $storyTagArr,
-            'storyUserArr' => $storyUserArr,
         ]);
     }
 

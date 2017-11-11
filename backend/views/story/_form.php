@@ -51,6 +51,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'comment_count')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'taps')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'is_published')->radioList([1=>'已发布','0'=>'未发布']); ?>
+    <?= $form->field($model, 'is_serialized')->radioList([1=>'已完本','0'=>'连载中']); ?>
+    <?= $form->field($model, 'is_pay')->radioList([1=>'收费','0'=>'免费']); ?>
     <?= $form->field($model, 'status')->radioList(
             ['1'=>'正常','0'=>'删除'],
             ['item' => function($index, $label, $name, $checked, $value) {

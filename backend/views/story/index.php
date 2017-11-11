@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="story-index">
 
-<!--    <h1>--><?//= Html::encode($this->title) ?><!--</h1>-->
+    <!--    <h1>--><? //= Html::encode($this->title) ?><!--</h1>-->
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'contentOptions' => ['style' => 'width:10px;'],
                 'format' => 'raw',
                 'value' => function ($m) {
-                    $ret =  Html::a($m->story_id,
+                    $ret = Html::a($m->story_id,
                         ['story/update', 'id' => $m->story_id,]);
                     return $ret;
                 },
@@ -50,40 +50,44 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 'attribute' => 'name',
                 'format' => 'raw',
-                'value' => function ($m) use ($storyTagArr) {
-                    $ret = Html::a($m->name,
-                        ['story/update', 'id' => $m->story_id]);
-
-                    if(isset($storyTagArr[$m->story_id]) && !empty($storyTagArr[$m->story_id])) {
-                        {
-                            $ret .= "<p >";
-                            foreach ($storyTagArr[$m->story_id] as $tag) {
-
-                                if(isset(Yii::$app->params['tagNameBg'][$tag['tag_id']])) {
-                                    $bg = Yii::$app->params['tagNameBg'][$tag['tag_id']];
-                                }else {
-                                    $bg = Yii::$app->params['defaultTagNameBg'];
-                                }
-                                $tagNameUrl = Html::a($tag['tag_name'],
-                                    ['tag/view', 'id' => $tag['tag_id']], ['style' => 'color:#fff']);
-                                $ret .= " <small class=\"label {$bg}\">{$tagNameUrl}</small>";
-                            }
-                            $ret .= "</p>";
-                        }
-                    }
+                'value' => function ($model) {
+                    $ret = Html::a($model->name,
+                        ['story/update', 'id' => $model->story_id]);
                     return $ret;
                 },
             ],
-//            'sub_name',
-//            'description',
+
+            [
+                'label' => '标签',
+                'format' => 'raw',
+                'attribute'=>'tag_id',
+                'value' => function($model) {
+                    $ret = "<p >";
+                    foreach ($model->tags as $tag) {
+
+                        if (isset(Yii::$app->params['tagNameBg'][$tag->tag_id])) {
+                            $bg = Yii::$app->params['tagNameBg'][$tag->tag_id];
+                        } else {
+                            $bg = Yii::$app->params['defaultTagNameBg'];
+                        }
+                        $tagNameUrl = Html::a($tag->name,
+                            ['story/index', 'StorySearch[tag_id]' => $tag->tag_id], ['style' => 'color:#fff']);
+                        $ret .= " <small class=\"label {$bg}\">{$tagNameUrl}</small>";
+                    }
+                    $ret .= "</p>";
+                    return $ret;
+                },
+            ],
+
+
             [
                 'attribute' => 'uid',
                 'format' => 'raw',
-                'value' => function ($m) use ($storyUserArr){
+                'value' => function ($model) {
                     $ret = '';
-                    if(!empty($m->uid)) {
-                        $ret = Html::a($storyUserArr[$m->uid]['username'],
-                            ['user/view', 'id' => $m->uid]);
+                    if (!empty($model->user)) {
+                        $ret = Html::a($model->user->username,
+                            ['user/view', 'id' => $model->uid]);
                     }
                     return $ret;
                 },
@@ -94,18 +98,19 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'headerOptions' => ['style' => 'width:100px'],
                 'value' => function ($model) {
-                    $ret = Html::a($model->chapter_count."章",
+                    $ret = Html::a($model->chapter_count . "章",
                         ['chapter/index', 'ChapterSearch[story_id]' => $model->story_id]);
                     return $ret;
                 },
             ],
+
             [
                 'attribute' => 'message_count',
                 'format' => 'raw',
                 'headerOptions' => ['style' => 'width:100px'],
                 'value' => function ($model) {
 
-                    $ret = Html::a($model->message_count."条",
+                    $ret = Html::a($model->message_count . "条",
                         ['chapter-message-content/index', 'ChapterMessageContentSearch[story_id]' => $model->story_id]);
                     return $ret;
                 },
@@ -117,9 +122,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'headerOptions' => ['style' => 'width:100px'],
                 'value' => function ($model) {
 
-                    $commentTargetType =  ArrayHelper::index(Yii::$app->params['COMMENT_TARGET_TYPE'],'alias');
-                    $ret = Html::a($model->comment_count."条",
-                        ['comment/index', 'CommentSearch[target_type]' =>$commentTargetType['story']['value'], 'CommentSearch[target_id]' => $model->story_id]);
+                    $commentTargetType = ArrayHelper::index(Yii::$app->params['COMMENT_TARGET_TYPE'], 'alias');
+                    $ret = Html::a($model->comment_count . "条",
+                        ['comment/index', 'CommentSearch[target_type]' => $commentTargetType['story']['value'], 'CommentSearch[target_id]' => $model->story_id]);
                     return $ret;
                 },
             ],
@@ -127,7 +132,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'taps',
                 'headerOptions' => ['style' => 'width:100px'],
                 'value' => function ($model) {
-                    return $model->taps."次";
+                    return $model->taps . "次";
                 },
             ],
             [
@@ -140,10 +145,46 @@ $this->params['breadcrumbs'][] = $this->title;
                         '0' => '未发布',
                         '1' => '已发布',
                     ];
-                    if ($model->is_published == 0){
+                    if ($model->is_published == 0) {
                         $ret = Html::tag('span', $state[$model->is_published], ['class' => 'not-set']);
-                    }else {
+                    } else {
                         $ret = $state[$model->is_published];
+                    }
+                    return $ret;
+                },
+            ],
+            [
+                'attribute' => 'is_serialized',
+                'format' => 'raw',
+                'headerOptions' => ['style' => 'width:100px'],
+                'contentOptions' => ['style' => 'width:10px;'],
+                'value' => function ($model) {
+                    $state = [
+                        '0' => '已完本',
+                        '1' => '连载中',
+                    ];
+                    if ($model->is_serialized == 0) {
+                        $ret = Html::tag('span', $state[$model->is_serialized], ['class' => 'not-set']);
+                    } else {
+                        $ret = $state[$model->is_serialized];
+                    }
+                    return $ret;
+                },
+            ],
+            [
+                'attribute' => 'is_pay',
+                'format' => 'raw',
+                'headerOptions' => ['style' => 'width:100px'],
+                'contentOptions' => ['style' => 'width:10px;'],
+                'value' => function ($model) {
+                    $state = [
+                        '0' => '免费',
+                        '1' => '收费',
+                    ];
+                    if ($model->is_pay == 0) {
+                        $ret = Html::tag('span', $state[$model->is_pay], ['class' => 'not-set']);
+                    } else {
+                        $ret = $state[$model->is_pay];
                     }
                     return $ret;
                 },
@@ -158,11 +199,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         '1' => '正常',
                     ];
 
-                    if(!isset($state[$model->status])) {
+                    if (!isset($state[$model->status])) {
                         $ret = Html::tag('span', '未知', ['class' => 'not-set']);
-                    }else if ($model->status == 0){
+                    } else if ($model->status == 0) {
                         $ret = Html::tag('span', $state[$model->status], ['class' => 'not-set']);
-                    }else {
+                    } else {
                         $ret = $state[$model->status];
                     }
                     return $ret;

@@ -12,14 +12,18 @@ use common\models\Story;
  */
 class StorySearch extends Story
 {
+
+    public $tag_name;
+    public $tag_id;
+
     /**
      * @inheritdoc
      */
     public function rules()
     {
         return [
-            [['story_id', 'uid', 'chapter_count', 'message_count', 'comment_count', 'taps', 'is_published', 'status'], 'integer'],
-            [['name', 'sub_name', 'description', 'cover', 'create_time', 'last_modify_time'], 'safe'],
+            [['story_id', 'tag_id', 'uid', 'chapter_count', 'message_count', 'comment_count', 'taps', 'is_published','is_serialized', 'is_pay', 'status'], 'integer'],
+            [['name', 'sub_name', 'description', 'cover', 'tag_name', 'create_time', 'last_modify_time'], 'safe'],
         ];
     }
 
@@ -41,13 +45,16 @@ class StorySearch extends Story
      */
     public function search($params)
     {
-        $query = Story::find()->orderBy(['story_id' => SORT_DESC]);
+        $query = Story::find()->innerJoinWith('tags', true);
 
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+
+        $dataProvider->sort->defaultOrder = [
+            'story_id' => SORT_DESC,];
 
         $this->load($params);
 
@@ -60,6 +67,7 @@ class StorySearch extends Story
         // grid filtering conditions
         $query->andFilterWhere([
             'story_id' => $this->story_id,
+            Tag::tableName() .'.tag_id' => $this->tag_id,
             'uid' => $this->uid,
             'chapter_count' => $this->chapter_count,
             'message_count' => $this->message_count,
@@ -74,7 +82,8 @@ class StorySearch extends Story
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'sub_name', $this->sub_name])
             ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'cover', $this->cover]);
+            ->andFilterWhere(['like', 'cover', $this->cover])
+            ->andFilterWhere(['like', Tag::tableName() .'.name', $this->tag_name]);
 
         return $dataProvider;
     }

@@ -75,4 +75,22 @@ class Tag extends \yii\db\ActiveRecord
     {
         return new TagQuery(get_called_class());
     }
+
+
+    /**
+     * 获取标签下的故事
+     * @return $this
+     */
+    public function getStorys()
+    {
+
+        //hasMany relation story表->story_id =>  story_tag_relation表 => story_id
+        return $this->hasMany(Story::className(), ['story_id' => 'story_id'])
+            //viaTable relation story_tag_relation表->story_id => story表->story_id
+            ->viaTable('story_tag_relation', ['story_id' => 'story_id'],
+                function ($query) {
+                    $query->onCondition(
+                        ['story_tag_relation.status' => Yii::$app->params['STATUS_ACTIVE']]);
+                });
+    }
 }
