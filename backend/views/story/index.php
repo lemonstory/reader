@@ -13,13 +13,19 @@ $this->title = Yii::t('app', '故事');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="story-index">
-
     <!--    <h1>--><? //= Html::encode($this->title) ?><!--</h1>-->
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <div class="callout callout-warning">
+        <p>首页：故事最少消息数量 <?= Yii::$app->params['tagStoryMinMessageCount'] ?></p>
+        <p>标签页：故事最少消息数量 <?= Yii::$app->params['homeStoryMinMessageCount'] ?></p>
+
+    </div>
 
     <p>
         <?= Html::a(Yii::t('app', '新增故事'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
+
     <?php Pjax::begin(); ?>    <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

@@ -70,7 +70,6 @@ class StorySearch extends Story
             Tag::tableName() .'.tag_id' => $this->tag_id,
             'uid' => $this->uid,
             'chapter_count' => $this->chapter_count,
-            'message_count' => $this->message_count,
             'comment_count' => $this->comment_count,
             'taps' => $this->taps,
             'is_published' => $this->is_published,
@@ -78,6 +77,8 @@ class StorySearch extends Story
             'create_time' => $this->create_time,
             'last_modify_time' => $this->last_modify_time,
         ]);
+
+        $query->andFilterWhere(['>', 'message_count', $this->message_count]);
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'sub_name', $this->sub_name])
