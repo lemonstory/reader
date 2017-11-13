@@ -87,7 +87,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         );
                         $ret = Html::a($img,
                             ['story-actor/update', 'id' => $m->actor_id]);
-
+                    }else {
+                        $ret = Html::a("上传头像",
+                            ['story-actor/update', 'id' => $m->actor_id]);
                     }
                     if(!empty($name)) {
                         $ret .= Html::tag('p', $name, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);

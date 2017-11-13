@@ -17,8 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <div class="callout callout-warning">
-        <p>首页：故事最少消息数量 <?= Yii::$app->params['tagStoryMinMessageCount'] ?></p>
-        <p>标签页：故事最少消息数量 <?= Yii::$app->params['homeStoryMinMessageCount'] ?></p>
+        <p>首页：故事最少消息数量 <?= Yii::$app->params['tagStoryMinMessageCount'] ?>;     标签页：故事最少消息数量 <?= Yii::$app->params['homeStoryMinMessageCount']  ?></p>
 
     </div>
 
