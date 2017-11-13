@@ -51,7 +51,7 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'comment_count')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'taps')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'is_published')->radioList([1=>'已发布','0'=>'未发布']); ?>
-    <?= $form->field($model, 'is_serialized')->radioList([1=>'已完本','0'=>'连载中']); ?>
+    <?= $form->field($model, 'is_serialized')->radioList([0=>'已完本','1'=>'连载中']); ?>
     <?= $form->field($model, 'is_pay')->radioList([1=>'收费','0'=>'免费']); ?>
     <?= $form->field($model, 'status')->radioList(
             ['1'=>'正常','0'=>'删除'],
@@ -107,8 +107,9 @@ use yii\widgets\ActiveForm;
         </div>
     </div>
 
-    <?= $form->field($model, 'create_time')->textInput(['disabled' => true]) ?>
-    <?= $form->field($model, 'last_modify_time')->textInput(['disabled' => true]) ?>
+    <?= $form->field($model, 'create_time')->textInput(['disabled' => true, 'value' => date('Y-m-d H:i:s', $model->create_time)]) ?>
+    <?= $form->field($model, 'last_modify_time')->textInput(['disabled' => true, 'value' => date('Y-m-d H:i:s', $model->create_time)]) ?>
+
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', '新建') : Yii::t('app', '修改'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
     </div>

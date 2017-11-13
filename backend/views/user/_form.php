@@ -65,8 +65,9 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'register_time')->textInput()->textInput(['disabled' => true]) ?>
     <?= $form->field($model, 'last_login_ip')->textInput(['maxlength' => true])->textInput(['disabled' => true]) ?>
     <?= $form->field($model, 'last_login_time')->textInput()->textInput(['disabled' => true]) ?>
-    <?= $form->field($model, 'create_time')->textInput()->textInput(['disabled' => true]) ?>
-    <?= $form->field($model, 'last_modify_time')->textInput()->textInput(['disabled' => true]) ?>
+
+    <?= $form->field($model, 'create_time')->textInput(['disabled' => true, 'value' => date('Y-m-d H:i:s', $model->create_time)]) ?>
+    <?= $form->field($model, 'last_modify_time')->textInput(['disabled' => true, 'value' => date('Y-m-d H:i:s', $model->create_time)]) ?>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? Yii::t('app', '新建') : Yii::t('app', '修改'), ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

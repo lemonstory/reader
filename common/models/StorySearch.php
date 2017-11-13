@@ -66,24 +66,24 @@ class StorySearch extends Story
 
         // grid filtering conditions
         $query->andFilterWhere([
-            'story_id' => $this->story_id,
+            Story::tableName().'.story_id' => $this->story_id,
             Tag::tableName() .'.tag_id' => $this->tag_id,
-            'uid' => $this->uid,
-            'chapter_count' => $this->chapter_count,
-            'comment_count' => $this->comment_count,
-            'taps' => $this->taps,
-            'is_published' => $this->is_published,
-            'status' => $this->status,
-            'create_time' => $this->create_time,
-            'last_modify_time' => $this->last_modify_time,
+            Story::tableName().'.uid' => $this->uid,
+            Story::tableName().'.chapter_count' => $this->chapter_count,
+            Story::tableName().'.comment_count' => $this->comment_count,
+            Story::tableName().'.taps' => $this->taps,
+            Story::tableName().'.is_published' => $this->is_published,
+            Story::tableName().'.status' => $this->status,
+            Story::tableName().'.create_time' => $this->create_time,
+            Story::tableName().'.last_modify_time' => $this->last_modify_time,
         ]);
 
         $query->andFilterWhere(['>', 'message_count', $this->message_count]);
 
-        $query->andFilterWhere(['like', 'name', $this->name])
-            ->andFilterWhere(['like', 'sub_name', $this->sub_name])
-            ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'cover', $this->cover])
+        $query->andFilterWhere(['like', Story::tableName().'.name', $this->name])
+            ->andFilterWhere(['like', Story::tableName().'.sub_name', $this->sub_name])
+            ->andFilterWhere(['like', Story::tableName().'.description', $this->description])
+            ->andFilterWhere(['like', Story::tableName().'.cover', $this->cover])
             ->andFilterWhere(['like', Tag::tableName() .'.name', $this->tag_name]);
 
         return $dataProvider;
