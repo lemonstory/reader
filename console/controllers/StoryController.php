@@ -30,32 +30,29 @@ class StoryController extends Controller
     public $message;
 
     //暂时不使用
-    public function options()
-    {
-        return ['message'];
-    }
+//    public function options()
+//    {
+//        return ['message'];
+//    }
+//
+//    //暂时不使用
+//    public function optionAliases()
+//    {
+//        return ['m' => 'message'];
+//    }
 
-    //暂时不使用
-    public function optionAliases()
-    {
-        return ['m' => 'message'];
-    }
-
+    /**
+     * 按热度对全网内容进行排序
+     * @return int
+     */
     public function actionHot()
     {
-        
         $redis = Yii::$app->redis;
 
         //从最热列表中删除已不合法的故事
         //例如: 有故事被后台审核人员已经删除
         $inHotStoryIdArr = $redis->zrevrange(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], 0, -1);
         $inHotStoryIdArrCount = count($inHotStoryIdArr);
-        $condition  = ['and',
-                        ['story.status' => Yii::$app->params['STATUS_ACTIVE']],
-                        ['story.is_published' => Yii::$app->params['STATUS_PUBLISHED']],
-                        ['>' , 'story.message_count' , Yii::$app->params['homeStoryMinMessageCount']],
-                        ['>' , 'story.taps' , Yii::$app->params['homeStoryMinTapsCount']],
-                    ];
         if($inHotStoryIdArrCount > 0) {
 
             $inHotCondition  = ['and',
@@ -85,6 +82,12 @@ class StoryController extends Controller
         }
 
         //获取所有的故事
+        $condition  = ['and',
+            ['story.status' => Yii::$app->params['STATUS_ACTIVE']],
+            ['story.is_published' => Yii::$app->params['STATUS_PUBLISHED']],
+            ['>' , 'story.message_count' , Yii::$app->params['homeStoryMinMessageCount']],
+            ['>' , 'story.taps' , Yii::$app->params['homeStoryMinTapsCount']],
+        ];
         $storyArr = Story::find()->where($condition)->asArray()->all();
         $storyModel =  new Story();
 
@@ -138,6 +141,49 @@ class StoryController extends Controller
                     }
                 }else {
                     echo "rank 计算出现错误\n";
+                    return 1;
+                }
+            }
+        }else {
+            echo "故事数组不能为空\n";
+            return 1;
+        }
+
+        echo "故事全局排序更新成功\n";
+        return 0;
+    }
+
+
+    /**
+     * 随机对全网内容进行排序
+     * @return int
+     */
+    public function actionShuffle(){
+
+        $redis = Yii::$app->redis;
+        //获取所有的故事
+        $condition  = ['and',
+            ['story.status' => Yii::$app->params['STATUS_ACTIVE']],
+            ['story.is_published' => Yii::$app->params['STATUS_PUBLISHED']],
+            ['>' , 'story.message_count' , Yii::$app->params['homeStoryMinMessageCount']],
+            ['>' , 'story.taps' , Yii::$app->params['homeStoryMinTapsCount']],
+        ];
+        $storyArr = Story::find()->where($condition)->asArray()->all();
+
+        //所有的故事Id
+        $storyIdArr = ArrayHelper::getColumn($storyArr,'story_id');
+        shuffle($storyIdArr);
+        if(!empty($storyArr) && is_array($storyArr)) {
+            foreach ($storyIdArr as $rank => $storyId) {
+                //向Redis中写入Rank
+                try {
+                    $isAdded = $redis->zadd(Yii::$app->params['cacheKeyYouweiStoriesHotRank'], $rank, strval($storyId));
+                    if (strcmp($isAdded, "0") != 0 && strcmp($isAdded, "1") != 0) {
+                        echo "redis 写入失败\n";
+                        return 1;
+                    }
+                } catch (Exception $e) {
+                    echo $e->getMessage();
                     return 1;
                 }
             }
