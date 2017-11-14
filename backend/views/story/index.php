@@ -92,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $ret = '';
                     if (!empty($model->user)) {
                         $ret = Html::a($model->user->username,
-                            ['user/view', 'id' => $model->uid]);
+                            ['user/update', 'id' => $model->uid]);
                     }
                     return $ret;
                 },

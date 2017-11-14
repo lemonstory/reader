@@ -14,10 +14,16 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="chapter-message-content-index">
 
 <!--    <h1>--><?//= Html::encode($this->title) ?><!--</h1>-->
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+<!--    --><?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
         <?= Html::a(Yii::t('app', '新增消息内容'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?php
+
+            $actorUrl = Yii::$app->urlManager->createUrl(['story-actor/index','StoryActorSearch[story_id]'=>$searchModel->story_id]);
+            echo Html::a(Yii::t('app', '查看角色'), $actorUrl, ['class' => 'btn btn-info']);
+
+        ?>
     </p>
     <?php
         $storyActorArr = ArrayHelper::index($storyActorArr, null, 'story_id');
@@ -81,19 +87,22 @@ $this->params['breadcrumbs'][] = $this->title;
                         }
                     }
 
-                    if(!empty($avatar)) {
-                        $img = Html::img($avatar,
-                            ['class' => 'img-circle img-bordered-sm', 'style' => 'width: 40px;height: 40px;margin: 0 auto;display: block;','alt' => "角色"]
-                        );
-                        $ret = Html::a($img,
-                            ['story-actor/update', 'id' => $m->actor_id]);
-                    }else {
-                        $ret = Html::a("上传头像",
-                            ['story-actor/update', 'id' => $m->actor_id]);
+                    if(!empty($actorId)) {
+                        if(!empty($avatar)) {
+                            $img = Html::img($avatar,
+                                ['class' => 'img-circle img-bordered-sm', 'style' => 'width: 40px;height: 40px;margin: 0 auto;display: block;','alt' => "角色"]
+                            );
+                            $ret = Html::a($img,
+                                ['story-actor/update', 'id' => $m->actor_id]);
+                        }else {
+                            $ret = Html::a("上传头像",
+                                ['story-actor/update', 'id' => $m->actor_id],['class' => 'btn btn-default btn-xs']);
+                        }
+                        if(!empty($name)) {
+                            $ret .= Html::tag('p', $name, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);
+                        }
                     }
-                    if(!empty($name)) {
-                        $ret .= Html::tag('p', $name, ['class' => 'text-muted text-center','style' => 'font-size: 13px; margin-top: 5px;']);
-                    }
+
                     return $ret;
                 }
             ],
@@ -132,23 +141,23 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'text',
                 'contentOptions' => ['style' => 'width:300px; white-space: normal;font-size: 90%;'],
             ],
-            [
-                'attribute' => 'is_loading',
-                'format' => 'raw',
-                'headerOptions' => ['style' => 'width:10px'],
-                'value' => function ($model) {
-                    $state = [
-                        '0' => '无',
-                        '1' => '有',
-                    ];
-                    if(!isset($state[$model->is_loading])) {
-                        $ret = Html::tag('span', '未知', ['class' => 'not-set']);
-                    }else{
-                        $ret = Html::tag('span', $state[$model->is_loading]);
-                    }
-                    return $ret;
-                },
-            ],
+//            [
+//                'attribute' => 'is_loading',
+//                'format' => 'raw',
+//                'headerOptions' => ['style' => 'width:10px'],
+//                'value' => function ($model) {
+//                    $state = [
+//                        '0' => '无',
+//                        '1' => '有',
+//                    ];
+//                    if(!isset($state[$model->is_loading])) {
+//                        $ret = Html::tag('span', '未知', ['class' => 'not-set']);
+//                    }else{
+//                        $ret = Html::tag('span', $state[$model->is_loading]);
+//                    }
+//                    return $ret;
+//                },
+//            ],
             [
                 'attribute' => 'status',
                 'format' => 'raw',

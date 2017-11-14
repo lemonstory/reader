@@ -63,6 +63,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         );
                         $ret = Html::a($img,
                             ['story-actor/update', 'id' => $actor_id]);
+                    }else {
+                        $ret = Html::a("上传头像",
+                            ['story-actor/update', 'id' => $m->actor_id],['class' => 'btn btn-default btn-xs']);
 
                     }
                     return $ret;
