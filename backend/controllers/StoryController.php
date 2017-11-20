@@ -47,9 +47,9 @@ class StoryController extends Controller
                         'ips' => Yii::$app->params['adminIps'],
                         'matchCallback' => function ($rule, $action) {
                             $uid = Yii::$app->getUser()->getId();
-                            if(!empty($uid) && ArrayHelper::isIn($uid,Yii::$app->params['adminUidWhiteList'])) {
+                            if (!empty($uid) && ArrayHelper::isIn($uid, Yii::$app->params['adminUidWhiteList'])) {
                                 return true;
-                            }else {
+                            } else {
                                 return false;
                             }
                         }
@@ -110,8 +110,17 @@ class StoryController extends Controller
      */
     public function actionUpload()
     {
-        $uploadFormModel = new UploadForm();
+        $inputPost = Yii::$app->request->post();
+        //获取所有的tag
+        $tagCondition = array(
+            'status' => Yii::$app->params['STATUS_ACTIVE']
+        );
+        $allTagArr = Tag::find($tagCondition)
+            ->orderBy(['number' => SORT_DESC])
+            ->asArray()
+            ->all();
 
+        $uploadFormModel = new UploadForm();
         if (Yii::$app->request->isPost) {
             $uploadFormModel->file = UploadedFile::getInstance($uploadFormModel, 'file');
 
@@ -121,7 +130,7 @@ class StoryController extends Controller
 
                     //解析处理故事文件
                     $storyModel = new Story();
-                    $story = $storyModel->parseFile($file,Story::FILE_PARSE_TYPE_STORY,null);
+                    $story = $storyModel->parseFile($file, Story::FILE_PARSE_TYPE_STORY, null);
 //                    var_dump($story);
 //                    exit();
 
@@ -166,6 +175,24 @@ class StoryController extends Controller
                                 throw new ServerErrorHttpException('新建故事失败');
                             }
 
+                            //标签
+                            $storyTagPair = array();
+                            $inputPost = Yii::$app->request->post();
+                            if (!empty($inputPost['Story']['tags'])) {
+
+                                foreach ($inputPost['Story']['tags'] as $tagId) {
+                                    $storyTagPair[] = array($storyId, $tagId);
+                                }
+
+                                $command = Yii::$app->getDb()->createCommand()->batchInsert('story_tag_relation',
+                                    ['story_id', 'tag_id'],
+                                    $storyTagPair
+                                );
+
+                                $sql = $command->getSql() . " ON DUPLICATE KEY UPDATE `status`=VALUES(`status`);";
+                                Yii::$app->getDb()->createCommand($sql)->execute();
+                            }
+
                             //角色
                             //期望获取新增角色的Id无法做批量写入
                             //http://www.yiiframework.com/forum/index.php/topic/72746-can-batchinsert-return-all-inserted-ids/
@@ -182,10 +209,10 @@ class StoryController extends Controller
                                     $storyActorModel->number = $actorItem['number'];
                                     $storyActorModel->location = $actorItem['location'];
                                     $storyActorModel->is_visible = Yii::$app->params['STATUS_ACTIVE'];
-                                    if($storyActorModel->save()) {
+                                    if ($storyActorModel->save()) {
                                         $actorId = $storyActorModel->actor_id;
                                         $actorNameIdPair[$actorItem['name']] = $actorId;
-                                    }else {
+                                    } else {
                                         print_r($storyActorModel->getErrors());
                                         throw new ServerErrorHttpException('新建角色失败');
                                     }
@@ -200,7 +227,7 @@ class StoryController extends Controller
 
                                 foreach ($story['addChapterArr'] as $chapterItem) {
                                     $messageCount = 0;
-                                    if(isset($story['addMessageArr'][$chapterItem['number']]) && is_array($story['addMessageArr'][$chapterItem['number']])) {
+                                    if (isset($story['addMessageArr'][$chapterItem['number']]) && is_array($story['addMessageArr'][$chapterItem['number']])) {
                                         $messageCount = count($story['addMessageArr'][$chapterItem['number']]);
                                     }
                                     $chapterModel = new Chapter();
@@ -210,10 +237,10 @@ class StoryController extends Controller
                                     $chapterModel->message_count = $messageCount;
                                     $chapterModel->status = Yii::$app->params['STATUS_ACTIVE'];
                                     $chapterModel->is_published = Yii::$app->params['STATUS_UNPUBLISHED'];
-                                    if($chapterModel->save()) {
+                                    if ($chapterModel->save()) {
                                         $chapterId = $chapterModel->chapter_id;
                                         $chapterNumberIdPair[$chapterItem['number']] = $chapterId;
-                                    }else {
+                                    } else {
                                         print_r($chapterModel->getErrors());
                                         throw new ServerErrorHttpException('新建章节失败');
                                     }
@@ -234,7 +261,7 @@ class StoryController extends Controller
                                 foreach ($story['addMessageArr'] as $chapterNumber => $chapterMessageArr) {
 
                                     $chapterId = $chapterNumberIdPair[$chapterNumber];
-                                    if(!empty($chapterId)) {
+                                    if (!empty($chapterId)) {
                                         foreach ($chapterMessageArr as $index => $messageItem) {
 
                                             $messageRow['story_id'] = $storyId;
@@ -255,7 +282,7 @@ class StoryController extends Controller
                                             $messageRow['status'] = Yii::$app->params['STATUS_ACTIVE'];
                                             $messageRows[] = $messageRow;
                                         }
-                                    }else {
+                                    } else {
                                         throw new ServerErrorHttpException('消息内容没有章节Id');
                                     }
                                 }
@@ -280,7 +307,10 @@ class StoryController extends Controller
             }
         }
 
-        return $this->render('upload', ['model' => $uploadFormModel]);
+        return $this->render('upload', [
+            'model' => $uploadFormModel,
+            'allTagArr' => $allTagArr,
+        ]);
     }
 
     /**
@@ -289,7 +319,8 @@ class StoryController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionUpdate($id)
+    public
+    function actionUpdate($id)
     {
 
         //TODO:获取用户UID
