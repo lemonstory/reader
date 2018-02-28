@@ -68,8 +68,8 @@
                 <div class="row center-xs between-sm middle-xs" style="max-width: 510px !important;">
                     <a class="download-button is-flex center-xs middle-xs col-xs-8 col-sm-5"
                        href="https://itunes.apple.com/us/app/%E6%9C%89%E5%91%B3%E8%AF%BB%E4%B9%A6/id1296714941?l=zh&ls=1&mt=8"
-
-                       <span class="icon icon-apple"></span>
+                       target="_blank">
+                        <span class="icon icon-apple"></span>
                         <div class="content-wrap is-flex direction-vert start-xs">
                             <div class="platform-text">
                                 App Store
